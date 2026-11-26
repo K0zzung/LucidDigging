@@ -558,7 +558,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gridController: {fileID: 0}
   playerStatus: {fileID: 0}
-  dashDuration: 0.8
+  dashDuration: 1.2
+  dashDurationTwoCharges: 1.5
+  dashDurationThreeCharges: 1.8
   dashAttackPercent: 200
   dashStepInterval: 0.08
   dashMoveDuration: 0.045

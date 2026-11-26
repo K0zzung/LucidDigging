@@ -212,6 +212,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   skillIcon: {fileID: 38676227}
+  badgeRoot: {fileID: 329845871}
   lockedIconColor: {r: 1, g: 1, b: 1, a: 0.10980392}
   unlockedIconColor: {r: 1, g: 1, b: 1, a: 1}
   punchStrength: 0.15
@@ -1343,7 +1344,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c78d94577ae840a49a2a5b72436d83c0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxChargesPerSkill: 1
 --- !u!114 &135940226
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1518,6 +1518,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   skillIcon: {fileID: 148000126}
+  badgeRoot: {fileID: 1307421587}
   lockedIconColor: {r: 1, g: 1, b: 1, a: 0.10980392}
   unlockedIconColor: {r: 1, g: 1, b: 1, a: 1}
   punchStrength: 0.15
@@ -2177,6 +2178,7 @@ MonoBehaviour:
   dashSlot: {fileID: 38676229}
   shockwaveSlot: {fileID: 148000128}
   shieldSlot: {fileID: 528460620}
+  runSkillFont: {fileID: 11400000, guid: 7318f80099aff7a40930834c98a9b305, type: 2}
 --- !u!1 &245311621
 GameObject:
   m_ObjectHideFlags: 0
@@ -4380,6 +4382,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   skillIcon: {fileID: 528460618}
+  badgeRoot: {fileID: 418197710}
   lockedIconColor: {r: 1, g: 1, b: 1, a: 0.10980392}
   unlockedIconColor: {r: 1, g: 1, b: 1, a: 1}
   punchStrength: 0.15

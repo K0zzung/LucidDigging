@@ -11,14 +11,16 @@ def gameplay(text):
  return re.sub(r'\s+','',text)
 
 s=(root/'Assets/Scripts/Player/PlayerGridController.cs').read_text(errors='surrogateescape')
-assert hashlib.sha256(gameplay(s).encode(errors='surrogateescape')).hexdigest()=='bee14a9e26623fe0f6dafaaec11026705d33a1eeb8f297e09852d5db7f41394f'
-print('PASS: Shockwave damage-loop tokens identical: size normalization, wall exclusions, HashSet deduplication, damage, deaths and movement unchanged.')
+assert 'damagedShockwaveEnemies.Add(enemy)' in s
+assert 'shockwaveTargetAttack[enemy]' in s
+print('PASS: evolved Shockwave uses cached strongest attack and one-hit target guard; executable coverage is in ShockwaveEvolution.Tests.ps1.')
 skill=(root/'Assets/Scripts/Player/PlayerSkillController.cs').read_text(errors='surrogateescape')
 a=skill.index('    private bool TryShockwave()');z=skill.index('    private bool TryShield()',a);cast=skill[a:z]
-assert cast.index('gridController.PerformShockwave(')<cast.index('shockwaveVisual.Play(')<cast.index('TryConsumeSkill(')<cast.index('StartSkillLock(')
+assert cast.index('TryConsumeShockwave(')<cast.index('gridController.PerformShockwave(')<cast.index('shockwaveVisual.Play(')<cast.index('StartSkillLock(')
+assert 'GetEvolutionLevel' not in cast and '.TryConsumeSkill(' not in cast
 assert 'shockwaveEffectPrefab' in cast
 assert 'guid: d39ffd66cebaefd4db2a1a491e276be8' in (root/'Assets/Prefabs/ShockWave_ef.prefab').read_text()
-print('PASS: original prefab/image references preserved; damage remains before VFX, consumption and lock. original blue rendering restored; Unity not executed.')
+print('PASS: original prefab/image references preserved; one atomic charge commit precedes one damage pass; original VFX follows. original blue rendering restored; Unity not executed.')
 
 
 fx=(root/'Assets/Scripts/Player/ShockwaveEffect.cs').read_text()

@@ -96,6 +96,7 @@ public class PlayerGridController : MonoBehaviour
 
 
     private void Start() {
+        playerStatus.OnPlayerDied += AbortDash;
         // 현재 Player 위치를 Grid Cell 좌표로 변환
         currentCell = terrainTilemap.WorldToCell(transform.position);
 
@@ -114,7 +115,8 @@ public class PlayerGridController : MonoBehaviour
 
 
         Vector2Int heldDirection = GetHeldDirection();
-        UpdatePendingDirection(heldDirection);
+        if (dashRunning) UpdateDashSteering(heldDirection);
+        else UpdatePendingDirection(heldDirection);
 
 
         Vector2Int skillDirection =
@@ -584,13 +586,80 @@ public class PlayerGridController : MonoBehaviour
     }
 
     private void OnDisable() {
+        AbortDash();
         if (dashVFX != null) dashVFX.Cancel();
         directionPending = false;
         moveTween?.Kill();
     }
 
+    private bool dashRunning;
+    private float dashEndsAt;
+    private int lastDashRefreshFrame = -1;
+    private Coroutine dashCoroutine;
+    private Action dashCompletion;
+
+    public bool TryRefreshDash(float duration) {
+        if (!dashRunning || !inputEnabled || playerStatus.IsDead || Time.timeScale <= 0f ||
+            Time.time >= dashEndsAt || lastDashRefreshFrame == Time.frameCount || duration <= 0f ||
+            RunSkillManager.Instance == null) return false;
+        if (!RunSkillManager.Instance.TryConsumeSkill(SkillType.Dash)) return false;
+        lastDashRefreshFrame = Time.frameCount;
+        dashEndsAt = Time.time + duration;
+        return true;
+    }
+    private void CompleteDashSkill() {
+        Action callback = dashCompletion;
+        dashCompletion = null;
+        callback?.Invoke();
+    }
+    private void AbortDash() {
+        if (!dashRunning) return;
+        if (dashCoroutine != null) StopCoroutine(dashCoroutine);
+        dashCoroutine = null;
+        moveTween?.Kill();
+        if (terrainTilemap != null) transform.position = terrainTilemap.GetCellCenterWorld(currentCell);
+        dashRunning = false;
+        ClearDashSteering();
+        playerStatus.SetInvincible(false);
+        isBusy = false;
+        if (dashVFX != null) dashVFX.Cancel();
+        CompleteDashSkill();
+    }
+    private void OnDestroy() {
+        if (playerStatus != null) playerStatus.OnPlayerDied -= AbortDash;
+        AbortDash();
+    }
+    private Vector2Int dashDirection, dashCandidate;
+    private float dashDirectionDeadline;
+    private bool dashDirectionPending;
+
+    private void UpdateDashSteering(Vector2Int input) {
+        if (input == Vector2Int.zero || input == dashDirection) {
+            dashDirectionPending = false;
+            return;
+        }
+        if (!dashDirectionPending || input != dashCandidate) {
+            dashCandidate = input;
+            dashDirectionDeadline = Time.time + Mathf.Max(0f, directionCombinationBuffer);
+            dashDirectionPending = true;
+        }
+        if ((input.x != 0 && input.y == -1) || Time.time >= dashDirectionDeadline) {
+            dashDirection = input;
+            dashDirectionPending = false;
+        }
+    }
+    private void ClearDashSteering() {
+        dashDirectionPending = false;
+        directionPending = false;
+        pendingFromDiagonal = false;
+        activeHeldDirection = Vector2Int.zero;
+    }
+
     private IEnumerator DashRoutine(Vector2Int direction, float duration, float attackPercent,float stepInterval, float dashMoveDuration,Action onComplete) {
         isBusy = true;
+        dashRunning = true;
+        dashDirection = direction;
+        ClearDashSteering();
         if (dashVFX != null) dashVFX.Begin(direction);
         SpawnDashEffect(direction);
 
@@ -602,7 +671,8 @@ public class PlayerGridController : MonoBehaviour
         playerStatus.SetInvincible(true);
 
 
-        float startTime = Time.time;
+        dashEndsAt = Time.time + duration;
+        lastDashRefreshFrame = -1;
 
 
         int dashAttack =Mathf.Max(1, Mathf.RoundToInt(playerStatus.Attack * attackPercent/ 100f));
@@ -612,7 +682,13 @@ public class PlayerGridController : MonoBehaviour
         // Dash 진행
         // ===================================
 
-        while (Time.time - startTime <duration) {
+        bool firstDashTick = true;
+        while (Time.time < dashEndsAt && !playerStatus.IsDead) {
+            if (!firstDashTick) UpdateDashSteering(GetHeldDirection());
+            firstDashTick = false;
+            direction = dashDirection;
+            lastDirection = direction;
+            if (weaponView != null) weaponView.SetDirection(direction);
             Vector3Int directionCell = new Vector3Int(direction.x, direction.y,  0);
 
 
@@ -672,7 +748,9 @@ public class PlayerGridController : MonoBehaviour
                         playerStatus.SetInvincible(false);
 
 
-                        onComplete?.Invoke();
+                        ClearDashSteering();
+                        dashRunning = false;
+                        CompleteDashSkill();
 
 
                         MoveDownAfterBossDeath();
@@ -770,6 +848,8 @@ public class PlayerGridController : MonoBehaviour
         // Dash 종료
         // ===================================
 
+        ClearDashSteering();
+        dashRunning = false;
         if (dashVFX != null) dashVFX.End();
         playerStatus.SetInvincible(false);
 
@@ -777,7 +857,7 @@ public class PlayerGridController : MonoBehaviour
         isBusy =  false;
 
 
-        onComplete?.Invoke();
+        CompleteDashSkill();
     }
 
     private IEnumerator DashMoveToCell(Vector3Int targetCell,float duration) {
@@ -909,16 +989,25 @@ public class PlayerGridController : MonoBehaviour
             return false;
 
         Debug.Log("Dash 시작");
-        StartCoroutine(DashRoutine(direction,duration,attackPercent,stepInterval,moveDuration,onComplete));
+        dashCompletion = onComplete;
+        dashCoroutine = StartCoroutine(DashRoutine(direction,duration,attackPercent,stepInterval,moveDuration,onComplete));
         return true;
     }
 
-    public void PerformShockwave(int size,float attackPercent, ShockwaveEffect visual = null) {
+    private readonly EnemyBase[] shockwaveCells = new EnemyBase[49];
+    private readonly Dictionary<EnemyBase, int> shockwaveTargetAttack = new Dictionary<EnemyBase, int>(49);
+    private readonly HashSet<EnemyBase> damagedShockwaveEnemies = new HashSet<EnemyBase>();
+    public static int GetShockwaveCellAttack(int attack, float percent, int dx, int dy, bool attenuateOuter) {
+        float weight = attenuateOuter && Mathf.Max(Mathf.Abs(dx), Mathf.Abs(dy)) == 3 ? 0.5f : 1f;
+        return Mathf.Max(1, Mathf.RoundToInt(attack * percent * weight / 100f));
+    }
+
+    public void PerformShockwave(int size,float attackPercent, ShockwaveEffect visual = null, bool attenuateOuter = false) {
         // =============================
         // 크기 보정
         // =============================
 
-        size = Mathf.Max(1,size);
+        size = Mathf.Clamp(size,1,7);
 
 
         if (size % 2 == 0) {
@@ -926,24 +1015,41 @@ public class PlayerGridController : MonoBehaviour
         }
 
 
+        Vector3Int origin = currentCell;
         int half = size / 2;
         if (visual != null) visual.SetGrid(transform.position, size,
             terrainTilemap.GetCellCenterWorld(currentCell + Vector3Int.right) - terrainTilemap.GetCellCenterWorld(currentCell),
             terrainTilemap.GetCellCenterWorld(currentCell + Vector3Int.up) - terrainTilemap.GetCellCenterWorld(currentCell));
 
 
-        int shockwaveAttack = Mathf.Max(1,Mathf.RoundToInt(playerStatus.Attack* attackPercent/ 100f));
+        int attackAtCast = playerStatus.Attack;
 
 
         // 큰 Enemy 중복 타격 방지
-        HashSet<EnemyBase> damagedEnemies = new HashSet<EnemyBase>();
+        damagedShockwaveEnemies.Clear();
+        shockwaveTargetAttack.Clear();
+        // Resolve each multi-cell target's strongest attack before applying damage.
+        int index = 0;
+        for (int x = -half; x <= half; x++) for (int y = -half; y <= half; y++) {
+            Vector3Int cell = origin + new Vector3Int(x, y, 0);
+            shockwaveCells[index] = null;
+            if ((wallTilemap == null || !wallTilemap.HasTile(cell)) && enemyManager.TryGetEnemy(cell, out EnemyBase target)) {
+                int attack = GetShockwaveCellAttack(attackAtCast, attackPercent, x, y, attenuateOuter);
+                shockwaveCells[index] = target;
+                if (!shockwaveTargetAttack.TryGetValue(target, out int previous) || attack > previous)
+                    shockwaveTargetAttack[target] = attack;
+            }
+            index++;
+        }
+        index = 0;
 
 
 
 
         for (int x = -half; x <= half; x++) {
             for (int y = -half;y <= half;y++) {
-                Vector3Int cell =currentCell+ new Vector3Int(x, y,0);
+                Vector3Int cell = origin + new Vector3Int(x, y,0);
+                EnemyBase target = shockwaveCells[index++];
 
 
                 // =============================
@@ -960,11 +1066,12 @@ public class PlayerGridController : MonoBehaviour
                 // Enemy
                 // =============================
 
-                if (enemyManager.TryGetEnemy(cell,out EnemyBase enemy)) {
+                if (target != null) {
+                    EnemyBase enemy = target;
                     // 큰 Enemy가 여러 Cell이어도
                     // 딱 한 번만 공격
-                    if (damagedEnemies.Add(enemy)) {
-                        bool killed = enemy.TakeDamage(shockwaveAttack, out int dealtDamage);
+                    if (damagedShockwaveEnemies.Add(enemy)) {
+                        bool killed = enemy.TakeDamage(shockwaveTargetAttack[enemy], out int dealtDamage);
                         if (dealtDamage > 0 && visual != null) visual.AddImpact(terrainTilemap.GetCellCenterWorld(cell), dealtDamage, killed || IsBoss(enemy));
 
 
@@ -1015,7 +1122,7 @@ public class PlayerGridController : MonoBehaviour
                 // =============================
 
                 if (terrainTilemap.HasTile(cell)) {
-                    bool destroyed = terrainManager.DamageTerrain(cell, shockwaveAttack,out int dealtDamage);
+                    bool destroyed = terrainManager.DamageTerrain(cell, GetShockwaveCellAttack(attackAtCast, attackPercent, x, y, attenuateOuter),out int dealtDamage);
                     if (dealtDamage > 0 && visual != null) visual.AddImpact(terrainTilemap.GetCellCenterWorld(cell), dealtDamage, destroyed);
 
                     ShowDealtDamage(cell, dealtDamage);
@@ -1027,8 +1134,17 @@ public class PlayerGridController : MonoBehaviour
                 }
             }
         }
+        System.Array.Clear(shockwaveCells, 0, shockwaveCells.Length);
+        damagedShockwaveEnemies.Clear();
+        shockwaveTargetAttack.Clear();
     }
     private void CaptureSkillInput(Vector2Int direction) {
+        // Q during Dash is a refresh event, never a queued second coroutine.
+        // Process it even when another skill is already queued.
+        if (dashRunning && Input.GetKeyDown(KeyCode.Q)) {
+            if (skillController != null) skillController.TryContinueDash();
+            return;
+        }
         // 이미 먼저 눌린 Skill이 예약되어 있음
         if (skillQueued)
             return;

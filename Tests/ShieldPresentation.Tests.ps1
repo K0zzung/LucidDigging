@@ -27,25 +27,26 @@ namespace UnityEngine {
  public struct Vector2Int {public static Vector2Int zero; public static bool operator==(Vector2Int a,Vector2Int b)=>true;public static bool operator!=(Vector2Int a,Vector2Int b)=>false;public override bool Equals(object o)=>false;public override int GetHashCode()=>0;}
  public class SerializeField:Attribute {}
  public class HeaderAttribute:Attribute {public HeaderAttribute(string s){}}
+ public class MinAttribute:Attribute {public MinAttribute(float value){}}
  public class TooltipAttribute:Attribute {public TooltipAttribute(string s){}}
- public static class Time {public static float time;}
+ public static class Time {public static float time;public static float timeScale=1f;public static int frameCount;}
  public static class Mathf {public static float Max(float a,float b)=>Math.Max(a,b);}
  public class WaitForSeconds {public WaitForSeconds(float seconds){}}
  public static class Debug {public static void Log(object o){}public static void LogError(object o){}}
 }
 public enum SkillType {Dash,Shield,Shockwave}
 public enum PermanentUpgradeType {Dash,Shield,Shockwave}
-public class PlayerStatus {
+public class PlayerStatus {public bool IsDead;
  public int Bonus; public int Defense=>5+Bonus;public event Action OnPlayerDied;
  public void AddTemporaryDefense(int x){Bonus+=x;}public void RemoveTemporaryDefense(int x){Bonus-=x;}
  public void Die(){OnPlayerDied?.Invoke();}
 }
-public class PlayerGridController {public bool StartDash(Vector2Int d,float a,float b,float c,float e,Action f)=>true;public void PerformShockwave(int a,float b,ShockwaveEffect v=null){}}
+public class PlayerGridController {public bool TryRefreshDash(float duration)=>false;public bool StartDash(Vector2Int d,float a,float b,float c,float e,Action f)=>true;public void PerformShockwave(int a,float b,ShockwaveEffect v=null,bool outer=false){}}
 public class ShieldEffect {}
 public class ShockwaveEffect {public DummyObject gameObject=new DummyObject();public void Prepare(PlayerStatus s){}public void Play(Vector3 p,int s){}}
 public class DummyObject {public void SetActive(bool value){}}
 public class PermanentUpgradeManager {public static PermanentUpgradeManager Instance; public int GetLevel(PermanentUpgradeType t)=>0;}
-public class RunSkillManager {public static RunSkillManager Instance=new RunSkillManager();public int Consumed;public bool HasSkill(SkillType t)=>true;public bool TryConsumeSkill(SkillType t){Consumed++;return true;}}
+public class RunSkillManager {public static RunSkillManager Instance=new RunSkillManager();public int Consumed;public bool TryConsumeShockwave(out int charges){charges=1;Consumed++;return true;}public int GetCharges(SkillType t)=>1;public int GetEvolutionLevel(SkillType t)=>1;public bool HasSkill(SkillType t)=>true;public bool TryConsumeSkill(SkillType t){Consumed++;return true;}}
 public static class ShieldTests {
  static void Call(object o,string method){o.GetType().GetMethod(method,BindingFlags.NonPublic|BindingFlags.Instance).Invoke(o,null);}
  static void Set(object o,string field,object value){o.GetType().GetField(field,BindingFlags.NonPublic|BindingFlags.Instance).SetValue(o,value);}

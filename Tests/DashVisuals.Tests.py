@@ -12,8 +12,18 @@ def gameplay(text):
  return re.sub(r'\s+', '', text)
 
 source=(root/'Assets/Scripts/Player/PlayerGridController.cs').read_text(errors='surrogateescape')
-assert hashlib.sha256(gameplay(source).encode(errors='surrogateescape')).hexdigest()=='b7d3e0578c89008aea68db1142e4fa6fdc56d78368362fda4dbee95f78fe7459'
-print('PASS: pre/post Dash gameplay tokens identical after removing visual-only calls. Movement, damage count, waits, invincibility and completion paths preserved.')
+routine=source[source.index('    private IEnumerator DashRoutine('):source.index('    private IEnumerator DashMoveToCell(')]
+assert 'DashWallBurst' not in source and 'reboundCellTime' not in source and 'path.Add' not in routine
+assert 'GetEvolutionLevel' not in routine
+assert 'yield return DashMoveToCell(targetCell,dashMoveDuration)' in routine
+assert 'yield return new WaitForSeconds(stepInterval)' in routine
+assert 'enemy.TakeDamage(dashAttack,out int dealtDamage)' in routine
+assert 'terrainManager.DamageTerrain(targetCell,dashAttack,out int dealtDamage)' in routine
+assert 'direction = dashDirection' in routine and 'lastDirection = direction' in routine
+assert 'if (!firstDashTick)' in routine
+wall=routine[routine.index('if (wallTilemap != null'):routine.index('bool canMove')]
+assert 'break;' in wall and 'yield' not in wall and 'TakeDamage' not in wall
+print('PASS: steerable Dash retains damage/movement Tick calls; wall ends immediately, no rebound or area attack, initial direction preserved.')
 # Legacy artwork must be invoked at Begin AND the original per-step point.
 routine=source[source.index('    private IEnumerator DashRoutine('):source.index('    private IEnumerator DashMoveToCell(')]
 assert routine.count('SpawnDashEffect(direction);') == 2

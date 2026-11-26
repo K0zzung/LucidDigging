@@ -17,7 +17,13 @@ public class PlayerSkillController : MonoBehaviour
 
     [Header("Dash")]
     [SerializeField]
-    private float dashDuration = 2f;
+    private float dashDuration = 1.2f;
+    [SerializeField, Min(0.01f)] private float dashDurationTwoCharges = 1.5f;
+    [SerializeField, Min(0.01f)] private float dashDurationThreeCharges = 1.8f;
+
+    public float GetDashDuration(int charges) {
+        return charges <= 0 ? 0f : Mathf.Max(0.01f, charges >= 3 ? dashDurationThreeCharges : charges == 2 ? dashDurationTwoCharges : dashDuration);
+    }
 
     [SerializeField]
     private float dashAttackPercent = 200f;
@@ -174,12 +180,21 @@ public class PlayerSkillController : MonoBehaviour
     // DASH
     // =============================
 
+    public bool TryContinueDash() {
+        if (playerStatus == null || playerStatus.IsDead || RunSkillManager.Instance == null) return false;
+        int charges = RunSkillManager.Instance.GetCharges(SkillType.Dash);
+        return charges > 0 && gridController.TryRefreshDash(GetDashDuration(charges));
+    }
+
     private bool TryDash(
     Vector2Int direction) {
         if (direction == Vector2Int.zero)
             return false;
 
 
+        int chargesAtCast = RunSkillManager.Instance.GetCharges(SkillType.Dash);
+        if (chargesAtCast <= 0) return false;
+        float castDuration = GetDashDuration(chargesAtCast);
         float finalAttackPercent =
             GetCurrentDashAttackPercent();
 
@@ -191,7 +206,7 @@ public class PlayerSkillController : MonoBehaviour
         bool started =
             gridController.StartDash(
                 direction,
-                dashDuration,
+                castDuration,
                 finalAttackPercent,
                 dashStepInterval,
                 dashMoveDuration,
@@ -225,6 +240,7 @@ public class PlayerSkillController : MonoBehaviour
     // =============================
 
     private bool TryShockwave() {
+        if (gridController == null || playerStatus == null || playerStatus.IsDead) return false;
         float finalAttackPercent =
             GetCurrentShockwaveAttackPercent();
 
@@ -237,13 +253,17 @@ public class PlayerSkillController : MonoBehaviour
             shockwaveVisual = Instantiate(shockwaveEffectPrefab, transform.position, Quaternion.identity);
         if (shockwaveVisual != null) shockwaveVisual.Prepare(playerStatus);
 
-        gridController.PerformShockwave(shockwaveSize, finalAttackPercent, shockwaveVisual);
+        if (!RunSkillManager.Instance.TryConsumeShockwave(out int chargesAtCast)) {
+            IsSkillLocked = false;
+            if (shockwaveVisual != null) shockwaveVisual.gameObject.SetActive(false);
+            return false;
+        }
+        int attackSize = chargesAtCast >= 3 ? 7 : chargesAtCast == 2 ? 5 : 3;
+        gridController.PerformShockwave(attackSize, finalAttackPercent, shockwaveVisual, chargesAtCast >= 3);
         if (shockwaveVisual != null) shockwaveVisual.Play(transform.position, shockwaveSize);
 
 
-        RunSkillManager.Instance
-            .TryConsumeSkill(
-                SkillType.Shockwave);
+
 
 
         StartSkillLock(

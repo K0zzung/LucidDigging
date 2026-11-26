@@ -1,4 +1,5 @@
 using UnityEngine;
+using TMPro;
 
 public class SkillHUDController : MonoBehaviour
 {
@@ -17,6 +18,8 @@ public class SkillHUDController : MonoBehaviour
     private SkillSlotUI shieldSlot;
 
 
+    [SerializeField] private TMP_FontAsset runSkillFont;
+
     private void Start() {
         if (runSkillManager == null) {
             runSkillManager =
@@ -25,7 +28,7 @@ public class SkillHUDController : MonoBehaviour
 
         if (runSkillManager == null) {
             Debug.LogError(
-                "[SkillHUD] RunSkillManager ¾øÀ½");
+                "[SkillHUD] RunSkillManager ì—†ìŒ");
 
             return;
         }
@@ -48,39 +51,14 @@ public class SkillHUDController : MonoBehaviour
     private void HandleSkillChargeChanged(
         SkillType type,
         int charges) {
-        bool available =
-            charges > 0;
-
-        switch (type) {
-            case SkillType.Dash:
-                dashSlot.SetUnlocked(
-                    available);
-                break;
-
-            case SkillType.Shockwave:
-                shockwaveSlot.SetUnlocked(
-                    available);
-                break;
-
-            case SkillType.Shield:
-                shieldSlot.SetUnlocked(
-                    available);
-                break;
-        }
+        SkillSlotUI slot = type == SkillType.Dash ? dashSlot : type == SkillType.Shield ? shieldSlot : shockwaveSlot;
+        if (slot != null) slot.SetRunState(charges, runSkillManager.GetEvolutionLevel(type), runSkillFont);
     }
 
 
     private void RefreshAll() {
-        dashSlot.SetUnlocked(
-            runSkillManager.HasSkill(
-                SkillType.Dash));
-
-        shockwaveSlot.SetUnlocked(
-            runSkillManager.HasSkill(
-                SkillType.Shockwave));
-
-        shieldSlot.SetUnlocked(
-            runSkillManager.HasSkill(
-                SkillType.Shield));
+        HandleSkillChargeChanged(SkillType.Dash, runSkillManager.GetCharges(SkillType.Dash));
+        HandleSkillChargeChanged(SkillType.Shield, runSkillManager.GetCharges(SkillType.Shield));
+        HandleSkillChargeChanged(SkillType.Shockwave, runSkillManager.GetCharges(SkillType.Shockwave));
     }
 }
