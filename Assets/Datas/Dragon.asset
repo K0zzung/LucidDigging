@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Dragon
   m_EditorClassIdentifier: 
   enemyName: 
-  maxHP: 5000
+  maxHP: 3000
   attack: 300
-  defense: 300
+  defense: 100
   footprintSize: {x: 7, y: 6}

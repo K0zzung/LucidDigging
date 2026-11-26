@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Stone
   m_EditorClassIdentifier: 
   enemyName: Stone
-  maxHP: 200
-  attack: 3
+  maxHP: 220
+  attack: 22
   defense: 30
   footprintSize: {x: 2, y: 2}

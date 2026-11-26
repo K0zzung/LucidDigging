@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   weaponId: 2
   weaponName: WolfSword
-  additionalAttack: 1500
+  additionalAttack: 300
   inventoryIcon: {fileID: 1750287206, guid: 2b31f39c25f947b408245a4951e9f249, type: 3}
   weaponSprite: {fileID: 1750287206, guid: 2b31f39c25f947b408245a4951e9f249, type: 3}
   attackEffectPrefab: {fileID: 9161089973499632485, guid: c888f5b2482c3554e8a2d508ef135522, type: 3}

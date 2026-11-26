@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Demon
   m_EditorClassIdentifier: 
   enemyName: Demon
-  maxHP: 160
-  attack: 40
+  maxHP: 140
+  attack: 35
   defense: 5
   footprintSize: {x: 2, y: 2}

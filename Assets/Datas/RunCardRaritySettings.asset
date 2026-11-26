@@ -15,21 +15,21 @@ MonoBehaviour:
   entries:
   - rarity: 0
     enabled: 1
-    weight: 0
+    weight: 64
     frame: {fileID: 1424810941, guid: 020058b2c24093345ab18f823aa993a4, type: 3}
   - rarity: 1
     enabled: 1
-    weight: 0
+    weight: 25
     frame: {fileID: 1702568977, guid: 020058b2c24093345ab18f823aa993a4, type: 3}
   - rarity: 2
     enabled: 1
-    weight: 0
+    weight: 8
     frame: {fileID: 670750082, guid: 020058b2c24093345ab18f823aa993a4, type: 3}
   - rarity: 3
     enabled: 1
-    weight: 0
+    weight: 2
     frame: {fileID: -2140859236, guid: 020058b2c24093345ab18f823aa993a4, type: 3}
   - rarity: 4
-    enabled: 1
-    weight: 100
+    enabled: 0
+    weight: 1
     frame: {fileID: 357295365, guid: 020058b2c24093345ab18f823aa993a4, type: 3}

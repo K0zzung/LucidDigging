@@ -217,7 +217,7 @@ MonoBehaviour:
   attackIntervalMax: 4
   warningDuration: 0.8
   spikeRangeCells: 4
-  spikeAttack: 500
+  spikeAttack: 100
   spikeVfxYOffset: -0.7
   spikeWarningPrefab: {fileID: 3264717465601513585, guid: 660419cbd86145c42ad3eb87521a0274, type: 3}
   spikeStrikePrefab: {fileID: 7860808926606003590, guid: b42547a79d407dc4d9d38586da082aeb, type: 3}

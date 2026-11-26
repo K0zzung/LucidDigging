@@ -425,6 +425,9 @@ public class PlayerGridController : MonoBehaviour
 
                 enemy.ShowHealthBar();
 
+                // Boss damage is handled by its Spike/Explosion pattern.
+                if (IsBoss(enemy))
+                    return;
 
                 int damage =
                     DamageCalculator.CalculateDamage(enemyAttack,playerStatus.Defense);

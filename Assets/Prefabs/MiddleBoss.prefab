@@ -148,7 +148,7 @@ MonoBehaviour:
   attackIntervalMin: 2.5
   attackIntervalMax: 4
   warningDuration: 0.8
-  explosionAttack: 1000
+  explosionAttack: 180
   warningPrefab: {fileID: 3264717465601513585, guid: 660419cbd86145c42ad3eb87521a0274, type: 3}
   explosionPrefab: {fileID: 2858119401778464852, guid: f44efbc4a45ce8149b7f07d1b2bb1ac1, type: 3}
   explosionVfxLifetime: 1

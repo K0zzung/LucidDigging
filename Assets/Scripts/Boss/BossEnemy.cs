@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class BossEnemy : EnemyBase
 {
+    protected override bool UsesDepthHpScaling => false;
+
     // =========================================================
     // Visual
     // =========================================================

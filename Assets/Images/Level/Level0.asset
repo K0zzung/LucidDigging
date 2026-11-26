@@ -15,6 +15,6 @@ MonoBehaviour:
   terrainName: 
   tile: {fileID: 11400000, guid: 426ef1fa4c1e9344e941f8c7c60e2263, type: 2}
   sprite: {fileID: 0}
-  maxHP: 20
+  maxHP: 8
   attack: 5
   defense: 1

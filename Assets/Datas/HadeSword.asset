@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   weaponId: 1
   weaponName: AronDight
-  additionalAttack: 500
+  additionalAttack: 150
   inventoryIcon: {fileID: 21300000, guid: 6eeadcfa75842464eaa0defc674ea242, type: 3}
   weaponSprite: {fileID: 21300000, guid: 6eeadcfa75842464eaa0defc674ea242, type: 3}
   attackEffectPrefab: {fileID: 183462129438306134, guid: dc2fe2e15225e2941a9d89c611779f98, type: 3}

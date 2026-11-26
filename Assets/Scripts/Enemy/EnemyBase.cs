@@ -40,6 +40,7 @@ public class EnemyBase : MonoBehaviour
     private EnemyHealthBar healthBarInstance;
 
     protected virtual bool UseNormalKillSound => true;
+    protected virtual bool UsesDepthHpScaling => true;
     // =========================================================
     // Runtime
     // =========================================================
@@ -92,9 +93,9 @@ public class EnemyBase : MonoBehaviour
 
 
         float multiplier =
-            DifficultyManager.Instance
-                .GetEnemyHpMultiplier(
-                    depth);
+            UsesDepthHpScaling
+                ? DifficultyManager.Instance.GetEnemyHpMultiplier(depth)
+                : 1f;
 
 
         // 이번 Enemy의 실제 최대 HP
