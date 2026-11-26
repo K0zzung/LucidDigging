@@ -1,0 +1,17 @@
+using UnityEngine;
+
+[CreateAssetMenu(
+    fileName = "EnemyData",
+    menuName = "Game/Enemy Data")]
+public class EnemyData : ScriptableObject
+{
+    public string enemyName;
+
+    [Header("Status")]
+    public int maxHP;
+    public int attack;
+    public int defense;
+
+    [Header("Grid")]
+    public Vector2Int footprintSize = new Vector2Int(2, 2);
+}

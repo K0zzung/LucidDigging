@@ -1,0 +1,442 @@
+using System.Collections;
+using UnityEngine;
+
+public class PlayerSkillController : MonoBehaviour
+{
+    [Header("References")]
+    [SerializeField]
+    private PlayerGridController gridController;
+
+    [SerializeField]
+    private PlayerStatus playerStatus;
+
+
+    // =============================
+    // Dash
+    // =============================
+
+    [Header("Dash")]
+    [SerializeField]
+    private float dashDuration = 2f;
+
+    [SerializeField]
+    private float dashAttackPercent = 200f;
+
+    [Tooltip("영구 강화 Lv.1당 증가하는 Dash 공격력 %")]
+    [SerializeField]
+    private float dashAttackPercentPerLevel = 10f;
+
+    [SerializeField]
+    private float dashStepInterval = 0.08f;
+
+    [SerializeField]
+    private float dashMoveDuration = 0.045f;
+
+
+    // =============================
+    // Shockwave
+    // =============================
+
+    [Header("Shockwave")]
+    [Tooltip("3 = 3x3, 5 = 5x5")]
+    [SerializeField]
+    private int shockwaveSize = 3;
+
+    [SerializeField]
+    private float shockwaveAttackPercent = 150f;
+
+    [SerializeField]
+    private float shockwaveSkillLockTime = 0.3f;
+
+    [Tooltip("영구 강화 Lv.1당 증가하는 Shockwave 공격력 %")]
+    [SerializeField]
+    private float shockwaveAttackPercentPerLevel = 10f;
+
+    [SerializeField]
+    private ShockwaveEffect shockwaveEffectPrefab;
+
+
+    // =============================
+    // Shield
+    // =============================
+
+    [Header("Shield")]
+    [SerializeField]
+    private int shieldDefenseBonus = 50;
+
+    [SerializeField]
+    private float shieldDuration = 3f;
+
+    [Tooltip("쉴드 발동 순간 다른 스킬 입력을 막는 짧은 시간")]
+    [SerializeField]
+    private float shieldCastLockTime = 0.15f;
+
+    [Tooltip("영구 강화 Lv.1당 증가하는 Shield 방어력")]
+    [SerializeField]
+    private int shieldDefenseBonusPerLevel = 10;
+
+    [SerializeField]
+    private ShieldEffect shieldEffectPrefab;
+
+
+    // =============================
+    // State
+    // =============================
+
+    public bool IsSkillLocked {
+        get;
+        private set;
+    }
+    public bool IsShieldActive {
+        get;
+        private set;
+    }
+
+    private int currentShieldBonus;
+
+    private Coroutine shieldCoroutine;
+    private Coroutine skillLockCoroutine;
+
+    private void Awake() {
+        if (gridController == null) {
+            gridController =
+                GetComponent<PlayerGridController>();
+        }
+
+        if (playerStatus == null) {
+            playerStatus =
+                GetComponent<PlayerStatus>();
+        }
+    }
+
+
+    // =============================
+    // 공통 진입점
+    // =============================
+
+    public bool TryUseSkill(
+        SkillType type,
+        Vector2Int direction) {
+        if (IsSkillLocked)
+            return false;
+
+
+        if (RunSkillManager.Instance == null) {
+            Debug.LogError(
+                "[Skill] RunSkillManager 없음");
+
+            return false;
+        }
+
+
+        if (!RunSkillManager.Instance.HasSkill(type)) {
+            Debug.Log(
+                $"[Skill] {type} Item 없음");
+
+            return false;
+        }
+
+
+        switch (type) {
+            case SkillType.Dash:
+
+                return TryDash(
+                    direction);
+
+
+            case SkillType.Shockwave:
+
+                return TryShockwave();
+
+
+            case SkillType.Shield:
+
+                return TryShield();
+        }
+
+
+        return false;
+    }
+
+
+    // =============================
+    // DASH
+    // =============================
+
+    private bool TryDash(
+    Vector2Int direction) {
+        if (direction == Vector2Int.zero)
+            return false;
+
+
+        float finalAttackPercent =
+            GetCurrentDashAttackPercent();
+
+
+        IsSkillLocked =
+            true;
+
+
+        bool started =
+            gridController.StartDash(
+                direction,
+                dashDuration,
+                finalAttackPercent,
+                dashStepInterval,
+                dashMoveDuration,
+                OnDashFinished);
+
+
+        if (!started) {
+            IsSkillLocked =
+                false;
+
+            return false;
+        }
+
+
+        RunSkillManager.Instance
+            .TryConsumeSkill(
+                SkillType.Dash);
+
+
+        return true;
+    }
+
+
+    private void OnDashFinished() {
+        IsSkillLocked = false;
+    }
+
+
+    // =============================
+    // SHOCKWAVE
+    // =============================
+
+    private bool TryShockwave() {
+        float finalAttackPercent =
+            GetCurrentShockwaveAttackPercent();
+
+
+        IsSkillLocked =
+            true;
+
+
+        gridController.PerformShockwave(
+            shockwaveSize,
+            finalAttackPercent);
+
+
+        if (shockwaveEffectPrefab != null) {
+            ShockwaveEffect effect =
+                Instantiate(
+                    shockwaveEffectPrefab,
+                    transform.position,
+                    Quaternion.identity);
+
+
+            effect.Play(
+                transform.position,
+                shockwaveSize);
+        }
+
+
+        RunSkillManager.Instance
+            .TryConsumeSkill(
+                SkillType.Shockwave);
+
+
+        StartSkillLock(
+            shockwaveSkillLockTime);
+
+
+        return true;
+    }
+
+
+    // =============================
+    // SHIELD
+    // =============================
+
+    private bool TryShield() {
+        int finalDefenseBonus =
+            GetCurrentShieldDefenseBonus();
+
+
+        IsSkillLocked =
+            true;
+
+
+        if (!IsShieldActive) {
+            IsShieldActive =
+                true;
+
+
+            currentShieldBonus =
+                finalDefenseBonus;
+
+
+            playerStatus.AddTemporaryDefense(
+                currentShieldBonus);
+
+
+            Debug.Log(
+                $"[Shield] Start / " +
+                $"Defense +{currentShieldBonus} / " +
+                $"Current : {playerStatus.Defense}");
+        }
+        else {
+            Debug.Log(
+                "[Shield] Refresh Duration");
+        }
+
+
+        if (shieldCoroutine != null) {
+            StopCoroutine(
+                shieldCoroutine);
+        }
+
+
+        shieldCoroutine =
+            StartCoroutine(
+                ShieldRoutine());
+
+
+        if (shieldEffectPrefab != null) {
+            ShieldEffect effect =
+                Instantiate(
+                    shieldEffectPrefab,
+                    transform.position,
+                    Quaternion.identity);
+
+
+            effect.Play(
+                transform.position);
+        }
+
+
+        RunSkillManager.Instance
+            .TryConsumeSkill(
+                SkillType.Shield);
+
+
+        StartSkillLock(
+            shieldCastLockTime);
+
+
+        return true;
+    }
+
+
+    private IEnumerator ShieldRoutine() {
+        yield return new WaitForSeconds(
+            shieldDuration);
+
+
+        playerStatus.RemoveTemporaryDefense(
+            currentShieldBonus);
+
+
+        Debug.Log(
+            $"[Shield] End / " +
+            $"Defense : {playerStatus.Defense}");
+
+
+        currentShieldBonus = 0;
+
+        IsShieldActive = false;
+
+        shieldCoroutine = null;
+    }
+
+    private void StartSkillLock(
+    float duration) {
+        if (skillLockCoroutine != null) {
+            StopCoroutine(
+                skillLockCoroutine);
+        }
+
+        skillLockCoroutine =
+            StartCoroutine(
+                SkillLockRoutine(
+                    duration));
+    }
+
+
+    private IEnumerator SkillLockRoutine(
+        float duration) {
+        IsSkillLocked = true;
+
+        yield return new WaitForSeconds(
+            duration);
+
+        IsSkillLocked = false;
+
+        skillLockCoroutine = null;
+    }
+
+    private int GetPermanentSkillLevel(
+    PermanentUpgradeType upgradeType) {
+        if (PermanentUpgradeManager.Instance == null)
+            return 0;
+
+
+        return PermanentUpgradeManager.Instance.GetLevel(upgradeType);
+    }
+
+
+
+    private void OnDisable() {
+        // Shield 도중 Scene 종료 등의 상황에서
+        // Defense가 남아버리는 것 방지
+        if (currentShieldBonus > 0 &&
+            playerStatus != null) {
+            playerStatus.RemoveTemporaryDefense(
+                currentShieldBonus);
+
+            currentShieldBonus = 0;
+        }
+
+
+        IsSkillLocked = false;
+    }
+
+
+    public float GetCurrentDashAttackPercent() {
+        int level =
+            GetPermanentSkillLevel(
+                PermanentUpgradeType.Dash);
+
+
+        return
+            dashAttackPercent
+            + level
+            * dashAttackPercentPerLevel;
+    }
+
+
+    public float GetCurrentShockwaveAttackPercent() {
+        int level =
+            GetPermanentSkillLevel(
+                PermanentUpgradeType.Shockwave);
+
+
+        return
+            shockwaveAttackPercent
+            + level
+            * shockwaveAttackPercentPerLevel;
+    }
+
+
+    public int GetCurrentShieldDefenseBonus() {
+        int level =
+            GetPermanentSkillLevel(
+                PermanentUpgradeType.Shield);
+
+
+        return
+            shieldDefenseBonus
+            + level
+            * shieldDefenseBonusPerLevel;
+    }
+}
