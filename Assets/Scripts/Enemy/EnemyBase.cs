@@ -45,6 +45,7 @@ public class EnemyBase : MonoBehaviour
     // =========================================================
 
     protected EnemyManager enemyManager;
+    private bool experienceGranted;
 
 
     public Vector3Int Cell {
@@ -111,6 +112,7 @@ public class EnemyBase : MonoBehaviour
 
         IsDead =
             false;
+        experienceGranted = false;
 
 
         Debug.Log(
@@ -138,7 +140,7 @@ public class EnemyBase : MonoBehaviour
             0;
 
 
-        if (IsDead)
+        if (IsDead || experienceGranted)
             return false;
 
 
@@ -168,7 +170,13 @@ public class EnemyBase : MonoBehaviour
             HideHealthBar();
 
 
+            // Claim before virtual death handling to guard repeated/reentrant damage.
+            experienceGranted = true;
             Die();
+
+            if (RunProgression.Instance != null) {
+                RunProgression.Instance.AddExperience(data.experienceReward);
+            }
 
 
             return true;
