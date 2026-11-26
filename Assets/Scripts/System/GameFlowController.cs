@@ -66,9 +66,45 @@ public class GameFlowController : MonoBehaviour
     [SerializeField]
     private DepthWarningUI depthWarningUI;
 
+    [Header("Run Rewards")]
+    [SerializeField] private RunCardSelectionUI runCardSelectionUI;
+    public event Action<GameState> OnStateChanged;
+    private bool ownsLevelUpPause;
+    private float timeScaleBeforeLevelUp = 1f;
+
+    public bool CanConfirmRunCard => CurrentState == GameState.LevelUpSelection &&
+        playerStatus != null && !playerStatus.IsDead;
+
+    public bool TryBeginLevelUpSelection() {
+        if (CurrentState != GameState.Playing || Time.timeScale <= 0f ||
+            playerStatus == null || playerStatus.IsDead || playerController == null ||
+            playerController.IsActionInProgress || runCardSelectionUI == null ||
+            !runCardSelectionUI.IsReady || RunProgression.Instance == null ||
+            RunProgression.Instance.PendingLevelUps <= 0)
+            return false;
+
+        SetState(GameState.LevelUpSelection);
+        return true;
+    }
+
+    public void EndLevelUpSelection() {
+        if (CurrentState != GameState.LevelUpSelection) return;
+        ReleaseLevelUpPause();
+        if (playerStatus != null && playerStatus.IsDead) HandlePlayerDied();
+        else SetState(GameState.Playing);
+    }
+
+    private void ReleaseLevelUpPause() {
+        if (!ownsLevelUpPause) return;
+        ownsLevelUpPause = false;
+        Time.timeScale = timeScaleBeforeLevelUp;
+    }
+
     private bool isRetrying;
     private static readonly KeyCode[] keyboardKeys = (KeyCode[])Enum.GetValues(typeof(KeyCode));
     private void Awake() {
+        // This scene starts a new run; never inherit a paused scene time scale.
+        Time.timeScale = 1f;
         Instance =
             this;
     }
@@ -173,6 +209,7 @@ public class GameFlowController : MonoBehaviour
             currentScene.buildIndex);
     }
     private void OnDestroy() {
+        ReleaseLevelUpPause();
         if (playerStatus != null) {
             playerStatus.OnPlayerDied -=
                 HandlePlayerDied;
@@ -192,6 +229,20 @@ public class GameFlowController : MonoBehaviour
 
     public void SetState(
         GameState state) {
+        // A delayed menu callback must not resume a reward selection or game over.
+        if (state == GameState.Playing &&
+            (CurrentState == GameState.GameOver ||
+             (CurrentState == GameState.LevelUpSelection && ownsLevelUpPause &&
+              RunProgression.Instance != null && RunProgression.Instance.PendingLevelUps > 0)))
+            return;
+
+        if (state != GameState.LevelUpSelection) ReleaseLevelUpPause();
+        else if (!ownsLevelUpPause) {
+            timeScaleBeforeLevelUp = Time.timeScale;
+            ownsLevelUpPause = true;
+            Time.timeScale = 0f;
+        }
+
         CurrentState =
             state;
 
@@ -205,6 +256,7 @@ public class GameFlowController : MonoBehaviour
                 break;
 
 
+            case GameState.LevelUpSelection:
             case GameState.Inventory:
 
                 playerController.SetInputEnabled(
@@ -232,6 +284,7 @@ public class GameFlowController : MonoBehaviour
 
         Debug.Log(
             $"[GameFlow] State -> {state}");
+        OnStateChanged?.Invoke(state);
     }
 
 

@@ -45,6 +45,15 @@ public class RunProgression : MonoBehaviour
         OnProgressionChanged?.Invoke();
     }
 
+    public bool TryConsumePendingLevelUp() {
+        if (PendingLevelUps <= 0)
+            return false;
+
+        PendingLevelUps--;
+        OnProgressionChanged?.Invoke();
+        return true;
+    }
+
     public void ResetRun() {
         Level = 1;
         CurrentExperience = 0;

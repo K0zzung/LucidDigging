@@ -54,6 +54,10 @@ public class PlayerGridController : MonoBehaviour
 
 
     private bool isBusy;
+    public bool IsActionInProgress => isBusy || skillQueued ||
+        (moveTween != null && moveTween.IsActive() && !moveTween.IsComplete()) ||
+        (skillController != null && skillController.IsSkillLocked);
+
 
     private sealed class AttackCompletion {
         public bool AnimationComplete;
@@ -149,6 +153,11 @@ public class PlayerGridController : MonoBehaviour
             }
         }
         // 일반 Hold 이동 / 공격
+
+        // Reserve the idle boundary before another held action can start.
+        if (GameFlowController.Instance != null &&
+            GameFlowController.Instance.TryBeginLevelUpSelection())
+            return;
 
         HandleHeldInput(heldDirection);
     }
