@@ -1308,6 +1308,7 @@ GameObject:
   - component: {fileID: 135940225}
   - component: {fileID: 135940226}
   - component: {fileID: 135940227}
+  - component: {fileID: 135940228}
   m_Layer: 0
   m_Name: RunSkillManager
   m_TagString: Untagged
@@ -1379,7 +1380,22 @@ MonoBehaviour:
   - {fileID: 11400000, guid: a9fe57547a43450d81c7745fca7fecdd, type: 2}
   - {fileID: 11400000, guid: 92ba24788da94e709ad93c63c3020a62, type: 2}
   - {fileID: 11400000, guid: 066bdd34715c422fb3e8797f7cf1a680, type: 2}
-  selectionHandler: {fileID: 0}
+  selectionHandler: {fileID: 135940228}
+--- !u!114 &135940228
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 135940223}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 143d5ba259d046aea3ba0c064f602b99, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  playerStatus: {fileID: 4856862971284855658}
+  progression: {fileID: 135940226}
+  gameFlow: {fileID: 756598064}
 --- !u!1 &148000124
 GameObject:
   m_ObjectHideFlags: 0

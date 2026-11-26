@@ -17,7 +17,8 @@ public class RunCardSelectionUI : MonoBehaviour
     public event Action<RunCardData> OnCardSelected;
     public bool IsOpen => root != null && root.activeSelf;
     public bool IsReady => configured && isActiveAndEnabled &&
-        parentCanvas != null && parentCanvas.isActiveAndEnabled && EventSystem.current != null;
+        parentCanvas != null && parentCanvas.isActiveAndEnabled && EventSystem.current != null &&
+        selectionHandler != null && selectionHandler.isActiveAndEnabled;
 
     private GameObject root;
     private TMP_Text heading;
@@ -35,7 +36,7 @@ public class RunCardSelectionUI : MonoBehaviour
         if (gameFlow == null) gameFlow = GameFlowController.Instance;
         if (progression == null || gameFlow == null || parentCanvas == null ||
             font == null || EventSystem.current == null ||
-            (selectionHandler != null && !(selectionHandler is IRunCardSelectionHandler))) {
+            !(selectionHandler is IRunCardSelectionHandler)) {
             Debug.LogError("[RunCards] Missing UI references or invalid selection handler.");
             enabled = false;
             return;
@@ -44,7 +45,7 @@ public class RunCardSelectionUI : MonoBehaviour
         var ids = new HashSet<string>();
         if (cardPool != null) {
             foreach (RunCardData card in cardPool) {
-                if (card != null && !string.IsNullOrWhiteSpace(card.Id) && ids.Add(card.Id))
+                if (card != null && card.HasValidEffect && !string.IsNullOrWhiteSpace(card.Id) && ids.Add(card.Id))
                     candidates.Add(card);
             }
         }
@@ -89,7 +90,7 @@ public class RunCardSelectionUI : MonoBehaviour
         offerFrame = Time.frameCount;
         offeredCards = DrawThree(candidates);
         heading.text = $"LEVEL UP  /  {progression.PendingLevelUps} choice(s) remaining\n" +
-            "UI TEST ONLY - No stat effects are applied";
+            "RUN EFFECTS ACTIVE - P1-3 Unity playtest pending";
         EventSystem.current.SetSelectedGameObject(null);
         for (int i = 0; i < buttons.Length; i++) {
             int index = i;
@@ -132,7 +133,7 @@ public class RunCardSelectionUI : MonoBehaviour
         RunCardData selected = offeredCards[index];
         var handler = selectionHandler as IRunCardSelectionHandler;
         try {
-            if (handler != null && !handler.TrySelectCard(selected)) {
+            if (handler == null || !handler.TrySelectCard(selected)) {
                 acceptingSelection = true;
                 foreach (Button button in buttons) button.interactable = true;
                 return;
@@ -145,9 +146,9 @@ public class RunCardSelectionUI : MonoBehaviour
             return;
         }
 
-        if (!gameFlow.CanConfirmRunCard || !progression.TryConsumePendingLevelUp()) return;
-        Debug.Log($"[RunCards] Selected {selected.Id} (UI test; no stat effect).");
-        if (progression.PendingLevelUps > 0) ShowNextOffer();
+        // The handler has already committed the effect and consumed the reward.
+        Debug.Log($"[RunCards] Applied {selected.Id} / Pending {progression.PendingLevelUps}");
+        if (gameFlow.CanConfirmRunCard && progression.PendingLevelUps > 0) ShowNextOffer();
         else {
             Hide();
             gameFlow.EndLevelUpSelection();
@@ -205,7 +206,7 @@ public class RunCardSelectionUI : MonoBehaviour
         }
         TMP_Text footer = CreateLabel("Footer", overlay, new Vector2(0.06f, 0.03f),
             new Vector2(0.94f, 0.1f), 26);
-        footer.text = "Choose one card to continue. Effects arrive in P1-3.";
+        footer.text = "Choose one card. Run bonuses reset on retry.";
         root.SetActive(false);
     }
 

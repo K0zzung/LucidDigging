@@ -1,5 +1,5 @@
-// P1-3 can implement this on a MonoBehaviour and assign it to the selection UI.
-// Return false to reject the choice without consuming a pending level-up.
+// The handler commits the effect and consumes exactly one pending level-up.
+// Return false without changing stats or rewards when the choice is rejected.
 public interface IRunCardSelectionHandler
 {
     bool TrySelectCard(RunCardData card);

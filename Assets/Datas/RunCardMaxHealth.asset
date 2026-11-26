@@ -14,5 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier:
   id: max_health_up
   displayName: Max Health Up
-  description: "Preview: increase maximum HP. No effect in P1-2."
+  description: "Run only. P1-3 Unity playtest pending."
   effectType: 2
+  attackBonus: 0
+  defenseBonus: 0
+  maxHealthBonus: 15
+  healAmount: 0

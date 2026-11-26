@@ -5,7 +5,11 @@ using UnityEngine;
 
 public class PlayerStatus : MonoBehaviour
 {
-    public int MaxHP { get; private set; }
+    private int permanentMaxHP;
+    public int MaxHP => permanentMaxHP + RunMaxHPBonus;
+    public int RunAttackBonus { get; private set; }
+    public int RunDefenseBonus { get; private set; }
+    public int RunMaxHPBonus { get; private set; }
     public int CurrentHP { get; private set; }
     public int BaseAttack {
         get;
@@ -28,11 +32,12 @@ public class PlayerStatus : MonoBehaviour
 
             return
                 BaseAttack
-                + weaponAttack;
+                + weaponAttack + RunAttackBonus;
         }
     }
 
     public event Action OnPlayerDied;
+    public event Action OnStatsChanged;
     public event Action<int, int> OnHPChanged;
     public bool IsDead { get; private set; }
 
@@ -44,7 +49,7 @@ public class PlayerStatus : MonoBehaviour
     private int temporaryDefenseBonus;
 
     public int Defense =>
-        BaseDefense + temporaryDefenseBonus;
+        BaseDefense + RunDefenseBonus + temporaryDefenseBonus;
     public bool IsInvincible { get; private set; }
 
 
@@ -55,7 +60,7 @@ public class PlayerStatus : MonoBehaviour
     }
 
     private void LoadStats() {
-        MaxHP =
+        permanentMaxHP =
             PlayerPrefs.GetInt(
                 "Player_MaxHP",
                 100);
@@ -88,7 +93,7 @@ public class PlayerStatus : MonoBehaviour
     public void SaveStats() {
         PlayerPrefs.SetInt(
             "Player_MaxHP",
-            MaxHP);
+            permanentMaxHP);
 
 
         PlayerPrefs.SetInt(
@@ -170,7 +175,7 @@ public class PlayerStatus : MonoBehaviour
             return;
 
 
-        MaxHP +=
+        permanentMaxHP +=
             amount;
 
 
@@ -234,6 +239,42 @@ public class PlayerStatus : MonoBehaviour
             $"Defense +{amount} / " +
             $"BaseDefense : {BaseDefense}");
     }
+    // Called only by the validated card transaction; publish HUD events after commit.
+    internal void ApplyRunCard(RunCardData card) {
+        switch (card.EffectType) {
+            case RunCardEffectType.Attack:
+                RunAttackBonus += card.AttackBonus;
+                break;
+            case RunCardEffectType.Defense:
+                RunDefenseBonus += card.DefenseBonus;
+                break;
+            case RunCardEffectType.MaxHealth:
+                RunMaxHPBonus += card.MaxHealthBonus;
+                CurrentHP = Mathf.Min(MaxHP, CurrentHP + card.MaxHealthBonus);
+                break;
+            case RunCardEffectType.Heal:
+                CurrentHP = Mathf.Min(MaxHP, CurrentHP + card.HealAmount);
+                break;
+            case RunCardEffectType.AttackAndDefense:
+                RunAttackBonus += card.AttackBonus;
+                RunDefenseBonus += card.DefenseBonus;
+                break;
+        }
+    }
+
+    internal void NotifyRunStatsChanged() {
+        OnHPChanged?.Invoke(CurrentHP, MaxHP);
+        OnStatsChanged?.Invoke();
+    }
+
+    public void ResetRunBonuses() {
+        RunAttackBonus = 0;
+        RunDefenseBonus = 0;
+        RunMaxHPBonus = 0;
+        CurrentHP = Mathf.Min(CurrentHP, MaxHP);
+        NotifyRunStatsChanged();
+    }
+
     public void SetInvincible(bool invincible) {
         IsInvincible = invincible;
     }

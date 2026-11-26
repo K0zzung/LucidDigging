@@ -17,6 +17,7 @@ public class RunProgression : MonoBehaviour
         (long)(Level - 1) * Math.Max(0, experienceIncreasePerLevel));
 
     public event Action OnProgressionChanged;
+    public event Action OnRunReset;
 
     private void Awake() {
         if (Instance != null && Instance != this) {
@@ -46,9 +47,15 @@ public class RunProgression : MonoBehaviour
     }
 
     public bool TryConsumePendingLevelUp() {
+        return TryConsumePendingLevelUp(null);
+    }
+
+    // Apply the validated effect before publishing reward consumption to observers.
+    internal bool TryConsumePendingLevelUp(Action applyEffect) {
         if (PendingLevelUps <= 0)
             return false;
 
+        applyEffect?.Invoke();
         PendingLevelUps--;
         OnProgressionChanged?.Invoke();
         return true;
@@ -58,6 +65,7 @@ public class RunProgression : MonoBehaviour
         Level = 1;
         CurrentExperience = 0;
         PendingLevelUps = 0;
+        OnRunReset?.Invoke();
         OnProgressionChanged?.Invoke();
     }
 

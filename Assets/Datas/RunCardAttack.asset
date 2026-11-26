@@ -14,5 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier:
   id: attack_up
   displayName: Attack Up
-  description: "Preview: increase run attack. No effect in P1-2."
+  description: "Run only. P1-3 Unity playtest pending."
   effectType: 0
+  attackBonus: 2
+  defenseBonus: 0
+  maxHealthBonus: 0
+  healAmount: 0

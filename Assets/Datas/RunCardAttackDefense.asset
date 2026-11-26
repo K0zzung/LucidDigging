@@ -14,5 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier:
   id: attack_defense_up
   displayName: Attack + Defense
-  description: "Preview: increase attack and defense. No effect in P1-2."
+  description: "Run only. P1-3 Unity playtest pending."
   effectType: 4
+  attackBonus: 1
+  defenseBonus: 1
+  maxHealthBonus: 0
+  healAmount: 0
