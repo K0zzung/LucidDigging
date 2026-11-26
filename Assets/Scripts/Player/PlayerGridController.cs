@@ -36,17 +36,46 @@ public class PlayerGridController : MonoBehaviour
 
 
 
+    [SerializeField, Min(0f)]
+    private float directionCombinationBuffer = 0.04f;
+
+    private bool directionPending;
+    private bool pendingFromDiagonal;
+    private Vector2Int pendingDirection;
+    private float pendingDirectionDeadline;
+
     private Vector2Int activeHeldDirection =Vector2Int.zero;
 
     private float nextHeldActionTime;
 
-    private bool waitingFirstRepeat;
 
     private Vector3Int currentCell;
     public Vector3Int CurrentCell => currentCell;
 
 
     private bool isBusy;
+
+    private sealed class AttackCompletion {
+        public bool AnimationComplete;
+        public bool MovementComplete = true;
+        public bool Released;
+    }
+
+    private void TryCompleteAttack(AttackCompletion completion) {
+        if (completion.Released || !completion.AnimationComplete || !completion.MovementComplete)
+            return;
+
+        completion.Released = true;
+        isBusy = false;
+    }
+
+    private Action TrackAttackMovement(AttackCompletion completion) {
+        completion.MovementComplete = false;
+        return () => {
+            completion.MovementComplete = true;
+            TryCompleteAttack(completion);
+        };
+    }
     private bool skillQueued;
 
     private SkillType queuedSkill;
@@ -81,6 +110,7 @@ public class PlayerGridController : MonoBehaviour
 
 
         Vector2Int heldDirection = GetHeldDirection();
+        UpdatePendingDirection(heldDirection);
 
 
         Vector2Int skillDirection =
@@ -128,9 +158,9 @@ public class PlayerGridController : MonoBehaviour
         inputEnabled = enabled;
 
         if (!enabled) {
+            directionPending = false;
             activeHeldDirection = Vector2Int.zero;
 
-            waitingFirstRepeat = false;
         }
     }
 
@@ -204,6 +234,7 @@ public class PlayerGridController : MonoBehaviour
 
     private void AttackTerrain(Vector2Int direction,Vector3Int targetCell) {
         isBusy =true;
+        var completion = new AttackCompletion();
         weaponView.PlayAttack(
             direction,
 
@@ -251,7 +282,7 @@ public class PlayerGridController : MonoBehaviour
 
                 if (destroyed) {
                     MoveIntoDestroyedCell(
-                        targetCell);
+                        targetCell, TrackAttackMovement(completion));
                 }
 
                 // =============================
@@ -275,8 +306,8 @@ public class PlayerGridController : MonoBehaviour
             },
 
             onComplete: () => {
-                isBusy =
-                    false;
+                completion.AnimationComplete = true;
+                TryCompleteAttack(completion);
             });
     }
     private bool IsBoss(EnemyBase enemy) {
@@ -297,6 +328,7 @@ public class PlayerGridController : MonoBehaviour
     }
     private void AttackEnemy(Vector2Int direction,Vector3Int targetCell,EnemyBase enemy) {
         isBusy = true;
+        var completion = new AttackCompletion();
 
 
         weaponView.PlayAttack(
@@ -344,7 +376,7 @@ public class PlayerGridController : MonoBehaviour
                     }
 
 
-                    MoveDownAfterBossDeath();
+                    MoveDownAfterBossDeath(TrackAttackMovement(completion));
 
 
                     return;
@@ -371,7 +403,7 @@ public class PlayerGridController : MonoBehaviour
                     }
 
 
-                    MoveIntoDestroyedCell(targetCell);
+                    MoveIntoDestroyedCell(targetCell, TrackAttackMovement(completion));
 
 
                     return;
@@ -392,12 +424,12 @@ public class PlayerGridController : MonoBehaviour
             },
 
             onComplete: () => {
-                isBusy =
-                    false;
+                completion.AnimationComplete = true;
+                TryCompleteAttack(completion);
             });
     }
 
-    private void MoveIntoDestroyedCell(Vector3Int targetCell) {
+    private void MoveIntoDestroyedCell(Vector3Int targetCell, Action onComplete) {
         // 논리적인 현재 위치 변경
         currentCell = targetCell;
         SetCurrentCell(targetCell);
@@ -412,6 +444,7 @@ public class PlayerGridController : MonoBehaviour
                 if (pickupManager != null) {
                     pickupManager.TryCollect(currentCell, transform);
                 }
+                onComplete?.Invoke();
             });
     }
 
@@ -454,49 +487,82 @@ public class PlayerGridController : MonoBehaviour
         return Vector2Int.zero;
     }
 
-    private void HandleHeldInput(Vector2Int direction) {
-        // 아무 키도 안 누름
-        if (direction == Vector2Int.zero) {
+    private void UpdatePendingDirection(Vector2Int direction) {
+        if (!directionPending)
+            return;
+
+        // A released diagonal must not leave a delayed single-direction action.
+        // Check even after the deadline: an attack or skill may still be busy.
+        if (pendingFromDiagonal && direction == Vector2Int.zero &&
+            !Input.GetKey(KeyCode.LeftArrow) &&
+            !Input.GetKey(KeyCode.RightArrow) &&
+            !Input.GetKey(KeyCode.DownArrow)) {
+            directionPending = false;
             activeHeldDirection = Vector2Int.zero;
-
-            waitingFirstRepeat = false;
-
             return;
         }
 
-        // 새 방향이 입력됨
+        if (Time.time >= pendingDirectionDeadline)
+            return;
 
-        if (direction != activeHeldDirection) {
-            activeHeldDirection = direction;
+        // Freeze a completed diagonal; releasing a key must not lose the tap.
+        if (pendingDirection.x != 0 && pendingDirection.y == -1)
+            return;
 
-            // 다음 행동은 즉시 가능
-            nextHeldActionTime = Time.time;
-
-            waitingFirstRepeat = true;
-        }
-
-
-        // 아직 반복 입력 시간 아님
-        if (Time.time <nextHeldActionTime) {
+        // Preserve the existing neutral result for opposing horizontal keys.
+        if (direction == Vector2Int.zero &&
+            Input.GetKey(KeyCode.LeftArrow) && Input.GetKey(KeyCode.RightArrow)) {
+            directionPending = false;
             return;
         }
 
-
-        TryAction(activeHeldDirection);
-
-
-        // 첫 입력 후에는 약간의 Delay
-        if (waitingFirstRepeat) {
-            nextHeldActionTime = Time.time+ firstRepeatDelay;
-
-            waitingFirstRepeat = false;
-        }
-        else {
-            nextHeldActionTime = Time.time + repeatInterval;
+        if (direction != Vector2Int.zero) {
+            pendingDirection = direction;
+            if (direction.x != 0 && direction.y == -1)
+                pendingFromDiagonal = false;
         }
     }
 
+    private void HandleHeldInput(Vector2Int direction) {
+        if (!directionPending) {
+            if (direction == Vector2Int.zero) {
+                activeHeldDirection = Vector2Int.zero;
+                return;
+            }
+
+            if (direction != activeHeldDirection) {
+                directionPending = true;
+                pendingFromDiagonal = activeHeldDirection.x != 0 &&
+                    activeHeldDirection.y == -1 &&
+                    (direction.x == 0 || direction.y == 0);
+                pendingDirection = direction;
+                pendingDirectionDeadline = Time.time + Mathf.Max(0f, directionCombinationBuffer);
+            }
+        }
+
+        if (directionPending) {
+            bool diagonalReady = pendingDirection.x != 0 && pendingDirection.y == -1;
+            if (!diagonalReady && Time.time < pendingDirectionDeadline)
+                return;
+
+            Vector2Int actionDirection = pendingDirection;
+            directionPending = false;
+            // Track the current keys so a completed tap is not replayed.
+            activeHeldDirection = direction;
+            nextHeldActionTime = Time.time + firstRepeatDelay;
+            TryAction(actionDirection);
+            return;
+        }
+
+        if (Time.time < nextHeldActionTime)
+            return;
+
+        TryAction(activeHeldDirection);
+        nextHeldActionTime = Time.time + repeatInterval;
+    }
+
     private void OnDisable() {
+        directionPending = false;
         moveTween?.Kill();
     }
 
@@ -713,12 +779,13 @@ public class PlayerGridController : MonoBehaviour
         }
     }
 
-    private void MoveDownAfterBossDeath() {
+    private void MoveDownAfterBossDeath(Action onComplete = null) {
         if (TryGetBossLandingCell(out Vector3Int landingCell)) {
-            MoveToLandingCell(landingCell);
+            MoveToLandingCell(landingCell, onComplete);
             return;
         }
 
+        onComplete?.Invoke();
     }
 
     public bool TryGetBossLandingCell(out Vector3Int landingCell) {
@@ -761,7 +828,7 @@ public class PlayerGridController : MonoBehaviour
 
         return false;
     }
-    private void MoveToLandingCell(Vector3Int landingCell) {
+    private void MoveToLandingCell(Vector3Int landingCell, Action onComplete = null) {
         isBusy = true;
 
 
@@ -787,7 +854,10 @@ public class PlayerGridController : MonoBehaviour
                 }
 
 
-                isBusy = false;
+                if (onComplete != null)
+                    onComplete();
+                else
+                    isBusy = false;
             });
     }
     private void SpawnDashEffect(Vector2Int direction) {
