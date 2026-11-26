@@ -121,6 +121,14 @@ public class CameraShakeController : MonoBehaviour
 
     private CinemachineBasicMultiChannelPerlin noise;
 
+    [Header("Normal attack contact (strength / duration / frequency)")]
+    [SerializeField] private Vector3 enemyContact = new Vector3(0.075f, 0.055f, 2.4f);
+    [SerializeField] private Vector3 terrainContact = new Vector3(0.09f, 0.06f, 2.8f);
+    [SerializeField] private Vector3 hardTerrainContact = new Vector3(0.13f, 0.075f, 3.2f);
+    [SerializeField] private Vector3 breakContact = new Vector3(0.17f, 0.085f, 3.4f);
+    [SerializeField] private Vector3 bossContact = new Vector3(0.09f, 0.055f, 2.6f);
+    private float bossKillProtectedUntil;
+    private float protectedShakeUntil;
     private Tween shakeTween;
 
 
@@ -166,6 +174,16 @@ public class CameraShakeController : MonoBehaviour
     // Presets
     // =========================================================
 
+    public void ShakeAttackImpact(AttackImpactKind kind) {
+        // Ordinary hits must never cancel an active skill/boss-kill preset.
+        if (Time.time < protectedShakeUntil) return;
+        Vector3 preset = kind == AttackImpactKind.Break ? breakContact :
+            kind == AttackImpactKind.HardTerrain ? hardTerrainContact :
+            kind == AttackImpactKind.Terrain ? terrainContact :
+            kind == AttackImpactKind.Boss ? bossContact : enemyContact;
+        ApplyShake(preset.x, preset.y, preset.z);
+    }
+
     public void ShakeNormal() {
         Shake(
             normalStrength,
@@ -175,20 +193,24 @@ public class CameraShakeController : MonoBehaviour
 
 
     public void ShakeDashStart() {
+        if (Time.time < protectedShakeUntil) return;
         Shake(
-            dashStartStrength,
+            dashStartStrength * 0.45f,
             dashStartDuration,
             dashStartFrequency);
     }
 
 
-    public void ShakeDashImpact() {
-        Shake(
-            dashImpactStrength,
-            dashImpactDuration,
-            dashImpactFrequency);
-    }
+    public void ShakeDashImpact() { ShakeDashContact(true); }
 
+    [Header("Dash contact (visual only)")]
+    [SerializeField] private float dashContactCooldown = 0.12f;
+    private float nextDashContact;
+    public void ShakeDashContact(bool strong) {
+        if (Time.time < protectedShakeUntil || Time.time < nextDashContact) return;
+        nextDashContact = Time.time + Mathf.Max(0.01f, dashContactCooldown);
+        ApplyShake(dashImpactStrength * (strong ? 0.7f : 0.32f), dashImpactDuration, dashImpactFrequency);
+    }
 
     public void ShakeShield() {
         Shake(
@@ -207,6 +229,7 @@ public class CameraShakeController : MonoBehaviour
 
 
     public void ShakeBossKill() {
+        bossKillProtectedUntil = Time.time + bossKillDuration;
         Shake(
             bossKillStrength,
             bossKillDuration,
@@ -229,10 +252,13 @@ public class CameraShakeController : MonoBehaviour
         float strength,
         float duration,
         float frequency) {
-        if (noise == null)
-            return;
+        if (Time.time < bossKillProtectedUntil && strength < bossKillStrength) return;
+        protectedShakeUntil = Time.time + Mathf.Max(0f, duration);
+        ApplyShake(strength, duration, frequency);
+    }
 
-
+    private void ApplyShake(float strength, float duration, float frequency) {
+        if (noise == null) return;
         shakeTween?.Kill();
 
 

@@ -104,6 +104,7 @@ public class PlayerSkillController : MonoBehaviour
 
     private int currentShieldBonus;
 
+    private ShockwaveEffect shockwaveVisual;
     private Coroutine shieldCoroutine;
     private Coroutine skillLockCoroutine;
 
@@ -232,23 +233,12 @@ public class PlayerSkillController : MonoBehaviour
             true;
 
 
-        gridController.PerformShockwave(
-            shockwaveSize,
-            finalAttackPercent);
+        if (shockwaveEffectPrefab != null && shockwaveVisual == null)
+            shockwaveVisual = Instantiate(shockwaveEffectPrefab, transform.position, Quaternion.identity);
+        if (shockwaveVisual != null) shockwaveVisual.Prepare(playerStatus);
 
-
-        if (shockwaveEffectPrefab != null) {
-            ShockwaveEffect effect =
-                Instantiate(
-                    shockwaveEffectPrefab,
-                    transform.position,
-                    Quaternion.identity);
-
-
-            effect.Play(
-                transform.position,
-                shockwaveSize);
-        }
+        gridController.PerformShockwave(shockwaveSize, finalAttackPercent, shockwaveVisual);
+        if (shockwaveVisual != null) shockwaveVisual.Play(transform.position, shockwaveSize);
 
 
         RunSkillManager.Instance
@@ -380,6 +370,7 @@ public class PlayerSkillController : MonoBehaviour
 
 
     private void OnDisable() {
+        if (shockwaveVisual != null) shockwaveVisual.gameObject.SetActive(false);
         if (playerStatus != null) playerStatus.OnPlayerDied -= ClearShield;
         ClearShield();
         if (skillLockCoroutine != null) StopCoroutine(skillLockCoroutine);
@@ -387,6 +378,10 @@ public class PlayerSkillController : MonoBehaviour
         IsSkillLocked = false;
     }
 
+
+    private void OnDestroy() {
+        if (shockwaveVisual != null) Destroy(shockwaveVisual.gameObject);
+    }
 
     public float GetCurrentDashAttackPercent() {
         int level =

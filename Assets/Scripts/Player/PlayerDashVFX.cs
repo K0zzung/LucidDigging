@@ -1,157 +1,40 @@
-using System.Collections;
-using System.Collections.Generic;
-using DG.Tweening;
 using UnityEngine;
 
+// Original blue Dash prefab only. No extra ghosts, procedural rays or fracture visuals.
 public class PlayerDashVFX : MonoBehaviour
 {
-    [Header("Source Renderers")]
-    [SerializeField]
-    private List<SpriteRenderer> sourceRenderers =
-        new List<SpriteRenderer>();
-
-
-    [Header("After Image")]
-    [SerializeField]
-    private float spawnInterval = 0.05f;
-
-    [SerializeField]
-    private float afterImageLifetime = 0.18f;
-
-    [Range(0f, 1f)]
-    [SerializeField]
-    private float startAlpha = 0.45f;
-
-
-    private Coroutine effectCoroutine;
-
-    private bool isPlaying;
-
-
-    public void Begin() {
-        if (isPlaying)
-            return;
-
-        isPlaying = true;
-
-
-        effectCoroutine =
-            StartCoroutine(
-                AfterImageRoutine());
+    [SerializeField] private float contactInterval = 0.12f;
+    private readonly DashEffect[] legacy = new DashEffect[5];
+    private int legacyCursor;
+    private float lastLegacyTime = float.NegativeInfinity;
+    private float nextContact;
+    private PlayerStatus status;
+    private void Awake() { status = GetComponent<PlayerStatus>(); }
+    private void OnEnable() { if (status != null) status.OnPlayerDied += Cancel; }
+    public void Begin(Vector2Int direction) { nextContact = 0f; }
+    public void End() { } // Let the original blue sprite finish its own fade.
+    public void PlayLegacy(DashEffect prefab, Vector3 position, Vector2Int direction) {
+        if (prefab == null || Time.time - lastLegacyTime < 0.01f) return;
+        lastLegacyTime = Time.time;
+        int index = legacyCursor;
+        legacyCursor = (legacyCursor + 1) % legacy.Length;
+        if (legacy[index] == null) legacy[index] = Instantiate(prefab);
+        legacy[index].PlayPooled(position, direction);
     }
-
-
-    public void End() {
-        isPlaying = false;
-
-        if (effectCoroutine != null) {
-            StopCoroutine(
-                effectCoroutine);
-
-            effectCoroutine = null;
-        }
+    public void Contact(Vector3 position, Vector2Int direction, bool wall, bool strong) {
+        if (!wall && Time.time < nextContact) return;
+        nextContact = Time.time + Mathf.Max(0.01f, contactInterval);
+        if (CameraShakeController.Instance != null)
+            CameraShakeController.Instance.ShakeDashContact(wall || strong);
     }
-
-
-    private IEnumerator AfterImageRoutine() {
-        while (isPlaying) {
-            SpawnAfterImage();
-
-            yield return
-                new WaitForSeconds(
-                    spawnInterval);
-        }
+    public void Cancel() {
+        foreach (var effect in legacy) if (effect != null) effect.gameObject.SetActive(false);
     }
-
-
-    private void SpawnAfterImage() {
-        GameObject root =
-            new GameObject(
-                "DashAfterImage");
-
-
-        foreach (SpriteRenderer source
-                 in sourceRenderers) {
-            if (source == null)
-                continue;
-
-            if (source.sprite == null)
-                continue;
-
-
-            GameObject piece =
-                new GameObject(
-                    source.name + "_AfterImage");
-
-
-            piece.transform.SetParent(
-                root.transform);
-
-
-            // ==========================
-            // 현재 Sprite의 World 상태 복사
-            // ==========================
-
-            piece.transform.position =
-                source.transform.position;
-
-            piece.transform.rotation =
-                source.transform.rotation;
-
-            piece.transform.localScale =
-                source.transform.lossyScale;
-
-
-            SpriteRenderer copy =
-                piece.AddComponent<SpriteRenderer>();
-
-
-            copy.sprite =
-                source.sprite;
-
-            copy.flipX =
-                source.flipX;
-
-            copy.flipY =
-                source.flipY;
-
-            copy.sortingLayerID =
-                source.sortingLayerID;
-
-            copy.sortingOrder =
-                source.sortingOrder - 1;
-
-            copy.sharedMaterial =
-                source.sharedMaterial;
-
-
-            Color color =
-                source.color;
-
-            color.a =
-                startAlpha;
-
-            copy.color =
-                color;
-
-
-            // ==========================
-            // Fade Out
-            // ==========================
-
-            copy.DOFade(
-                0f,
-                afterImageLifetime);
-        }
-
-
-        Destroy(
-            root,
-            afterImageLifetime + 0.05f);
-    }
-
-
     private void OnDisable() {
-        End();
+        if (status != null) status.OnPlayerDied -= Cancel;
+        Cancel();
+    }
+    private void OnDestroy() {
+        foreach (var effect in legacy) if (effect != null) Destroy(effect.gameObject);
     }
 }

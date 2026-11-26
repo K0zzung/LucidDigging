@@ -624,7 +624,7 @@ MonoBehaviour:
   enemyManager: {fileID: 0}
   depthManager: {fileID: 0}
   skillController: {fileID: 0}
-  dashVFX: {fileID: 0}
+  dashVFX: {fileID: 3053126050934310064}
   dashEffectPrefab: {fileID: 0}
   dashEffectOffset: 0.6
   weaponAttackVFX: {fileID: 0}

@@ -11,6 +11,7 @@ using UnityEngine;
 namespace UnityEngine {
  public class MonoBehaviour {
   public Transform transform=new Transform();
+  public static void Destroy(object value){}
   public static Dictionary<Type,object> Components=new Dictionary<Type,object>();
   public List<Coroutine> Running=new List<Coroutine>();
   public T GetComponent<T>() {return (T)Components[typeof(T)];}
@@ -39,9 +40,10 @@ public class PlayerStatus {
  public void AddTemporaryDefense(int x){Bonus+=x;}public void RemoveTemporaryDefense(int x){Bonus-=x;}
  public void Die(){OnPlayerDied?.Invoke();}
 }
-public class PlayerGridController {public bool StartDash(Vector2Int d,float a,float b,float c,float e,Action f)=>true;public void PerformShockwave(int a,float b){}}
+public class PlayerGridController {public bool StartDash(Vector2Int d,float a,float b,float c,float e,Action f)=>true;public void PerformShockwave(int a,float b,ShockwaveEffect v=null){}}
 public class ShieldEffect {}
-public class ShockwaveEffect {public void Play(Vector3 p,int s){}}
+public class ShockwaveEffect {public DummyObject gameObject=new DummyObject();public void Prepare(PlayerStatus s){}public void Play(Vector3 p,int s){}}
+public class DummyObject {public void SetActive(bool value){}}
 public class PermanentUpgradeManager {public static PermanentUpgradeManager Instance; public int GetLevel(PermanentUpgradeType t)=>0;}
 public class RunSkillManager {public static RunSkillManager Instance=new RunSkillManager();public int Consumed;public bool HasSkill(SkillType t)=>true;public bool TryConsumeSkill(SkillType t){Consumed++;return true;}}
 public static class ShieldTests {

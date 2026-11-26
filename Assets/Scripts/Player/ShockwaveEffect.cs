@@ -25,6 +25,27 @@ public class ShockwaveEffect : MonoBehaviour
     private float maxAlpha = 0.8f;
 
 
+    private Sequence sequence;
+    private PlayerStatus owner;
+    public void Prepare(PlayerStatus status) {
+        if (owner != null) owner.OnPlayerDied -= Stop;
+        owner = status;
+        if (owner != null) owner.OnPlayerDied += Stop;
+        gameObject.SetActive(true);
+    }
+    // Compatibility with the unchanged damage loop; no added visual overlays.
+    public void SetGrid(Vector3 origin, int size, Vector3 xStep, Vector3 yStep) { }
+    public void AddImpact(Vector3 position, int damage = 0, bool strong = false) { }
+    private void Stop() { gameObject.SetActive(false); }
+    private void OnDisable() {
+        sequence?.Kill();
+        if (owner != null) owner.OnPlayerDied -= Stop;
+    }
+    private void OnDestroy() {
+        sequence?.Kill();
+        if (owner != null) owner.OnPlayerDied -= Stop;
+    }
+
     private void Awake() {
         if (spriteRenderer == null) {
             spriteRenderer =
@@ -57,8 +78,8 @@ public class ShockwaveEffect : MonoBehaviour
         float targetScale = size* scalePerCell;
 
 
-        Sequence sequence =
-            DOTween.Sequence();
+        sequence?.Kill();
+        sequence = DOTween.Sequence();
 
 
         // 빠르게 확장
@@ -78,7 +99,7 @@ public class ShockwaveEffect : MonoBehaviour
 
 
         sequence.OnComplete(() => {
-            Destroy(gameObject);
+            gameObject.SetActive(false);
         });
     }
 }

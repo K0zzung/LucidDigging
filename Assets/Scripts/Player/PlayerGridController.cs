@@ -266,6 +266,7 @@ public class PlayerGridController : MonoBehaviour
                         targetCell);
 
 
+                bool hardTerrain = terrainManager.GetTerrainDefense(targetCell) >= 30;
                 bool destroyed = terrainManager.DamageTerrain(targetCell,playerStatus.Attack,out int dealtDamage);
 
 
@@ -279,10 +280,9 @@ public class PlayerGridController : MonoBehaviour
                 // Camera
                 // =============================
 
-                if (CameraShakeController.Instance != null) {
-                    CameraShakeController.Instance
-                        .ShakeNormal();
-                }
+                if (dealtDamage > 0)
+                    PlayNormalImpact(targetCell, direction, destroyed ? AttackImpactKind.Break :
+                        hardTerrain ? AttackImpactKind.HardTerrain : AttackImpactKind.Terrain);
 
 
                 // =============================
@@ -319,6 +319,14 @@ public class PlayerGridController : MonoBehaviour
                 TryCompleteAttack(completion);
             });
     }
+    // Visual feedback only; called at the existing onHit callback after damage.
+    private void PlayNormalImpact(Vector3Int cell, Vector2Int direction, AttackImpactKind kind) {
+        if (weaponAttackVFX != null)
+            weaponAttackVFX.PlayImpact(terrainTilemap.GetCellCenterWorld(cell), direction, kind);
+        if (CameraShakeController.Instance != null)
+            CameraShakeController.Instance.ShakeAttackImpact(kind);
+    }
+
     private bool IsBoss(EnemyBase enemy) {
         return
             enemy is BossEnemy ||
@@ -373,6 +381,10 @@ public class PlayerGridController : MonoBehaviour
                     dealtDamage);
 
 
+                if (dealtDamage > 0)
+                    PlayNormalImpact(targetCell, direction, IsBoss(enemy) ? AttackImpactKind.Boss :
+                        killed ? AttackImpactKind.Break : AttackImpactKind.Enemy);
+
                 // =============================
                 // Boss Kill
                 // =============================
@@ -396,9 +408,7 @@ public class PlayerGridController : MonoBehaviour
                 // Normal Hit Camera
                 // =============================
 
-                if (CameraShakeController.Instance != null) {
-                    CameraShakeController.Instance.ShakeNormal();
-                }
+
 
 
                 // =============================
@@ -574,12 +584,15 @@ public class PlayerGridController : MonoBehaviour
     }
 
     private void OnDisable() {
+        if (dashVFX != null) dashVFX.Cancel();
         directionPending = false;
         moveTween?.Kill();
     }
 
     private IEnumerator DashRoutine(Vector2Int direction, float duration, float attackPercent,float stepInterval, float dashMoveDuration,Action onComplete) {
         isBusy = true;
+        if (dashVFX != null) dashVFX.Begin(direction);
+        SpawnDashEffect(direction);
 
 
         lastDirection = direction;
@@ -612,6 +625,7 @@ public class PlayerGridController : MonoBehaviour
 
             if (wallTilemap != null &&
                 wallTilemap.HasTile(targetCell)) {
+                if (dashVFX != null) dashVFX.Contact(terrainTilemap.GetCellCenterWorld(targetCell), direction, true, true);
                 break;
             }
 
@@ -619,7 +633,6 @@ public class PlayerGridController : MonoBehaviour
             bool canMove = false;
 
 
-            bool hitSomething = false;
 
 
             // ===================================
@@ -627,10 +640,10 @@ public class PlayerGridController : MonoBehaviour
             // ===================================
 
             if (enemyManager.TryGetEnemy(targetCell,out EnemyBase enemy)) {
-                hitSomething = true;
 
 
                 bool killed = enemy.TakeDamage(dashAttack,out int dealtDamage);
+                if (dealtDamage > 0 && dashVFX != null) dashVFX.Contact(terrainTilemap.GetCellCenterWorld(targetCell), direction, false, killed);
 
 
                 // Floating Damage
@@ -655,6 +668,7 @@ public class PlayerGridController : MonoBehaviour
                         }
 
 
+                        if (dashVFX != null) dashVFX.End();
                         playerStatus.SetInvincible(false);
 
 
@@ -697,10 +711,10 @@ public class PlayerGridController : MonoBehaviour
 
             else if (terrainTilemap.HasTile(
                 targetCell)) {
-                hitSomething =true;
 
 
                 bool destroyed =terrainManager.DamageTerrain(targetCell,dashAttack,out int dealtDamage);
+                if (dealtDamage > 0 && dashVFX != null) dashVFX.Contact(terrainTilemap.GetCellCenterWorld(targetCell), direction, false, destroyed);
 
 
                 ShowDealtDamage(targetCell, dealtDamage);
@@ -729,10 +743,7 @@ public class PlayerGridController : MonoBehaviour
             // Dash 충돌 Camera
             // ===================================
 
-            if (hitSomething &&
-                CameraShakeController.Instance != null) {
-                CameraShakeController.Instance.ShakeDashImpact();
-            }
+
 
 
             // ===================================
@@ -759,6 +770,7 @@ public class PlayerGridController : MonoBehaviour
         // Dash 종료
         // ===================================
 
+        if (dashVFX != null) dashVFX.End();
         playerStatus.SetInvincible(false);
 
 
@@ -880,10 +892,13 @@ public class PlayerGridController : MonoBehaviour
             transform.position +
             new Vector3(direction.x, direction.y, 0f) * dashEffectOffset;
 
-        DashEffect effect =
-            Instantiate(dashEffectPrefab, spawnPosition, Quaternion.identity);
-
-        effect.Play(spawnPosition, direction);
+        if (dashVFX != null) {
+            dashVFX.PlayLegacy(dashEffectPrefab, spawnPosition, direction);
+        }
+        else {
+            DashEffect effect = Instantiate(dashEffectPrefab, spawnPosition, Quaternion.identity);
+            effect.Play(spawnPosition, direction);
+        }
     }
 
     public bool StartDash(Vector2Int direction,float duration,float attackPercent,float stepInterval,float moveDuration, Action onComplete = null) {
@@ -898,7 +913,7 @@ public class PlayerGridController : MonoBehaviour
         return true;
     }
 
-    public void PerformShockwave(int size,float attackPercent) {
+    public void PerformShockwave(int size,float attackPercent, ShockwaveEffect visual = null) {
         // =============================
         // 크기 보정
         // =============================
@@ -912,6 +927,9 @@ public class PlayerGridController : MonoBehaviour
 
 
         int half = size / 2;
+        if (visual != null) visual.SetGrid(transform.position, size,
+            terrainTilemap.GetCellCenterWorld(currentCell + Vector3Int.right) - terrainTilemap.GetCellCenterWorld(currentCell),
+            terrainTilemap.GetCellCenterWorld(currentCell + Vector3Int.up) - terrainTilemap.GetCellCenterWorld(currentCell));
 
 
         int shockwaveAttack = Mathf.Max(1,Mathf.RoundToInt(playerStatus.Attack* attackPercent/ 100f));
@@ -947,6 +965,7 @@ public class PlayerGridController : MonoBehaviour
                     // 딱 한 번만 공격
                     if (damagedEnemies.Add(enemy)) {
                         bool killed = enemy.TakeDamage(shockwaveAttack, out int dealtDamage);
+                        if (dealtDamage > 0 && visual != null) visual.AddImpact(terrainTilemap.GetCellCenterWorld(cell), dealtDamage, killed || IsBoss(enemy));
 
 
                         ShowDealtDamage(cell,dealtDamage);
@@ -997,6 +1016,7 @@ public class PlayerGridController : MonoBehaviour
 
                 if (terrainTilemap.HasTile(cell)) {
                     bool destroyed = terrainManager.DamageTerrain(cell, shockwaveAttack,out int dealtDamage);
+                    if (dealtDamage > 0 && visual != null) visual.AddImpact(terrainTilemap.GetCellCenterWorld(cell), dealtDamage, destroyed);
 
                     ShowDealtDamage(cell, dealtDamage);
 

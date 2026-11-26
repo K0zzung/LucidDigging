@@ -17,9 +17,16 @@ public class DashEffect : MonoBehaviour
     [SerializeField] private Vector3 endScale = new Vector3(1.1f, 1.1f, 1f);
 
     private Sequence sequence;
+    private bool pooled;
 
     private void Reset() {
         spriteRenderer = GetComponent<SpriteRenderer>();
+    }
+
+    public void PlayPooled(Vector3 worldPosition, Vector2Int direction) {
+        pooled = true;
+        gameObject.SetActive(true);
+        Play(worldPosition, direction);
     }
 
     public void Play(Vector3 worldPosition, Vector2Int direction) {
@@ -62,7 +69,8 @@ public class DashEffect : MonoBehaviour
         );
 
         sequence.OnComplete(() => {
-            Destroy(gameObject);
+            if (pooled) gameObject.SetActive(false);
+            else Destroy(gameObject);
         });
     }
 
@@ -72,6 +80,11 @@ public class DashEffect : MonoBehaviour
         float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg - 270f;
 
         transform.rotation = Quaternion.Euler(0f, 0f, angle);
+    }
+
+    private void OnDisable() {
+        sequence?.Kill();
+        transform.DOKill();
     }
 
     private void OnDestroy() {

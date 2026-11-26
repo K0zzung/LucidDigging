@@ -332,6 +332,11 @@ public class TerrainManager : MonoBehaviour
     /// <summary>
     /// 해당 타일의 공격력 반환
     /// </summary>
+    public int GetTerrainDefense(Vector3Int cell) {
+        TerrainData terrain = GetTerrainData(cell);
+        return terrain != null ? terrain.defense : 0;
+    }
+
     public int GetTerrainAttack(Vector3Int cell) {
         TerrainData data = GetTerrainData(cell);
 
