@@ -92,6 +92,16 @@ public class PlayerSkillController : MonoBehaviour
         private set;
     }
 
+    // Gameplay and presentation share this scaled-time deadline.
+    private float shieldEndsAt;
+    public float ShieldDuration => shieldDuration;
+    public float ShieldRemainingTime => IsShieldActive ? Mathf.Max(0f, shieldEndsAt - Time.time) : 0f;
+    public ShieldEffect ShieldVisualSource => shieldEffectPrefab;
+
+    private void OnEnable() {
+        if (playerStatus != null) playerStatus.OnPlayerDied += ClearShield;
+    }
+
     private int currentShieldBonus;
 
     private Coroutine shieldCoroutine;
@@ -297,22 +307,8 @@ public class PlayerSkillController : MonoBehaviour
         }
 
 
-        shieldCoroutine =
-            StartCoroutine(
-                ShieldRoutine());
-
-
-        if (shieldEffectPrefab != null) {
-            ShieldEffect effect =
-                Instantiate(
-                    shieldEffectPrefab,
-                    transform.position,
-                    Quaternion.identity);
-
-
-            effect.Play(
-                transform.position);
-        }
+        shieldEndsAt = Time.time + shieldDuration;
+        shieldCoroutine = StartCoroutine(ShieldRoutine());
 
 
         RunSkillManager.Instance
@@ -329,24 +325,21 @@ public class PlayerSkillController : MonoBehaviour
 
 
     private IEnumerator ShieldRoutine() {
-        yield return new WaitForSeconds(
-            shieldDuration);
-
-
-        playerStatus.RemoveTemporaryDefense(
-            currentShieldBonus);
-
-
-        Debug.Log(
-            $"[Shield] End / " +
-            $"Defense : {playerStatus.Defense}");
-
-
-        currentShieldBonus = 0;
-
-        IsShieldActive = false;
+        while (Time.time < shieldEndsAt)
+            yield return null;
 
         shieldCoroutine = null;
+        ClearShield();
+    }
+
+    private void ClearShield() {
+        if (shieldCoroutine != null) StopCoroutine(shieldCoroutine);
+        shieldCoroutine = null;
+        shieldEndsAt = 0f;
+        IsShieldActive = false;
+        if (currentShieldBonus != 0 && playerStatus != null)
+            playerStatus.RemoveTemporaryDefense(currentShieldBonus);
+        currentShieldBonus = 0;
     }
 
     private void StartSkillLock(
@@ -387,17 +380,10 @@ public class PlayerSkillController : MonoBehaviour
 
 
     private void OnDisable() {
-        // Shield 도중 Scene 종료 등의 상황에서
-        // Defense가 남아버리는 것 방지
-        if (currentShieldBonus > 0 &&
-            playerStatus != null) {
-            playerStatus.RemoveTemporaryDefense(
-                currentShieldBonus);
-
-            currentShieldBonus = 0;
-        }
-
-
+        if (playerStatus != null) playerStatus.OnPlayerDied -= ClearShield;
+        ClearShield();
+        if (skillLockCoroutine != null) StopCoroutine(skillLockCoroutine);
+        skillLockCoroutine = null;
         IsSkillLocked = false;
     }
 
