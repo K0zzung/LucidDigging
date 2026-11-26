@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier:
   id: max_health_up
   displayName: Max Health Up
-  description: "Run only. P1-3 Unity playtest pending."
+  description: "Applies only during this run."
   effectType: 2
   attackBonus: 0
   defenseBonus: 0

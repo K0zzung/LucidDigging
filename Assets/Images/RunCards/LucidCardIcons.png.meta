@@ -1,0 +1,263 @@
+fileFormatVersion: 2
+guid: ea0b5d6e1cc9a9b4fa5a9a7467213007
+TextureImporter:
+  internalIDToNameTable: []
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 4096
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 128
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 3
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 4096
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Standalone
+    maxTextureSize: 4096
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: iPhone
+    maxTextureSize: 4096
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Android
+    maxTextureSize: 4096
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Shield
+      rect:
+        serializedVersion: 2
+        x: 513
+        y: 220
+        width: 339
+        height: 332
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8fd084beb89205343b91e4269533f568
+      internalID: 386257069
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MaxHealth
+      rect:
+        serializedVersion: 2
+        x: 918
+        y: 223
+        width: 339
+        height: 329
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0d14f2f60ca559e4da3a2363d33debef
+      internalID: -827135964
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: attDef
+      rect:
+        serializedVersion: 2
+        x: 1728
+        y: 219
+        width: 337
+        height: 334
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 17af8f2f51a4313419017f5207186a57
+      internalID: 1358284597
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Attack
+      rect:
+        serializedVersion: 2
+        x: 108
+        y: 219
+        width: 337
+        height: 331
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 98f025939d1424f499968c1c92c8306c
+      internalID: 1223969352
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: healthBonus
+      rect:
+        serializedVersion: 2
+        x: 1317
+        y: 222
+        width: 346
+        height: 331
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: eb319127b18569541b7ff9cb8e5e0d47
+      internalID: -2007350176
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    nameFileIdTable:
+      Attack: 1223969352
+      MaxHealth: -827135964
+      Shield: 386257069
+      attDef: 1358284597
+      healthBonus: -2007350176
+      "\uB8E8\uC2DC\uB4DC \uB098\uC774\uD2B8 \uC2A4\uCE74\uC774 \uC544\uC774\uCF58 \uC2DC\uD2B8_0": -1226952198
+      "\uB8E8\uC2DC\uB4DC \uB098\uC774\uD2B8 \uC2A4\uCE74\uC774 \uC544\uC774\uCF58 \uC2DC\uD2B8_1": 373816659
+      "\uB8E8\uC2DC\uB4DC \uB098\uC774\uD2B8 \uC2A4\uCE74\uC774 \uC544\uC774\uCF58 \uC2DC\uD2B8_10": -2117658087
+      "\uB8E8\uC2DC\uB4DC \uB098\uC774\uD2B8 \uC2A4\uCE74\uC774 \uC544\uC774\uCF58 \uC2DC\uD2B8_12": -879104285
+      "\uB8E8\uC2DC\uB4DC \uB098\uC774\uD2B8 \uC2A4\uCE74\uC774 \uC544\uC774\uCF58 \uC2DC\uD2B8_15": 1096607186
+      "\uB8E8\uC2DC\uB4DC \uB098\uC774\uD2B8 \uC2A4\uCE74\uC774 \uC544\uC774\uCF58 \uC2DC\uD2B8_16": -1439815675
+      "\uB8E8\uC2DC\uB4DC \uB098\uC774\uD2B8 \uC2A4\uCE74\uC774 \uC544\uC774\uCF58 \uC2DC\uD2B8_17": 18527221
+      "\uB8E8\uC2DC\uB4DC \uB098\uC774\uD2B8 \uC2A4\uCE74\uC774 \uC544\uC774\uCF58 \uC2DC\uD2B8_2": 1198143164
+      "\uB8E8\uC2DC\uB4DC \uB098\uC774\uD2B8 \uC2A4\uCE74\uC774 \uC544\uC774\uCF58 \uC2DC\uD2B8_3": 475864831
+      "\uB8E8\uC2DC\uB4DC \uB098\uC774\uD2B8 \uC2A4\uCE74\uC774 \uC544\uC774\uCF58 \uC2DC\uD2B8_6": -1185565967
+      "\uB8E8\uC2DC\uB4DC \uB098\uC774\uD2B8 \uC2A4\uCE74\uC774 \uC544\uC774\uCF58 \uC2DC\uD2B8_7": -1276675312
+      "\uB8E8\uC2DC\uB4DC \uB098\uC774\uD2B8 \uC2A4\uCE74\uC774 \uC544\uC774\uCF58 \uC2DC\uD2B8_8": 193182129
+      "\uB8E8\uC2DC\uB4DC \uB098\uC774\uD2B8 \uC2A4\uCE74\uC774 \uC544\uC774\uCF58 \uC2DC\uD2B8_9": 1732843628
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

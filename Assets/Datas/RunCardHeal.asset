@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier:
   id: heal
   displayName: Health Recovery
-  description: "Run only. P1-3 Unity playtest pending."
+  description: "Applies only during this run."
   effectType: 3
   attackBonus: 0
   defenseBonus: 0

@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier:
   id: attack_defense_up
   displayName: Attack + Defense
-  description: "Run only. P1-3 Unity playtest pending."
+  description: "Applies only during this run."
   effectType: 4
   attackBonus: 1
   defenseBonus: 1

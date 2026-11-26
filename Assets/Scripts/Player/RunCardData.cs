@@ -24,6 +24,7 @@ public class RunCardData : ScriptableObject
     public string Id => id;
     public string DisplayName => displayName;
     public string Description => EffectSummary + "\n" + description;
+    public string EffectDescription => EffectSummary;
     public RunCardEffectType EffectType => effectType;
     public int AttackBonus => Mathf.Max(0, attackBonus);
     public int DefenseBonus => Mathf.Max(0, defenseBonus);

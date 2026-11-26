@@ -1373,7 +1373,7 @@ MonoBehaviour:
   progression: {fileID: 135940226}
   gameFlow: {fileID: 756598064}
   parentCanvas: {fileID: 97245879}
-  font: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  font: {fileID: 11400000, guid: 7318f80099aff7a40930834c98a9b305, type: 2}
   cardPool:
   - {fileID: 11400000, guid: d1f23f4edb834af8b24d5c39ec6c8ceb, type: 2}
   - {fileID: 11400000, guid: 6526b9aa72664fa583c74c828488e452, type: 2}
@@ -1381,6 +1381,13 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 92ba24788da94e709ad93c63c3020a62, type: 2}
   - {fileID: 11400000, guid: 066bdd34715c422fb3e8797f7cf1a680, type: 2}
   selectionHandler: {fileID: 135940228}
+  koreanFont: {fileID: 11400000, guid: 7318f80099aff7a40930834c98a9b305, type: 2}
+  commonFrame: {fileID: 1424810941, guid: 020058b2c24093345ab18f823aa993a4, type: 3}
+  attackIcon: {fileID: 1223969352, guid: ea0b5d6e1cc9a9b4fa5a9a7467213007, type: 3}
+  defenseIcon: {fileID: 386257069, guid: ea0b5d6e1cc9a9b4fa5a9a7467213007, type: 3}
+  maxHealthIcon: {fileID: -827135964, guid: ea0b5d6e1cc9a9b4fa5a9a7467213007, type: 3}
+  healIcon: {fileID: -2007350176, guid: ea0b5d6e1cc9a9b4fa5a9a7467213007, type: 3}
+  attackAndDefenseIcon: {fileID: 1358284597, guid: ea0b5d6e1cc9a9b4fa5a9a7467213007, type: 3}
 --- !u!114 &135940228
 MonoBehaviour:
   m_ObjectHideFlags: 0
