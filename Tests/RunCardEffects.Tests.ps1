@@ -81,7 +81,7 @@ $start = $uiSource.IndexOf('    private void SelectCard(')
 $end = $uiSource.IndexOf('    private void HandleStateChanged(', $start)
 if ($start -lt 0 -or $end -le $start) { throw 'Cannot locate production UI selection method.' }
 $source = $stub + $uiSource.Substring($start, $end - $start) + $tests
-foreach ($file in @('Assets/Scripts/Player/PlayerStatus.cs','Assets/Scripts/Player/RunCardData.cs','Assets/Scripts/Player/IRunCardSelectionHandler.cs','Assets/Scripts/Player/RunCardEffectHandler.cs','Assets/Scripts/Player/RunProgression.cs','Assets/Scripts/UI/PlayerHealthBarUI.cs','Assets/Scripts/System/GameState.cs','Assets/Scripts/System/DamageCalculator.cs')) {
+foreach ($file in @('Assets/Scripts/Player/PlayerStatus.cs','Assets/Scripts/Player/RunCardRarity.cs','Assets/Scripts/Player/RunCardData.cs','Assets/Scripts/Player/IRunCardSelectionHandler.cs','Assets/Scripts/Player/RunCardEffectHandler.cs','Assets/Scripts/Player/RunProgression.cs','Assets/Scripts/UI/PlayerHealthBarUI.cs','Assets/Scripts/System/GameState.cs','Assets/Scripts/System/DamageCalculator.cs')) {
     $source += [regex]::Replace([IO.File]::ReadAllText((Join-Path $projectRoot $file)), '(?m)^using [^;]+;\r?\n', '')
 }
 Add-Type -TypeDefinition $source

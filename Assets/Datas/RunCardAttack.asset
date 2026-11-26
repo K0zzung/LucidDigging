@@ -13,8 +13,10 @@ MonoBehaviour:
   m_Name: RunCardAttack
   m_EditorClassIdentifier:
   id: attack_up
-  displayName: Attack Up
-  description: "Applies only during this run."
+  rarity: 0
+  baseCardId: attack_up
+  displayName: 꿈결의 칼날
+  description: "이번 탐험 동안 유지됩니다."
   effectType: 0
   attackBonus: 2
   defenseBonus: 0

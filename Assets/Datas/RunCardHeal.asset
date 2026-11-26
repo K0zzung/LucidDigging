@@ -13,8 +13,10 @@ MonoBehaviour:
   m_Name: RunCardHeal
   m_EditorClassIdentifier:
   id: heal
-  displayName: Health Recovery
-  description: "Applies only during this run."
+  rarity: 0
+  baseCardId: heal
+  displayName: 꿈의 이슬
+  description: "이번 탐험 동안 유지됩니다."
   effectType: 3
   attackBonus: 0
   defenseBonus: 0

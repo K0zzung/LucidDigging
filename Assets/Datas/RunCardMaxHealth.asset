@@ -13,8 +13,10 @@ MonoBehaviour:
   m_Name: RunCardMaxHealth
   m_EditorClassIdentifier:
   id: max_health_up
-  displayName: Max Health Up
-  description: "Applies only during this run."
+  rarity: 0
+  baseCardId: max_health_up
+  displayName: 꿈의 심장
+  description: "이번 탐험 동안 유지됩니다."
   effectType: 2
   attackBonus: 0
   defenseBonus: 0

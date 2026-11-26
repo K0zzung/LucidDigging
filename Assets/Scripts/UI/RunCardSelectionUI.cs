@@ -12,6 +12,7 @@ public class RunCardSelectionUI : MonoBehaviour
     [SerializeField] private Canvas parentCanvas;
     [SerializeField] private TMP_FontAsset font;
     [SerializeField] private RunCardData[] cardPool;
+    [SerializeField] private RunCardRaritySettings raritySettings;
     [SerializeField] private MonoBehaviour selectionHandler;
 
     [Header("Lucid Fragments - Presentation")]
@@ -23,9 +24,16 @@ public class RunCardSelectionUI : MonoBehaviour
     [SerializeField] private Sprite healIcon;
     [SerializeField] private Sprite attackAndDefenseIcon;
 
+    [Header("Nightmare - Dedicated Icons")]
+    [SerializeField] private Sprite nightmareAttackIcon;
+    [SerializeField] private Sprite nightmareDefenseIcon;
+    [SerializeField] private Sprite nightmareMaxHealthIcon;
+    [SerializeField] private Sprite nightmareHealIcon;
+    [SerializeField] private Sprite nightmareAttackAndDefenseIcon;
+
     public event Action<RunCardData> OnCardSelected;
     public bool IsOpen => root != null && root.activeSelf;
-    public bool IsReady => configured && isActiveAndEnabled &&
+    public bool IsReady => configured && !configurationFailed && isActiveAndEnabled &&
         parentCanvas != null && parentCanvas.isActiveAndEnabled && EventSystem.current != null &&
         selectionHandler != null && selectionHandler.isActiveAndEnabled;
 
@@ -36,12 +44,17 @@ public class RunCardSelectionUI : MonoBehaviour
     private readonly TMP_Text[] names = new TMP_Text[3];
     private readonly TMP_Text[] effects = new TMP_Text[3];
     private readonly Image[] icons = new Image[3];
+    private readonly RectTransform[] iconContainers = new RectTransform[3];
+    private const float IconDisplayScale = 1.3f;
+    private const float NightmareIconSizeMultiplier = 1.3f;
+    private readonly Image[] frames = new Image[3];
     private readonly List<RunCardData> candidates = new List<RunCardData>();
     private RunCardData[] offeredCards;
     private int offerVersion;
     private int offerFrame;
     private bool acceptingSelection;
     private bool configured;
+    private bool configurationFailed;
 
     private void Start() {
         if (progression == null) progression = RunProgression.Instance;
@@ -56,26 +69,25 @@ public class RunCardSelectionUI : MonoBehaviour
             return;
         }
 
-        var ids = new HashSet<string>();
-        if (cardPool != null) {
-            foreach (RunCardData card in cardPool) {
-                if (card != null && card.HasValidEffect && !string.IsNullOrWhiteSpace(card.Id) && ids.Add(card.Id))
-                    candidates.Add(card);
-            }
-        }
-        if (candidates.Count < 3) {
-            Debug.LogError("[RunCards] At least three cards with unique IDs are required.");
-            enabled = false;
+        if (cardPool != null) candidates.AddRange(cardPool);
+        if (!RunCardSampler.CanDrawThree(candidates, raritySettings, out string error)) {
+            ReportConfigurationError(error);
             return;
         }
 
         BuildUI();
         gameFlow.OnStateChanged += HandleStateChanged;
+        Canvas.willRenderCanvases += AlignIconsToSlots;
         configured = true;
     }
 
     private void LateUpdate() {
-        if (!configured) return;
+        if (!configured || configurationFailed) return;
+        if (progression.PendingLevelUps > 0 &&
+            !RunCardSampler.CanDrawThree(candidates, raritySettings, out string error)) {
+            ReportConfigurationError(error);
+            return;
+        }
         if (IsOpen) UpdateSafeArea();
         if (gameFlow.CurrentState != GameState.LevelUpSelection) {
             if (IsOpen) Hide();
@@ -103,7 +115,10 @@ public class RunCardSelectionUI : MonoBehaviour
     private void ShowNextOffer() {
         offerVersion++;
         offerFrame = Time.frameCount;
-        offeredCards = DrawThree(candidates);
+        if (!RunCardSampler.TryDrawThree(candidates, raritySettings, out offeredCards, out string error)) {
+            ReportConfigurationError(error);
+            return;
+        }
         UpdateSafeArea();
         remainingChoices.text = progression.PendingLevelUps > 1
             ? $"남은 선택 {progression.PendingLevelUps}회"
@@ -114,8 +129,20 @@ public class RunCardSelectionUI : MonoBehaviour
             int version = offerVersion;
             RunCardData card = offeredCards[i];
             names[i].text = card.DisplayName;
-            effects[i].text = card.EffectDescription;
-            icons[i].sprite = GetIcon(card.EffectType);
+            effects[i].text = card.HasPenalty
+                ? card.PositiveEffectDescription + "\n<color=#FF8F9C>" + card.PenaltyDescription + "</color>"
+                : card.EffectDescription;
+            Sprite icon = GetIcon(card);
+            if (icon == null) {
+                ReportConfigurationError($"Missing icon for {card.Rarity}/{card.EffectType} ({card.Id}).");
+                return;
+            }
+            icons[i].sprite = icon;
+            // Nightmare originals have more transparent padding: enlarge their current display only.
+            float iconScale = IconDisplayScale *
+                (card.Rarity == RunCardRarity.Nightmare ? NightmareIconSizeMultiplier : 1f);
+            icons[i].rectTransform.localScale = Vector3.one * iconScale;
+            frames[i].sprite = raritySettings.GetFrame(card.Rarity);
             buttons[i].onClick.RemoveAllListeners();
             buttons[i].onClick.AddListener(() => SelectCard(index, version));
             buttons[i].interactable = true;
@@ -123,20 +150,12 @@ public class RunCardSelectionUI : MonoBehaviour
         acceptingSelection = true;
     }
 
-    // Partial Fisher-Yates: each offer contains three distinct card IDs.
-    public static RunCardData[] DrawThree(IReadOnlyList<RunCardData> pool) {
-        if (pool == null || pool.Count < 3)
-            throw new ArgumentException("At least three unique cards are required.", nameof(pool));
-        var remaining = new List<RunCardData>(pool);
-        var result = new RunCardData[3];
-        for (int i = 0; i < result.Length; i++) {
-            int index = UnityEngine.Random.Range(i, remaining.Count);
-            RunCardData swap = remaining[i];
-            remaining[i] = remaining[index];
-            remaining[index] = swap;
-            result[i] = remaining[i];
-        }
-        return result;
+    private void ReportConfigurationError(string error) {
+        if (configurationFailed) return;
+        configurationFailed = true;
+        Hide();
+        if (gameFlow != null) gameFlow.EndLevelUpSelection();
+        Debug.LogError($"[RunCards] {error} Fix the card/settings assets and restart the scene.", this);
     }
 
     private void SelectCard(int index, int version) {
@@ -192,8 +211,21 @@ public class RunCardSelectionUI : MonoBehaviour
     }
 
     private void OnDestroy() {
+        Canvas.willRenderCanvases -= AlignIconsToSlots;
         if (gameFlow != null) gameFlow.OnStateChanged -= HandleStateChanged;
         if (root != null) Destroy(root);
+    }
+
+    private Sprite GetIcon(RunCardData card) {
+        if (card.Rarity != RunCardRarity.Nightmare) return GetIcon(card.EffectType);
+        switch (card.EffectType) {
+            case RunCardEffectType.Attack: return nightmareAttackIcon;
+            case RunCardEffectType.Defense: return nightmareDefenseIcon;
+            case RunCardEffectType.MaxHealth: return nightmareMaxHealthIcon;
+            case RunCardEffectType.Heal: return nightmareHealIcon;
+            case RunCardEffectType.AttackAndDefense: return nightmareAttackAndDefenseIcon;
+            default: return null;
+        }
     }
 
     private Sprite GetIcon(RunCardEffectType type) {
@@ -250,6 +282,7 @@ public class RunCardSelectionUI : MonoBehaviour
             fillImage.color = new Color(0.055f, 0.065f, 0.13f, 1f);
             fillImage.raycastTarget = false;
             Image frame = CreateSprite("CommonFrame", card, Vector2.zero, Vector2.one, commonFrame);
+            frames[i] = frame;
             Button button = card.gameObject.AddComponent<Button>();
             button.targetGraphic = frame;
             button.transition = Selectable.Transition.ColorTint;
@@ -264,9 +297,14 @@ public class RunCardSelectionUI : MonoBehaviour
             button.navigation = navigation;
             buttons[i] = button;
 
-            // Keep the square icon inside the circular opening of the supplied frame.
-            icons[i] = CreateSprite("EffectIcon", card, new Vector2(0.103f, 0.35f),
-                new Vector2(0.166f, 0.65f), null);
+            // All slots share the original display size; only the measured center varies.
+            iconContainers[i] = CreateRect("IconContainer", frame.rectTransform,
+                new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f));
+            iconContainers[i].pivot = new Vector2(0.5f, 0.5f);
+            icons[i] = CreateSprite("EffectIcon", iconContainers[i],
+                new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), null);
+            icons[i].rectTransform.pivot = new Vector2(0.5f, 0.5f);
+            icons[i].rectTransform.localScale = Vector3.one * IconDisplayScale;
             names[i] = CreateLabel("Name", card, new Vector2(0.255f, 0.53f),
                 new Vector2(0.925f, 0.77f), 36, koreanFont, TextAlignmentOptions.MidlineLeft);
             effects[i] = CreateLabel("Effect", card, new Vector2(0.255f, 0.235f),
@@ -283,6 +321,56 @@ public class RunCardSelectionUI : MonoBehaviour
         footer.color = new Color(0.67f, 0.72f, 0.83f, 1f);
         UpdateSafeArea();
         root.SetActive(false);
+    }
+
+    // Transparent-slot bounding-box centers measured from CardFrames.png (2172 x 724).
+    // Coordinates are texture pixels from bottom-left, not hand-tuned rarity offsets.
+    // Subtracting sprite.rect.position also accounts for the current Sprite Editor crop.
+    private static bool TryGetSlotCenter(Sprite sprite, out Vector2 center) {
+        Vector2 textureCenter;
+        switch (sprite.name) {
+            case "Normal": textureCenter = new Vector2(160.5f, 600f); break;
+            case "rare": textureCenter = new Vector2(1239f, 600f); break;
+            case "epic": textureCenter = new Vector2(160.5f, 363f); break;
+            case "legendary": textureCenter = new Vector2(1239.5f, 363.5f); break;
+            case "Lucid": textureCenter = new Vector2(160.5f, 125.5f); break;
+            default: center = Vector2.zero; return false;
+        }
+        center = textureCenter - sprite.rect.position;
+        return true;
+    }
+
+    private static Vector2 SlotToLocal(Rect displayRect, Rect spriteRect,
+        Vector2 pivot, Vector2 slotCenter) {
+        float scale = Mathf.Min(displayRect.width / spriteRect.width,
+            displayRect.height / spriteRect.height);
+        Vector2 renderedSize = spriteRect.size * scale;
+        Vector2 padding = Vector2.Scale(displayRect.size - renderedSize, pivot);
+        return displayRect.position + padding + slotCenter * scale;
+    }
+
+    // Runs after the normal canvas layout pass, including while timeScale is zero.
+    // No pixel reads, asset changes, or forced/recursive canvas rebuilds are needed.
+    private void AlignIconsToSlots() {
+        if (!IsOpen) return;
+        for (int i = 0; i < icons.Length; i++) {
+            Image frame = frames[i];
+            if (frame == null || frame.sprite == null || iconContainers[i] == null ||
+                !TryGetSlotCenter(frame.sprite, out Vector2 slotCenter)) continue;
+            Rect bounds = frame.GetPixelAdjustedRect();
+            if (bounds.width <= 0f || bounds.height <= 0f) continue;
+
+            RectTransform container = iconContainers[i];
+            container.anchorMin = frame.rectTransform.pivot;
+            container.anchorMax = frame.rectTransform.pivot;
+            container.anchoredPosition = SlotToLocal(bounds, frame.sprite.rect,
+                frame.rectTransform.pivot, slotCenter);
+            // Preserve the previous base width/height for all three card instances.
+            Vector2 baseSize = Vector2.Scale(frame.rectTransform.rect.size,
+                new Vector2(0.063f, 0.30f));
+            container.sizeDelta = baseSize;
+            icons[i].rectTransform.sizeDelta = baseSize;
+        }
     }
 
     private void UpdateSafeArea() {

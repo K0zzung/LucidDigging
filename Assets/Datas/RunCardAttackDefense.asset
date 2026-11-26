@@ -13,8 +13,10 @@ MonoBehaviour:
   m_Name: RunCardAttackDefense
   m_EditorClassIdentifier:
   id: attack_defense_up
-  displayName: Attack + Defense
-  description: "Applies only during this run."
+  rarity: 0
+  baseCardId: attack_defense_up
+  displayName: 균형의 의지
+  description: "이번 탐험 동안 유지됩니다."
   effectType: 4
   attackBonus: 1
   defenseBonus: 1

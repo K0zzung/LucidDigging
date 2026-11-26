@@ -1354,8 +1354,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b4caa2fe46da4a3d849ad7a5932961db, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   firstLevelExperience: 20
   experienceIncreasePerLevel: 10
 --- !u!114 &135940227
@@ -1368,8 +1368,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 552553416f05474e94f879d8b326feb4, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   progression: {fileID: 135940226}
   gameFlow: {fileID: 756598064}
   parentCanvas: {fileID: 97245879}
@@ -1380,14 +1380,40 @@ MonoBehaviour:
   - {fileID: 11400000, guid: a9fe57547a43450d81c7745fca7fecdd, type: 2}
   - {fileID: 11400000, guid: 92ba24788da94e709ad93c63c3020a62, type: 2}
   - {fileID: 11400000, guid: 066bdd34715c422fb3e8797f7cf1a680, type: 2}
+  - {fileID: 11400000, guid: b80baac5152f499ca6c720fc8318e16f, type: 2}
+  - {fileID: 11400000, guid: de6e069d3a9647f9a172be90bf0ea721, type: 2}
+  - {fileID: 11400000, guid: 46cf4c8c77f54a57969bc81c8be34aa4, type: 2}
+  - {fileID: 11400000, guid: 3a4fd287c8be4ad09bf8adbc30be61ce, type: 2}
+  - {fileID: 11400000, guid: 1c0f04811c564378ac611d16616a5f98, type: 2}
+  - {fileID: 11400000, guid: f3f6bc67dff347c3a434343d2ec05fe4, type: 2}
+  - {fileID: 11400000, guid: 673de3391bd24475bf101fc509985372, type: 2}
+  - {fileID: 11400000, guid: 296a5d0f97a84c679b8279b8e64e01bd, type: 2}
+  - {fileID: 11400000, guid: f32d0e16373c44ab8a1cb3e134e52950, type: 2}
+  - {fileID: 11400000, guid: b84a75ead7d548309bd8d807af38200e, type: 2}
+  - {fileID: 11400000, guid: e96c136bf64e4453a2404157427c17d4, type: 2}
+  - {fileID: 11400000, guid: dc387b8e31284d13b0ccc9f728b17e16, type: 2}
+  - {fileID: 11400000, guid: 51bf1780e1624e1fb565f08ea19de5be, type: 2}
+  - {fileID: 11400000, guid: c85571d51e2a439392151e047811ffdd, type: 2}
+  - {fileID: 11400000, guid: 243dead0ba444bb4ba05469e7cbd1a9d, type: 2}
+  - {fileID: 11400000, guid: 1a8a7596008840b695b003ec5b81e66d, type: 2}
+  - {fileID: 11400000, guid: 1991b32683ba4f148b86ba027c1e06e2, type: 2}
+  - {fileID: 11400000, guid: 152caefd977b43a28a8164f5eb884839, type: 2}
+  - {fileID: 11400000, guid: cd092245814444d18b3ebe29d3a0f6fd, type: 2}
+  - {fileID: 11400000, guid: 60a267a3f28f4d9faf2cb784d5175c00, type: 2}
+  raritySettings: {fileID: 11400000, guid: 092310b4b69547dc8a1ab5ab5f4b13f1, type: 2}
   selectionHandler: {fileID: 135940228}
   koreanFont: {fileID: 11400000, guid: 7318f80099aff7a40930834c98a9b305, type: 2}
   commonFrame: {fileID: 1424810941, guid: 020058b2c24093345ab18f823aa993a4, type: 3}
-  attackIcon: {fileID: 1223969352, guid: ea0b5d6e1cc9a9b4fa5a9a7467213007, type: 3}
-  defenseIcon: {fileID: 386257069, guid: ea0b5d6e1cc9a9b4fa5a9a7467213007, type: 3}
-  maxHealthIcon: {fileID: -827135964, guid: ea0b5d6e1cc9a9b4fa5a9a7467213007, type: 3}
-  healIcon: {fileID: -2007350176, guid: ea0b5d6e1cc9a9b4fa5a9a7467213007, type: 3}
-  attackAndDefenseIcon: {fileID: 1358284597, guid: ea0b5d6e1cc9a9b4fa5a9a7467213007, type: 3}
+  attackIcon: {fileID: -436787500, guid: f84c2ea225ced5f439c551cd16136723, type: 3}
+  defenseIcon: {fileID: 2045541400, guid: f84c2ea225ced5f439c551cd16136723, type: 3}
+  maxHealthIcon: {fileID: 391590770, guid: f84c2ea225ced5f439c551cd16136723, type: 3}
+  healIcon: {fileID: -452504166, guid: f84c2ea225ced5f439c551cd16136723, type: 3}
+  attackAndDefenseIcon: {fileID: 675856984, guid: f84c2ea225ced5f439c551cd16136723, type: 3}
+  nightmareAttackIcon: {fileID: 21300000, guid: 9ed49205405f49288e80ce2ab1ba4f4b, type: 3}
+  nightmareDefenseIcon: {fileID: 21300000, guid: 40f0a474ae9e445c8deffc1545d4a8a9, type: 3}
+  nightmareMaxHealthIcon: {fileID: 21300000, guid: c7d38d3f60344359a6308e7ecc8802a1, type: 3}
+  nightmareHealIcon: {fileID: 21300000, guid: af2cd52f60df41ab9afb4521db751174, type: 3}
+  nightmareAttackAndDefenseIcon: {fileID: 21300000, guid: 902125d229b248e58d013b4906f9778d, type: 3}
 --- !u!114 &135940228
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1398,8 +1424,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 143d5ba259d046aea3ba0c064f602b99, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   playerStatus: {fileID: 4856862971284855658}
   progression: {fileID: 135940226}
   gameFlow: {fileID: 756598064}

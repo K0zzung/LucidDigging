@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: ea0b5d6e1cc9a9b4fa5a9a7467213007
+guid: f84c2ea225ced5f439c551cd16136723
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -31,7 +31,7 @@ TextureImporter:
   cubemapConvolution: 0
   seamlessCubemap: 0
   textureFormat: 1
-  maxTextureSize: 4096
+  maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
     filterMode: 0
@@ -48,7 +48,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 128
+  spritePixelsToUnits: 100
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -69,10 +69,10 @@ TextureImporter:
   platformSettings:
   - serializedVersion: 3
     buildTarget: DefaultTexturePlatform
-    maxTextureSize: 4096
+    maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 0
+    textureCompression: 1
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -82,10 +82,10 @@ TextureImporter:
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 3
     buildTarget: Standalone
-    maxTextureSize: 4096
+    maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 0
+    textureCompression: 1
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -95,10 +95,10 @@ TextureImporter:
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 3
     buildTarget: iPhone
-    maxTextureSize: 4096
+    maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 0
+    textureCompression: 1
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -108,10 +108,10 @@ TextureImporter:
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 3
     buildTarget: Android
-    maxTextureSize: 4096
+    maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 0
+    textureCompression: 1
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -123,12 +123,12 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Shield
+      name: mahp
       rect:
         serializedVersion: 2
-        x: 513
-        y: 220
-        width: 339
+        x: 906
+        y: 212
+        width: 341
         height: 332
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
@@ -137,20 +137,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 8fd084beb89205343b91e4269533f568
-      internalID: 386257069
+      spriteID: 90291d5cc8c82ab47bf7ae9389f654e7
+      internalID: 391590770
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: MaxHealth
+      name: hpplus
       rect:
         serializedVersion: 2
-        x: 918
-        y: 223
-        width: 339
-        height: 329
+        x: 1330
+        y: 212
+        width: 341
+        height: 332
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -158,20 +158,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 0d14f2f60ca559e4da3a2363d33debef
-      internalID: -827135964
+      spriteID: d1587c2802d65484fbc75250860cb721
+      internalID: -452504166
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: attDef
+      name: addf
       rect:
         serializedVersion: 2
-        x: 1728
-        y: 219
-        width: 337
-        height: 334
+        x: 1749
+        y: 210
+        width: 341
+        height: 332
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -179,20 +179,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 17af8f2f51a4313419017f5207186a57
-      internalID: 1358284597
+      spriteID: 01913bc799d7f1040ae3545c94883dd9
+      internalID: 675856984
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Attack
+      name: atk
       rect:
         serializedVersion: 2
-        x: 108
-        y: 219
-        width: 337
-        height: 331
+        x: 92
+        y: 211
+        width: 341
+        height: 332
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -200,20 +200,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 98f025939d1424f499968c1c92c8306c
-      internalID: 1223969352
+      spriteID: 07662d7b47ddb984b9eeb7c27f5812fd
+      internalID: -436787500
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: healthBonus
+      name: shd
       rect:
         serializedVersion: 2
-        x: 1317
-        y: 222
-        width: 346
-        height: 331
+        x: 496
+        y: 210
+        width: 341
+        height: 332
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -221,8 +221,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: eb319127b18569541b7ff9cb8e5e0d47
-      internalID: -2007350176
+      spriteID: f46a232def0ecc44f926dcff697c97d5
+      internalID: 2045541400
       vertices: []
       indices: 
       edges: []
@@ -238,24 +238,23 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      Attack: 1223969352
-      MaxHealth: -827135964
-      Shield: 386257069
-      attDef: 1358284597
-      healthBonus: -2007350176
-      "\uB8E8\uC2DC\uB4DC \uB098\uC774\uD2B8 \uC2A4\uCE74\uC774 \uC544\uC774\uCF58 \uC2DC\uD2B8_0": -1226952198
-      "\uB8E8\uC2DC\uB4DC \uB098\uC774\uD2B8 \uC2A4\uCE74\uC774 \uC544\uC774\uCF58 \uC2DC\uD2B8_1": 373816659
-      "\uB8E8\uC2DC\uB4DC \uB098\uC774\uD2B8 \uC2A4\uCE74\uC774 \uC544\uC774\uCF58 \uC2DC\uD2B8_10": -2117658087
-      "\uB8E8\uC2DC\uB4DC \uB098\uC774\uD2B8 \uC2A4\uCE74\uC774 \uC544\uC774\uCF58 \uC2DC\uD2B8_12": -879104285
-      "\uB8E8\uC2DC\uB4DC \uB098\uC774\uD2B8 \uC2A4\uCE74\uC774 \uC544\uC774\uCF58 \uC2DC\uD2B8_15": 1096607186
-      "\uB8E8\uC2DC\uB4DC \uB098\uC774\uD2B8 \uC2A4\uCE74\uC774 \uC544\uC774\uCF58 \uC2DC\uD2B8_16": -1439815675
-      "\uB8E8\uC2DC\uB4DC \uB098\uC774\uD2B8 \uC2A4\uCE74\uC774 \uC544\uC774\uCF58 \uC2DC\uD2B8_17": 18527221
-      "\uB8E8\uC2DC\uB4DC \uB098\uC774\uD2B8 \uC2A4\uCE74\uC774 \uC544\uC774\uCF58 \uC2DC\uD2B8_2": 1198143164
-      "\uB8E8\uC2DC\uB4DC \uB098\uC774\uD2B8 \uC2A4\uCE74\uC774 \uC544\uC774\uCF58 \uC2DC\uD2B8_3": 475864831
-      "\uB8E8\uC2DC\uB4DC \uB098\uC774\uD2B8 \uC2A4\uCE74\uC774 \uC544\uC774\uCF58 \uC2DC\uD2B8_6": -1185565967
-      "\uB8E8\uC2DC\uB4DC \uB098\uC774\uD2B8 \uC2A4\uCE74\uC774 \uC544\uC774\uCF58 \uC2DC\uD2B8_7": -1276675312
-      "\uB8E8\uC2DC\uB4DC \uB098\uC774\uD2B8 \uC2A4\uCE74\uC774 \uC544\uC774\uCF58 \uC2DC\uD2B8_8": 193182129
-      "\uB8E8\uC2DC\uB4DC \uB098\uC774\uD2B8 \uC2A4\uCE74\uC774 \uC544\uC774\uCF58 \uC2DC\uD2B8_9": 1732843628
+      addf: 675856984
+      atk: -436787500
+      hpplus: -452504166
+      mahp: 391590770
+      shd: 2045541400
+      "\uB8E8\uC2DC\uB4DC \uD310\uD0C0\uC9C0 \uC544\uC774\uCF58 \uC2A4\uD504\uB77C\uC774\uD2B8\uC5F4_0": -713057311
+      "\uB8E8\uC2DC\uB4DC \uD310\uD0C0\uC9C0 \uC544\uC774\uCF58 \uC2A4\uD504\uB77C\uC774\uD2B8\uC5F4_1": -490096193
+      "\uB8E8\uC2DC\uB4DC \uD310\uD0C0\uC9C0 \uC544\uC774\uCF58 \uC2A4\uD504\uB77C\uC774\uD2B8\uC5F4_10": 1541196780
+      "\uB8E8\uC2DC\uB4DC \uD310\uD0C0\uC9C0 \uC544\uC774\uCF58 \uC2A4\uD504\uB77C\uC774\uD2B8\uC5F4_11": -705345876
+      "\uB8E8\uC2DC\uB4DC \uD310\uD0C0\uC9C0 \uC544\uC774\uCF58 \uC2A4\uD504\uB77C\uC774\uD2B8\uC5F4_12": -1903058330
+      "\uB8E8\uC2DC\uB4DC \uD310\uD0C0\uC9C0 \uC544\uC774\uCF58 \uC2A4\uD504\uB77C\uC774\uD2B8\uC5F4_13": -1155485373
+      "\uB8E8\uC2DC\uB4DC \uD310\uD0C0\uC9C0 \uC544\uC774\uCF58 \uC2A4\uD504\uB77C\uC774\uD2B8\uC5F4_14": 933437723
+      "\uB8E8\uC2DC\uB4DC \uD310\uD0C0\uC9C0 \uC544\uC774\uCF58 \uC2A4\uD504\uB77C\uC774\uD2B8\uC5F4_15": 1552430602
+      "\uB8E8\uC2DC\uB4DC \uD310\uD0C0\uC9C0 \uC544\uC774\uCF58 \uC2A4\uD504\uB77C\uC774\uD2B8\uC5F4_16": 1206157823
+      "\uB8E8\uC2DC\uB4DC \uD310\uD0C0\uC9C0 \uC544\uC774\uCF58 \uC2A4\uD504\uB77C\uC774\uD2B8\uC5F4_6": 2084086746
+      "\uB8E8\uC2DC\uB4DC \uD310\uD0C0\uC9C0 \uC544\uC774\uCF58 \uC2A4\uD504\uB77C\uC774\uD2B8\uC5F4_8": 1863768894
+      "\uB8E8\uC2DC\uB4DC \uD310\uD0C0\uC9C0 \uC544\uC774\uCF58 \uC2A4\uD504\uB77C\uC774\uD2B8\uC5F4_9": 1422776793
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
