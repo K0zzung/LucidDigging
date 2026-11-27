@@ -54,6 +54,24 @@ public class DepthWarningUI : MonoBehaviour
     private Sequence sequence;
 
     private bool hiddenByGameOver;
+    private bool bossMessageActive;
+    private TMP_FontAsset regularFont;
+    public float ShowBossMessage(string text,TMP_FontAsset font) {
+        if(hiddenByGameOver || canvasGroup==null || warningText==null)return 0f;
+        if(!bossMessageActive)regularFont=warningText.font;
+        bossMessageActive=true;
+        if(font!=null)warningText.font=font;
+        warningText.text=text;
+        PlayWarning();
+        sequence.OnComplete(()=>{bossMessageActive=false;warningText.font=regularFont;warningText.text=message;});
+        return fadeInDuration+holdDuration+fadeOutDuration;
+    }
+    public void CancelBossMessage() {
+        if(!bossMessageActive)return;
+        bossMessageActive=false;sequence?.Kill();sequence=null;
+        if(canvasGroup!=null)canvasGroup.alpha=0f;
+        if(warningText!=null){warningText.font=regularFont;warningText.text=message;}
+    }
 
 
     // =========================================================
@@ -105,10 +123,11 @@ public class DepthWarningUI : MonoBehaviour
             return;
 
 
-        if (hiddenByGameOver)
+        if (hiddenByGameOver || bossMessageActive)
             return;
 
 
+        if(warningText!=null)warningText.text=message;
         PlayWarning();
     }
 
@@ -155,6 +174,7 @@ public class DepthWarningUI : MonoBehaviour
     // =========================================================
 
     public void HideImmediately() {
+        CancelBossMessage();
         hiddenByGameOver =
             true;
 

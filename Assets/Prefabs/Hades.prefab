@@ -25,7 +25,7 @@ Transform:
   m_GameObject: {fileID: 1649195321287993467}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.08, y: 1.773, z: 0.008095049}
+  m_LocalPosition: {x: -0.08, y: 1.58, z: 0.008095049}
   m_LocalScale: {x: 0.5, y: 0.5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -57,7 +57,7 @@ Transform:
   m_GameObject: {fileID: 4545835492600913386}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.0043400824, y: 0.95150036, z: 0.003210757}
+  m_LocalPosition: {x: 0.0043400824, y: 0.82, z: 0.003210757}
   m_LocalScale: {x: 1, y: 0.9, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -103,13 +103,13 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 2
-  m_Sprite: {fileID: 21300000, guid: a12b37cdeb08dfc4a838c3275f7c99b7, type: 3}
+  m_SortingOrder: 1
+  m_Sprite: {fileID: -700817639, guid: 4e8fd3b9f170f21449e63c9ee47cdf08, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 3.5, y: 3.1875}
+  m_Size: {x: 10.5, y: 9.0625}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -140,7 +140,7 @@ Transform:
   m_GameObject: {fileID: 4696728521338921612}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.09, y: -0.252, z: -0.0076576644}
+  m_LocalPosition: {x: -0.09, y: -2.13, z: -0.0076576644}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -202,31 +202,112 @@ MonoBehaviour:
   fadeDuration: 0.3
   healthBarPrefab: {fileID: 6236484554578286432, guid: 11317f6cc63c5eb4a948f06bf8cab645, type: 3}
   healthBarAnchor: {fileID: 3648308561940212129}
+  phaseTwoHead: {fileID: -1489707535, guid: e48db8b52885d674e9fd2cee5c8aa515, type: 3}
+  phaseTwoJaw: {fileID: -1421475264, guid: 9554ac22cd4462849a32f49575101d56, type: 3}
+  bossHealthFrame: {fileID: 21300000, guid: d8339c0d2ed6ad041ba3cc4fe7d4db29, type: 3}
+  bossNameFont: {fileID: 11400000, guid: 7318f80099aff7a40930834c98a9b305, type: 2}
+  bossHUDOffset: {x: 0, y: -20}
+  stoneFrames:
+  - {fileID: -704301742, guid: 8a4972851f5f7d6409c4d2708687eb31, type: 3}
+  - {fileID: -1151552197, guid: 39fe77f2dc1f68343a418230bf79a771, type: 3}
+  - {fileID: -885974038, guid: d8a53a4908b782a4c8abe7e88c4bd7cf, type: 3}
+  - {fileID: -152136058, guid: 72720a9a71878414a97a7a2409be354a, type: 3}
+  - {fileID: -2099051135, guid: 1497416faef949747be0ee35bb812753, type: 3}
+  - {fileID: 1838781235, guid: 1a95e85fc9c6028448c12b801c68570f, type: 3}
+  - {fileID: -538902528, guid: 37e6ed7e7de068543b1db3774dd92cc1, type: 3}
+  - {fileID: 1551450041, guid: 401276dd46d50e74c911273d0422feab, type: 3}
+  - {fileID: 33578324, guid: 3ea9ee07bbc466b46b89fc0094a752ca, type: 3}
+  - {fileID: 218707704, guid: 617f804d04ba4e540ae9d5a97baa518f, type: 3}
+  - {fileID: -256613979, guid: 8d0199b13d2c9f243931bd6a38ba39b7, type: 3}
+  - {fileID: 859349740, guid: fe4a345e8d0e4a549b2ffe7f73b7a2f6, type: 3}
+  - {fileID: -300061735, guid: 02fbb179a93a3fa4aacd6dd7c534fc97, type: 3}
+  - {fileID: -84080423, guid: 4b70863d32b8adb45808aeb399bf31df, type: 3}
+  - {fileID: -1207645359, guid: c5515dcfbf58e124fb3659bb4d33a6f8, type: 3}
+  - {fileID: 1776709871, guid: 692aec38cb78e124b9e7ed27286dbc47, type: 3}
+  phaseTwoMaxHP: 0
+  phaseTwoPower: 1.5
+  phaseTwoPatternSpeed: 1.5
+  stoneFrameDuration: 1
   visualRoot: {fileID: 9213148059893568483}
   bodyRenderers:
   - {fileID: 239854699847394319}
   - {fileID: 4735846946665035300}
   - {fileID: 8379804001703722849}
-  idleMoveX: 0.06
-  idleMoveY: 0.05
-  idleRotateZ: 1.5
-  idleDuration: 0.7
-  hitAlpha: 0.5
+  headPart: {fileID: 951889026846698355}
+  jawPart: {fileID: 3325616650281385621}
+  presentationHealthBarAnchor: {fileID: 3648308561940212129}
+  arenaWidthFill: 0.94
+  visualLiftCells: 1
+  breathScaleY: 0.012
+  jawTravel: 0.14
+  awakeningLightColor: {r: 0.92, g: 0.94, b: 0.98, a: 1}
+  hadesBattleBackgroundColor: {r: 0.18, g: 0.2, b: 0.26, a: 1}
+  awakeningBackgroundFlashes: 2
+  awakeningBackgroundStep: 0.18
+  awakeningCameraDuration: 0.65
+  awakeningMessageFont: {fileID: 11400000, guid: 7318f80099aff7a40930834c98a9b305, type: 2}
+  wakeFrames:
+  - {fileID: -832574569, guid: 1b7590a948b912c40ba8e529924bd72b, type: 3}
+  - {fileID: 484909276, guid: 0e6901e906e35e54fbc682d3494a4ce2, type: 3}
+  - {fileID: 1413817618, guid: 5fb6ced2a7e79024ab915ccf1c217c47, type: 3}
+  wakeFrameDuration: 0.45
+  openingSweepRows: 8
+  openingSweepRowInterval: 0.2
+  mouthOrbPrefab: {fileID: 5381246749996242882, guid: 6c37ccb08ddb1214abaab525faef649c, type: 3}
+  missilePrefab: {fileID: 9120133376321895607, guid: d33b4b7eaff3a3143a4c3e0c422dddfc, type: 3}
+  missilePoolSize: 5
+  missileSpeedCells: 7
+  missileRangeCells: 12
+  missileAttack: 100
+  missileVolleyDuration: 4
+  missileFireInterval: 0.45
+  mouthOrbFadeTime: 0.25
+  missileJawTravelMultiplier: 6
+  mouthOrbDownRatio: 0.13
+  tellDurationMultiplier: 2
+  tellHoldTime: 0.12
+  hitTint: {r: 1, g: 0.45, b: 0.55, a: 1}
+  hitTintAmount: 0.85
+  idleMoveY: 0.04
+  idleDuration: 1.25
   hitFadeTime: 0.1
   attackIntervalMin: 2.5
   attackIntervalMax: 4
   warningDuration: 0.8
   spikeRangeCells: 4
   spikeAttack: 100
-  spikeVfxYOffset: -0.7
   spikeWarningPrefab: {fileID: 3264717465601513585, guid: 660419cbd86145c42ad3eb87521a0274, type: 3}
   spikeStrikePrefab: {fileID: 7860808926606003590, guid: b42547a79d407dc4d9d38586da082aeb, type: 3}
-  deathShakeDuration: 2
-  deathShakeStrength: 0.18
-  deathFadeDuration: 0.35
   weaponDrop: {fileID: 11400000, guid: 9c53509d782ab35429162796a24ef71c, type: 2}
+  forceWeaponDropForTesting: 0
+  weaponDropRiseCells: 2
   weaponPickupPrefab: {fileID: 8747088873434279567, guid: 23bde26dbee818d49b75d0aa0a27e612, type: 3}
   spikeAttackSFX: {fileID: 8300000, guid: ddb19c5f64dd49248acd08086854b6a6, type: 3}
+  patternWeights:
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  warningMultipliers:
+  - 1
+  - 1.15
+  - 1.1
+  - 1
+  - 1.25
+  cellStrikeInterval: 0.055
+  delayedRetargetGap: 0.25
+  forceDebugPattern: 0
+  debugPattern: 0
+  pursuitCadence:
+  - 1
+  - 0.8
+  - 0.5
+  pursuitMinShots: 4
+  pursuitMaxShots: 6
 --- !u!1 &7861783529967139610
 GameObject:
   m_ObjectHideFlags: 0
@@ -253,7 +334,7 @@ Transform:
   m_GameObject: {fileID: 7861783529967139610}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.0043400824, y: 0.68, z: 0.003210757}
+  m_LocalPosition: {x: 0.0043400824, y: -2.84, z: 0.003210757}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -299,13 +380,13 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 1
-  m_Sprite: {fileID: 21300000, guid: 93e2281a69a1716498fe21a9bf60437a, type: 3}
+  m_SortingOrder: 0
+  m_Sprite: {fileID: -1087901870, guid: b6e37fc7c228ea84685d23c961b58346, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1.68, y: 1.8}
+  m_Size: {x: 4.375, y: 3.625}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -337,8 +418,8 @@ Transform:
   m_GameObject: {fileID: 8453523728781729632}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.06565988, y: -0.66199994, z: -0.0044469074}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: -0.1, y: -4.93, z: -0.0044469074}
+  m_LocalScale: {x: 1.3, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 7082191293588542995}
@@ -384,12 +465,12 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: bdb29730c8fe783488e8d8cf6ada8729, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 09d95feb4774bdb43884e32385c319fd, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 3, y: 2.0208333}
+  m_Size: {x: 9, y: 6.0625}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1

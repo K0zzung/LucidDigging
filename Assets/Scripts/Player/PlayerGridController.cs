@@ -14,6 +14,7 @@ public class PlayerGridController : MonoBehaviour
     [SerializeField] private PlayerWeaponView weaponView;
     [SerializeField] private TerrainManager terrainManager;
     [SerializeField] private PlayerStatus playerStatus;
+    public PlayerStatus Status => playerStatus;
     [SerializeField] private EnemyManager enemyManager;
     [SerializeField] private DepthManager depthManager;
     [SerializeField] private PlayerSkillController skillController;
@@ -53,8 +54,31 @@ public class PlayerGridController : MonoBehaviour
     public Vector3Int CurrentCell => currentCell;
 
 
+    private bool bossPresentationLocked;
+    private bool bossPresentationRequested;
+    public void RequestBossPresentationLock() {
+        bossPresentationRequested = true;
+        directionPending = false; pendingFromDiagonal = false;
+        activeHeldDirection = Vector2Int.zero; skillQueued = false;
+    }
+    public bool IsWaitingForBossPresentation { get; private set; }
+    private Vector3 bossPresentationPosition;
+    public void BeginBossPresentationLock() {
+        bossPresentationRequested = false;
+        bossPresentationLocked = true;
+        moveTween?.Kill();
+        bossPresentationPosition = transform.position;
+        directionPending = false; pendingFromDiagonal = false;
+        activeHeldDirection = Vector2Int.zero; skillQueued = false;
+    }
+    public void EndBossPresentationLock() { bossPresentationRequested = false; bossPresentationLocked = false; }
+    private void LateUpdate() {
+        if (bossPresentationLocked) transform.position = bossPresentationPosition;
+    }
     private bool isBusy;
-    public bool IsActionInProgress => isBusy || skillQueued ||
+    public bool IsActionInProgress => bossPresentationRequested || bossPresentationLocked || HasActiveAction;
+    public bool IsReadyForBossPresentation => !HasActiveAction;
+    private bool HasActiveAction => isBusy || skillQueued ||
         (moveTween != null && moveTween.IsActive() && !moveTween.IsComplete()) ||
         (skillController != null && skillController.IsSkillLocked);
 
@@ -110,7 +134,7 @@ public class PlayerGridController : MonoBehaviour
 
 
     private void Update() {
-        if (!inputEnabled)
+        if (bossPresentationRequested || bossPresentationLocked || !inputEnabled || playerStatus == null || playerStatus.IsDead)
             return;
 
 
@@ -399,7 +423,7 @@ public class PlayerGridController : MonoBehaviour
                     }
 
 
-                    MoveDownAfterBossDeath(TrackAttackMovement(completion));
+                    CompleteBossDefeat(TrackAttackMovement(completion),enemy);
 
 
                     return;
@@ -586,6 +610,8 @@ public class PlayerGridController : MonoBehaviour
     }
 
     private void OnDisable() {
+        IsWaitingForBossPresentation = false;
+        EndBossPresentationLock();
         AbortDash();
         if (dashVFX != null) dashVFX.Cancel();
         directionPending = false;
@@ -753,7 +779,7 @@ public class PlayerGridController : MonoBehaviour
                         CompleteDashSkill();
 
 
-                        MoveDownAfterBossDeath();
+                        CompleteBossDefeat(null,enemy);
 
 
                         yield break;
@@ -883,13 +909,24 @@ public class PlayerGridController : MonoBehaviour
         }
     }
 
-    private void MoveDownAfterBossDeath(Action onComplete = null) {
-        if (TryGetBossLandingCell(out Vector3Int landingCell)) {
-            MoveToLandingCell(landingCell, onComplete);
+    private void CompleteBossDefeat(Action onComplete = null, EnemyBase defeatedBoss = null) {
+        if (defeatedBoss is BossEnemy hades && hades.IsDeathPresentationPlaying) {
+            IsWaitingForBossPresentation = true;
+            StartCoroutine(WaitForHadesPresentation(hades,onComplete));
             return;
         }
+        // Boss defeat no longer moves the player or changes their Grid Cell.
+        if (onComplete != null) onComplete();
+        else isBusy=false;
+    }
 
-        onComplete?.Invoke();
+    private IEnumerator WaitForHadesPresentation(BossEnemy hades,Action onComplete) {
+        while (hades != null && hades.IsDeathPresentationPlaying && !playerStatus.IsDead) yield return null;
+        IsWaitingForBossPresentation = false;
+        EndBossPresentationLock();
+        if (playerStatus.IsDead || !isActiveAndEnabled) { onComplete?.Invoke(); yield break; }
+        // Release the original attack lock without an automatic descent.
+        CompleteBossDefeat(onComplete);
     }
 
     public bool TryGetBossLandingCell(out Vector3Int landingCell) {
@@ -931,38 +968,6 @@ public class PlayerGridController : MonoBehaviour
 
 
         return false;
-    }
-    private void MoveToLandingCell(Vector3Int landingCell, Action onComplete = null) {
-        isBusy = true;
-
-
-        SetCurrentCell(landingCell);
-
-
-        Vector3 targetPosition =
-            terrainTilemap.GetCellCenterWorld(landingCell);
-
-
-        moveTween?.Kill();
-
-
-        moveTween =
-            transform.DOMove(
-                targetPosition,
-                0.15f)
-            .SetEase(Ease.InQuad)
-            .OnComplete(() => {
-                // ÂøÁö À§Ä¡¿¡ PickupÀÌ ÀÖÀ¸¸é È¹µæ
-                if (pickupManager != null) {
-                    pickupManager.TryCollect(currentCell,transform);
-                }
-
-
-                if (onComplete != null)
-                    onComplete();
-                else
-                    isBusy = false;
-            });
     }
     private void SpawnDashEffect(Vector2Int direction) {
         if (dashEffectPrefab == null)
@@ -1097,7 +1102,7 @@ public class PlayerGridController : MonoBehaviour
                             }
 
 
-                            MoveDownAfterBossDeath();
+                            CompleteBossDefeat(null,enemy);
                         }
 
 

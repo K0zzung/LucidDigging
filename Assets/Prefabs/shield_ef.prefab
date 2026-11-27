@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 6963340619525071842}
   - component: {fileID: 7725776563464843760}
   - component: {fileID: 649493118631971965}
-  - component: {fileID: 3118734188444135357}
   m_Layer: 0
   m_Name: shield_ef
   m_TagString: Untagged
@@ -105,20 +104,3 @@ MonoBehaviour:
   maxAlpha: 0.9
   startScale: 0.75
   endScale: 1.1
---- !u!114 &3118734188444135357
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9110554518468172788}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 172515602e62fb746b5d573b38a5fe58, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_IsGlobal: 1
-  priority: 0
-  blendDistance: 0
-  weight: 1
-  sharedProfile: {fileID: 11400000, guid: f2034458e2af6cb47b3de81e5fd1551f, type: 2}

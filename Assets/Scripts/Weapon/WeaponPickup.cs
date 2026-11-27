@@ -63,6 +63,7 @@ public class WeaponPickup : MonoBehaviour
     private bool collected;
 
     private Sequence dropSequence;
+    private float upwardRiseHeight;
 
 
     // =========================================================
@@ -73,7 +74,8 @@ public class WeaponPickup : MonoBehaviour
         WeaponData weapon,
         Vector3Int targetCell,
         Vector3 startWorldPosition,
-        PlayerGridController targetPlayer) {
+        PlayerGridController targetPlayer, float riseHeight = 0f) {
+        upwardRiseHeight = Mathf.Max(0f,riseHeight);
         weaponData =
             weapon;
 
@@ -174,22 +176,21 @@ public class WeaponPickup : MonoBehaviour
         // 튀어나오면서 목표 Cell까지 하강
         // =============================
 
-        dropSequence.Append(
-            visualRoot
-                .DOJump(
-                    targetPosition,
-                    jumpPower,
-                    1,
-                    dropDuration)
-                .SetEase(
-                    Ease.OutQuad));
+        if (upwardRiseHeight > 0f) {
+            dropSequence.Append(visualRoot.DOMoveY(startWorldPosition.y+upwardRiseHeight,dropDuration*0.4f)
+                .SetEase(Ease.OutQuad));
+            dropSequence.Append(visualRoot.DOMove(targetPosition,dropDuration*0.6f).SetEase(Ease.InQuad));
+        }
+        else {
+            dropSequence.Append(visualRoot.DOJump(targetPosition,jumpPower,1,dropDuration).SetEase(Ease.OutQuad));
+        }
 
 
         // =============================
         // 공중 회전
         // =============================
 
-        dropSequence.Join(
+        dropSequence.Insert(0f,
             visualRoot
                 .DORotate(
                     new Vector3(

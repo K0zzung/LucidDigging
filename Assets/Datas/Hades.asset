@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: Hades
   m_EditorClassIdentifier: 
   enemyName: Hades
-  maxHP: 1200
-  attack: 150
+  maxHP: 10000
+  attack: 350
   defense: 25
+  experienceReward: 350
   footprintSize: {x: 7, y: 7}

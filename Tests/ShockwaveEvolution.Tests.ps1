@@ -24,10 +24,10 @@ public class AttackHarness {
  public Transform transform=new Transform();public PlayerStatus playerStatus=new PlayerStatus();
  public Tilemap wallTilemap=new Tilemap(),terrainTilemap=new Tilemap();
  public EnemyManager enemyManager=new EnemyManager();public TerrainManager terrainManager=new TerrainManager();
- public int Landings;
+ public int BossCompletions;
  private bool IsBoss(EnemyBase e)=>e.Boss;
  private void ShowDealtDamage(Vector3Int c,int damage){}
- private void MoveDownAfterBossDeath(){Landings++;currentCell=new Vector3Int(100,100,0);}
+ private void CompleteBossDefeat(Action onComplete=null,EnemyBase defeatedBoss=null){BossCompletions++;onComplete?.Invoke();}
 '@
 $source = [IO.File]::ReadAllText((Join-Path $root 'Assets/Scripts/Player/PlayerGridController.cs'))
 $start = $source.IndexOf('    private readonly EnemyBase[] shockwaveCells')
@@ -49,19 +49,19 @@ public static class ShockwaveTests {
   b.enemyManager.Cells[Cell(-3,-3)]=boss;b.enemyManager.Cells[Cell(-2,-2)]=boss;b.enemyManager.Cells[Cell(0,0)]=boss;
   var outer=new EnemyBase();b.enemyManager.Cells[Cell(3,3)]=outer;
   var outside=new EnemyBase();b.enemyManager.Cells[Cell(4,0)]=outside;
-  // Simulate a death observer changing player stats and boss landing changing currentCell.
+  // Simulate a death observer changing player stats and a defeat observer changing player stats.
   boss.OnHit=()=>b.playerStatus.Attack=999;
   b.terrainTilemap.Cells.Add(Cell(2,2));b.PerformShockwave(7,150f,null,true);
   Check(boss.Calls==1&&boss.LastAttack==15&&boss.Damage==12,"spanning boss full damage once");
   Check(outer.Calls==1&&outer.LastAttack==8&&outer.Damage==6,"outer-only target half before defense");
-  Check(outside.Calls==0&&b.Landings==1,"outside/landing");
+  Check(outside.Calls==0&&b.BossCompletions==1,"outside/boss completion");
   Check(b.terrainManager.Attacks[Cell(2,2)]==15,"cast origin/attack snapshot");
   // Reuse scratch containers over many casts, including dead targets and overlapping cells.
   boss.Killed=false;boss.OnHit=null;b.currentCell=Cell(0,0);b.playerStatus.Attack=10;
   int before=boss.Calls;for(int i=0;i<1000;i++)b.PerformShockwave(7,150f,null,true);
   Check(boss.Calls-before==1000,"scratch reuse duplicate hits");
   Check(AttackHarness.GetShockwaveCellAttack(3,150f,3,0,true)==2,"round once after multiplier");
-  return "PASS: production Shockwave loop + DamageCalculator: 3/5/7 square ranges, walls/outside exclusion, terrain, outer 50% before defense, spanning boss max weight/one hit, cast snapshots across death/landing, and 1000 repeated casts. Managed stand-ins; Unity not executed or GC-profiled.";
+  return "PASS: production Shockwave loop + DamageCalculator: 3/5/7 square ranges, walls/outside exclusion, terrain, outer 50% before defense, spanning boss max weight/one hit, cast snapshots across death/completion, and 1000 repeated casts. Managed stand-ins; Unity not executed or GC-profiled.";
  }
 }
 '@

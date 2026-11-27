@@ -41,6 +41,8 @@ public class EnemyBase : MonoBehaviour
 
     protected virtual bool UseNormalKillSound => true;
     protected virtual bool UsesDepthHpScaling => true;
+    protected virtual bool UseWorldHealthBar => true;
+    protected virtual bool TryPreventDeath() => false;
     // =========================================================
     // Runtime
     // =========================================================
@@ -55,8 +57,15 @@ public class EnemyBase : MonoBehaviour
     }
 
 
-    public Vector2Int FootprintSize =>
-        data.footprintSize;
+    private Vector2Int placementFootprint;
+    public Vector2Int FootprintSize => placementFootprint.x>0 && placementFootprint.y>0
+        ? placementFootprint : data.footprintSize;
+    // Per-instance placement only; never mutate the shared EnemyData asset.
+    public bool TrySetPlacementFootprint(Vector2Int size) {
+        if(enemyManager!=null || size.x<1 || size.y<1)return false;
+        placementFootprint=size;
+        return true;
+    }
 
 
     public int MaxHP {
@@ -167,6 +176,7 @@ public class EnemyBase : MonoBehaviour
         // Death
         // =============================
 
+        if (CurrentHP <= 0 && TryPreventDeath()) return false;
         if (CurrentHP <= 0) {
             HideHealthBar();
 
@@ -315,6 +325,7 @@ public class EnemyBase : MonoBehaviour
     // =========================================================
 
     public void ShowHealthBar() {
+        if (!UseWorldHealthBar) return;
         if (IsDead)
             return;
 

@@ -91,6 +91,37 @@ public class DepthBackgroundController : MonoBehaviour
     private float startY;
 
     private bool backgroundOverride;
+    private bool hadesBackgroundActive;
+    private Color savedHadesBackground;
+    private CameraClearFlags savedHadesClearFlags;
+    private Coroutine hadesBackgroundRoutine;
+    public void BeginHadesBackground(Color light,Color dark,int flashes,float step) {
+        if(mainCamera==null)mainCamera=Camera.main;
+        if(mainCamera==null || backgroundOverride || hadesBackgroundActive)return;
+        savedHadesBackground=mainCamera.backgroundColor;
+        savedHadesClearFlags=mainCamera.clearFlags;
+        hadesBackgroundActive=true;
+        mainCamera.clearFlags=CameraClearFlags.SolidColor;
+        hadesBackgroundRoutine=StartCoroutine(HadesBackgroundRoutine(light,dark,Mathf.Clamp(flashes,1,4),Mathf.Max(.1f,step)));
+    }
+    private IEnumerator HadesBackgroundRoutine(Color light,Color dark,int flashes,float step) {
+        for(int i=0;i<flashes;i++) {
+            yield return LerpBackgroundColor(mainCamera.backgroundColor,light,step);
+            yield return LerpBackgroundColor(light,dark,step);
+        }
+        mainCamera.backgroundColor=dark;
+        hadesBackgroundRoutine=null;
+    }
+    public void EndHadesBackground() {
+        if(!hadesBackgroundActive)return;
+        if(hadesBackgroundRoutine!=null)StopCoroutine(hadesBackgroundRoutine);
+        hadesBackgroundRoutine=null;hadesBackgroundActive=false;
+        if(mainCamera!=null) {
+            mainCamera.clearFlags=savedHadesClearFlags;
+            if(!backgroundOverride)mainCamera.backgroundColor=savedHadesBackground;
+        }
+    }
+    private void OnDisable() { EndHadesBackground(); }
 
     private Coroutine backgroundEffectRoutine;
 
@@ -128,7 +159,7 @@ public class DepthBackgroundController : MonoBehaviour
     private void LateUpdate() {
         // 사망 연출 등이 직접 Background를
         // 제어 중이라면 Depth 색상 갱신 금지
-        if (backgroundOverride)
+        if (backgroundOverride || hadesBackgroundActive)
             return;
 
 
@@ -221,6 +252,7 @@ public class DepthBackgroundController : MonoBehaviour
     // =========================================================
 
     public void PlayDeathFlash() {
+        EndHadesBackground();
         if (mainCamera == null)
             return;
 
@@ -314,6 +346,7 @@ public class DepthBackgroundController : MonoBehaviour
 
     public void ReturnToStartColor(
         float duration) {
+        EndHadesBackground();
         if (mainCamera == null)
             return;
 
@@ -418,6 +451,7 @@ public class DepthBackgroundController : MonoBehaviour
     // =========================================================
 
     public void ResumeDepthTracking() {
+        EndHadesBackground();
         if (backgroundEffectRoutine != null) {
             StopCoroutine(
                 backgroundEffectRoutine);

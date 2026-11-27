@@ -2046,17 +2046,18 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Dream deepen.. Enemies grow stronger
+  m_text: "\uAFC8\uC774 \uAE4A\uC5B4\uC9C0\uBA74\uC11C \uC801\uB4E4\uC774 \uB354\uC6B1
+    \uAC15\uD574\uC9D1\uB2C8\uB2E4..."
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 2e498d1c8094910479dc3e1b768306a4, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 2e498d1c8094910479dc3e1b768306a4, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 7318f80099aff7a40930834c98a9b305, type: 2}
+  m_sharedMaterial: {fileID: 4985760020309454812, guid: 7318f80099aff7a40930834c98a9b305, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4278190335
-  m_fontColor: {r: 1, g: 0, b: 0, a: 1}
+    rgba: 4294967295
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -2073,13 +2074,13 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 46.55
-  m_fontSizeBase: 46.55
+  m_fontSize: 40
+  m_fontSizeBase: 40
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 0
+  m_fontStyle: 2
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
   m_textAlignment: 65535
@@ -4663,7 +4664,8 @@ MonoBehaviour:
   depthManager: {fileID: 1415020535}
   canvasGroup: {fileID: 574747149}
   warningText: {fileID: 237732874}
-  message: Dream deepen.. Enemies grow stronger
+  message: "\uAFC8\uC774 \uAE4A\uC5B4\uC9C0\uBA74\uC11C \uC801\uB4E4\uC774 \uB354\uC6B1
+    \uAC15\uD574\uC9D1\uB2C8\uB2E4..."
   fadeInDuration: 0.35
   holdDuration: 1.2
   fadeOutDuration: 0.45
@@ -9818,6 +9820,8 @@ MonoBehaviour:
   - data: {fileID: 11400000, guid: 25474f3db5b4dd643a19aab43b9016f5, type: 2}
     weight: 5
   enemy1Prefab: {fileID: 2613346294022471339, guid: b86952c38aeb6e64a8e734e8f67c2a9f, type: 3}
+  fillHadesBaseWithEnemies: 1
+  hadesPaddingEnemyPrefab: {fileID: 2613346294022471339, guid: b86952c38aeb6e64a8e734e8f67c2a9f, type: 3}
   enemy2Prefab: {fileID: 8332331328135237269, guid: e3bbd9f71daf8eb408252a60512fdf25, type: 3}
   enemy3Prefab: {fileID: 1591309196762092831, guid: 9618d51a64b566d49ad5c3126e840e39, type: 3}
   enemySpawnChance: 0.02
@@ -9831,9 +9835,9 @@ MonoBehaviour:
   - {fileID: -8219823876015494212, guid: 9ff77ffcecd044c4f93ffebf5e266449, type: 3}
   - {fileID: 1542808189364375019, guid: dea020ec545080d46b82813d95b911b7, type: 3}
   itemSpawnChance: 0.05
-  firstBossDepth: 333
+  firstBossDepth: 11
   firstBossPrefab: {fileID: 9220582682763254033, guid: c2a7cd4e6b54951429dc61b16d017636, type: 3}
-  bossActivationLeadDepth: 10
+  bossActivationLeadDepth: 8
   secondBossDepth: 666
   secondBossPrefab: {fileID: 2959995222003719928, guid: 537076675c31acb4f9f0a32e9d5f866a, type: 3}
   secondBossActivationLeadDepth: 11
@@ -10696,6 +10700,12 @@ MonoBehaviour:
   bossKillStrength: 10
   bossKillDuration: 0.6
   bossKillFrequency: 2
+  enemyContact: {x: 0.075, y: 0.055, z: 2.4}
+  terrainContact: {x: 0.09, y: 0.06, z: 2.8}
+  hardTerrainContact: {x: 0.13, y: 0.075, z: 3.2}
+  breakContact: {x: 0.17, y: 0.085, z: 3.4}
+  bossContact: {x: 0.09, y: 0.055, z: 2.6}
+  dashContactCooldown: 0.12
 --- !u!1 &1396177685
 GameObject:
   m_ObjectHideFlags: 0
@@ -16025,6 +16035,10 @@ MonoBehaviour:
   windupTime: 0.05
   swingTime: 0.08
   returnTime: 0.1
+  pullbackDistance: 0.045
+  strikeDistance: 0.075
+  arondightMotionWeight: 1.08
+  dragonMotionWeight: 1.22
 --- !u!114 &4856862971284855658
 MonoBehaviour:
   m_ObjectHideFlags: 0

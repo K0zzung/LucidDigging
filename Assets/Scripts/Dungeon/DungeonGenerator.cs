@@ -103,6 +103,9 @@ public class DungeonGenerator : MonoBehaviour
 
     [SerializeField]
     private EnemyBase enemy1Prefab;
+    [Header("Hades base padding")]
+    [SerializeField] private bool fillHadesBaseWithEnemies = true;
+    [SerializeField] private EnemyBase hadesPaddingEnemyPrefab;
 
     [SerializeField]
     private EnemyBase enemy2Prefab;
@@ -550,7 +553,7 @@ public class DungeonGenerator : MonoBehaviour
             player,
             terrainManager,
             firstBossArenaLeftX,
-            firstBossArenaWidth);
+            firstBossArenaWidth, wallTilemap);
 
 
         firstBossActivated =
@@ -630,6 +633,9 @@ public class DungeonGenerator : MonoBehaviour
             bossSize,
             reservedCells);
 
+
+        if(fillHadesBaseWithEnemies)ReserveFootprint(firstBossAnchorCell+Vector3Int.down,
+            new Vector2Int(bossSize.x,1),reservedCells);
 
         firstBossArenaLeftX =
             leftX;
@@ -867,6 +873,7 @@ public class DungeonGenerator : MonoBehaviour
         }
 
 
+        SpawnHadesBasePadding();
         firstBossSpawned =
             true;
 
@@ -880,6 +887,19 @@ public class DungeonGenerator : MonoBehaviour
     // =========================================================
     // Wall
     // =========================================================
+
+    private void SpawnHadesBasePadding() {
+        if(!fillHadesBaseWithEnemies || enemyManager==null)return;
+        EnemyBase prefab=hadesPaddingEnemyPrefab!=null?hadesPaddingEnemyPrefab:enemy1Prefab;
+        if(prefab==null)return;
+        for(int x=0;x<firstBossPrefab.FootprintSize.x;x++) {
+            Vector3Int cell=firstBossAnchorCell+new Vector3Int(x,-1,0);
+            if(enemyManager.HasEnemy(cell) || (wallTilemap!=null && wallTilemap.HasTile(cell)))continue;
+            var padding=Instantiate(prefab,firstBossInstance.transform.parent);
+            if(!padding.TrySetPlacementFootprint(Vector2Int.one) ||
+                !enemyManager.RegisterEnemy(padding,cell,firstBossDepth+1))Destroy(padding.gameObject);
+        }
+    }
 
     private void GenerateWalls(
         int leftX,

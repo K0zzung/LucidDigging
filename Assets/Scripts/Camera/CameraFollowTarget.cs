@@ -1,3 +1,4 @@
+using DG.Tweening;
 using UnityEngine;
 
 public class CameraFollowTarget : MonoBehaviour
@@ -6,6 +7,24 @@ public class CameraFollowTarget : MonoBehaviour
 
     private float fixedX;
     private float lowestY;
+    private float focusOffsetY;
+    private Tween focusTween;
+    public void FocusBoss(Vector3 worldPosition,float duration) {
+        focusTween?.Kill();
+        if(player!=null)lowestY=Mathf.Min(lowestY,player.position.y);
+        focusTween=DOTween.To(()=>focusOffsetY,value=>focusOffsetY=value,
+            worldPosition.y-lowestY,Mathf.Max(.01f,duration)).SetEase(Ease.InOutSine);
+    }
+    public void RestorePlayerFocus(float duration) {
+        focusTween?.Kill();
+        focusTween=DOTween.To(()=>focusOffsetY,value=>focusOffsetY=value,0f,
+            Mathf.Max(.01f,duration)).SetEase(Ease.InOutSine);
+    }
+    public void CancelBossFocus() {
+        focusTween?.Kill();focusTween=null;focusOffsetY=0f;
+        transform.position=new Vector3(fixedX,lowestY,transform.position.z);
+    }
+    private void OnDisable() { CancelBossFocus(); }
 
     private void Start() {
         // 카메라의 X 위치는 시작 위치에서 고정
@@ -24,7 +43,7 @@ public class CameraFollowTarget : MonoBehaviour
 
         transform.position = new Vector3(
             fixedX,
-            lowestY,
+            lowestY+focusOffsetY,
             transform.position.z
         );
     }

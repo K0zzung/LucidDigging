@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 // Presentation only: never owns the buff lifetime, defense or skill consumption.
 [DisallowMultipleComponent]
-[RequireComponent(typeof(PlayerSkillController), typeof(PlayerStatus))]
+[RequireComponent(typeof(PlayerSkillController))]
 public sealed class ShieldPresentation : MonoBehaviour
 {
     [Header("Existing art")]
@@ -47,10 +47,12 @@ public sealed class ShieldPresentation : MonoBehaviour
 
     private void Awake() {
         skills = GetComponent<PlayerSkillController>();
-        status = GetComponent<PlayerStatus>();
+        var grid = GetComponent<PlayerGridController>();
+        status = grid != null && grid.Status != null ? grid.Status : GetComponent<PlayerStatus>();
     }
 
     private void OnEnable() {
+        if (status == null) return;
         lastHP = status.CurrentHP;
         lastMaxHP = status.MaxHP;
         status.OnHPChanged += HandleHPChanged;
@@ -58,6 +60,7 @@ public sealed class ShieldPresentation : MonoBehaviour
     }
 
     private void Start() {
+        if (status == null || skills == null) return;
         BuildWorldVisual();
         BuildHUD();
         built = true;
@@ -270,8 +273,10 @@ public sealed class ShieldPresentation : MonoBehaviour
     }
 
     private void OnDisable() {
-        status.OnHPChanged -= HandleHPChanged;
-        status.OnPlayerDied -= HideImmediately;
+        if (status != null) {
+            status.OnHPChanged -= HandleHPChanged;
+            status.OnPlayerDied -= HideImmediately;
+        }
         HideImmediately();
     }
 
