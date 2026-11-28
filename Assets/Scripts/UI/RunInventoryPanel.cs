@@ -26,6 +26,7 @@ public sealed class RunInventoryPanel : MonoBehaviour
     private Tween handleFade;
     private Tween slide;
     private bool hudVisible;
+    private bool cardSelectionSuspended;
     private bool opened,built,bound;
     private float openedX,closedX;
     private Vector2 lastCanvasSize;
@@ -64,7 +65,7 @@ public sealed class RunInventoryPanel : MonoBehaviour
         });
     }
     public void HideWithGameplayHUD() {
-        hudVisible=false;handleFade?.Kill();handleFade=null;
+        cardSelectionSuspended=false;hudVisible=false;handleFade?.Kill();handleFade=null;
         if(!built)return;
         handleGroup.alpha=0f;handleGroup.interactable=false;handleGroup.blocksRaycasts=false;
         ResetDrawer();overlay.gameObject.SetActive(false);
@@ -91,7 +92,8 @@ public sealed class RunInventoryPanel : MonoBehaviour
         // Pending level-up offers take priority even before the card UI's LateUpdate.
         if(RunProgression.Instance!=null && RunProgression.Instance.PendingLevelUps>0)return;
         if(Input.GetKeyDown(KeyCode.Tab)){Toggle();return;}
-        if(opened && overlay.gameObject.activeInHierarchy && UiNumberShortcuts.TryRead(out int number)) {
+        // Equipment shortcuts are available during gameplay, regardless of drawer visibility.
+        if(overlay.gameObject.activeInHierarchy && UiNumberShortcuts.TryRead(out int number)) {
             if(number==1 || number==2) {
                 if(weapons!=null) {
                     bool success=number==1?weapons.EquipLastWeapon():weapons.EquipLastPickaxe();
@@ -114,6 +116,18 @@ public sealed class RunInventoryPanel : MonoBehaviour
     private void HandleState(GameState state) {
         if(!built)return;
         if(state==GameState.GameOver){HideWithGameplayHUD();return;}
+        if(state==GameState.LevelUpSelection) {
+            // Preserve the drawer and its opened/closed state under the card modal.
+            cardSelectionSuspended=true;
+            UiNumberShortcuts.BlockThisFrame();
+            return;
+        }
+        if(state==GameState.Playing && cardSelectionSuspended) {
+            cardSelectionSuspended=false;
+            // A card-confirm key must not become an equipment switch on this frame.
+            UiNumberShortcuts.BlockThisFrame();
+            overlay.gameObject.SetActive(hudVisible);Refresh();return;
+        }
         // Ready during the camera blend must not postpone the handle entrance.
         if(state==GameState.Ready)return;
         ResetDrawer();overlay.gameObject.SetActive(hudVisible && state==GameState.Playing);

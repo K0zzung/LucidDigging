@@ -17,6 +17,7 @@ inventory=(root/'Assets/Scripts/UI/RunInventoryPanel.cs').read_text(encoding='ut
 cardSource=source
 source=inventory
 inventoryUpdate=method('private void Update()')
+inventoryState=method('private void HandleState(GameState state)')
 source=cardSource
 (folder/'UiNumberShortcuts.cs').write_bytes((root/'Assets/Scripts/UI/UiNumberShortcuts.cs').read_bytes())
 (folder/'Tests.csproj').write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework></PropertyGroup></Project>')
@@ -30,7 +31,7 @@ namespace UnityEngine {
  public class GameObject {public bool activeSelf=true;public bool activeInHierarchy=>activeSelf;public void SetActive(bool v){activeSelf=v;}}
  public static class Debug{public static void Log(string s){}public static void LogException(Exception e,object o){}}
 }
-public enum GameState {LevelUpSelection,Playing}
+public enum GameState {LevelUpSelection,Playing,GameOver,Ready}
 public class GameFlow {public GameState CurrentState=GameState.LevelUpSelection;public bool CanConfirmRunCard=true;public void EndLevelUpSelection(){CurrentState=GameState.Playing;}}
 public class Progression {public int PendingLevelUps=3;}
 public class RunCardData{public string Id;}
@@ -51,10 +52,11 @@ public class EquipmentRequests {public int swords,picks;public bool EquipLastWea
 public class RootRect {public GameObject gameObject=new GameObject();}
 public class StatusLabel {public string text;}
 public class InventoryHarness {
- public bool built=true,hudVisible=true,Playing=true,opened=true;
+ public bool built=true,hudVisible=true,Playing=true,opened=true;public bool cardSelectionSuspended;
+ public void ResetDrawer(){opened=false;}public void HideWithGameplayHUD(){hudVisible=false;opened=false;cardSelectionSuspended=false;overlay.gameObject.SetActive(false);}
  public RootRect overlay=new RootRect();public EquipmentRequests weapons=new EquipmentRequests();public StatusLabel statusText=new StatusLabel();
  public void Refresh(){}public void Toggle(){opened=!opened;UiNumberShortcuts.BlockThisFrame();}
-''' +inventoryUpdate+r'''
+''' +inventoryUpdate+'\n'+inventoryState+r'''
 }
 class Program {
  static int count;static void Check(bool b,string name){if(!b)throw new Exception(name);count++;Console.WriteLine("PASS "+name);}
@@ -82,13 +84,26 @@ class Program {
  var inv=new InventoryHarness();Time.frameCount++;Press(KeyCode.Alpha1);inv.Update();Check(inv.weapons.swords==1&&inv.weapons.picks==0,"open inventory number1 calls weapon API");
  Time.frameCount++;Press(KeyCode.Alpha2);inv.Update();Check(inv.weapons.picks==1,"open inventory number2 calls pickaxe API");
  Time.frameCount++;Press(KeyCode.Alpha3);inv.Update();Check(inv.weapons.swords==1&&inv.weapons.picks==1,"inventory ignores number3");
- inv.opened=false;Time.frameCount++;Press(KeyCode.Alpha1);inv.Update();Check(inv.weapons.swords==1,"closed inventory ignores numbers");
+ var closed=new InventoryHarness{opened=false};Time.frameCount++;Press(KeyCode.Alpha1);closed.Update();
+ Check(closed.weapons.swords==1&&!closed.opened,"closed inventory allows weapon swap without opening");
+ Time.frameCount++;Press(KeyCode.Alpha2);closed.Update();
+ Check(closed.weapons.picks==1&&!closed.opened,"closed inventory allows pickaxe swap without opening");
+ Check(inv.opened,"open drawer stays open after swapping");
  inv.opened=true;inv.Playing=false;Time.frameCount++;Press(KeyCode.Alpha2);inv.Update();Check(inv.weapons.picks==1,"card selection state blocks equipment");
  inv.Playing=true;RunProgression.Instance.PendingLevelUps=1;Time.frameCount++;Press(KeyCode.Alpha1);inv.Update();Check(inv.weapons.swords==1,"pending offer has priority before card LateUpdate");
  RunProgression.Instance.PendingLevelUps=0;Time.frameCount++;UiNumberShortcuts.BlockThisFrame();Press(KeyCode.Alpha1);inv.Update();Check(inv.weapons.swords==1,"card transition cannot fall through to equipment");
  Time.frameCount++;Press(KeyCode.Tab);Input.downs.Add(KeyCode.Alpha1);inv.Update();Check(!inv.opened&&inv.weapons.swords==1,"Tab plus number only closes inventory");
  inv.opened=true;Time.timeScale=0;Time.frameCount++;Press(KeyCode.Alpha1);inv.Update();Check(inv.weapons.swords==1,"paused inventory ignores numbers");Time.timeScale=1;
  inv.hudVisible=false;Time.frameCount++;Press(KeyCode.Alpha2);inv.Update();Check(inv.weapons.picks==1,"hidden HUD ignores numbers");
+
+ inv=new InventoryHarness();Time.frameCount++;inv.HandleState(GameState.LevelUpSelection);
+ Check(inv.opened&&inv.overlay.gameObject.activeSelf,"card modal preserves open inventory");
+ inv.Playing=false;Time.frameCount++;Press(KeyCode.Alpha1);inv.Update();Check(inv.weapons.swords==0,"card number cannot equip while inventory remains visible");
+ inv.Playing=true;inv.HandleState(GameState.Playing);inv.Update();Check(inv.opened&&inv.weapons.swords==0,"card completion preserves drawer and blocks confirmation key");
+ Time.frameCount++;Input.downs.Clear();inv.Update();Check(inv.weapons.swords==0,"held card key cannot equip after completion");
+ Time.frameCount++;Press(KeyCode.Alpha1);inv.Update();Check(inv.weapons.swords==1,"fresh number works after card modal");
+ inv.opened=false;inv.HandleState(GameState.LevelUpSelection);inv.HandleState(GameState.Playing);Check(!inv.opened,"closed drawer stays closed across cards");
+ inv.opened=true;inv.HandleState(GameState.LevelUpSelection);inv.HandleState(GameState.GameOver);Check(!inv.opened&&!inv.hudVisible,"death still closes inventory");
  Console.WriteLine(count+" shortcut tests passed. Production methods with managed doubles, not Unity play.");
  }
 }
