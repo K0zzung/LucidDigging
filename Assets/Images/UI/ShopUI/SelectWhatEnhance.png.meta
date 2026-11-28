@@ -1,0 +1,1482 @@
+fileFormatVersion: 2
+guid: 99b1e89f7ea9dca4c945731f663cf80b
+TextureImporter:
+  internalIDToNameTable: []
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 3
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: iPhone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: StelectWhatEnhance_real
+      rect:
+        serializedVersion: 2
+        x: 233
+        y: 204
+        width: 1205
+        height: 542
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 415ab5f0751fe584db8f51c5e2746727
+      internalID: -470165588
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SelectWhatEnhance_1
+      rect:
+        serializedVersion: 2
+        x: 130
+        y: 894
+        width: 47
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 868b5e685f029544aa595c594a6bb53d
+      internalID: 1766620723
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SelectWhatEnhance_2
+      rect:
+        serializedVersion: 2
+        x: 537
+        y: 908
+        width: 4
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a87a350d94d77fd499c1cab5c957abf3
+      internalID: 2106061378
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SelectWhatEnhance_3
+      rect:
+        serializedVersion: 2
+        x: 1020
+        y: 883
+        width: 37
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6f8084d54b886eb4b8b6f12a377a8c6f
+      internalID: 326003654
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SelectWhatEnhance_4
+      rect:
+        serializedVersion: 2
+        x: 1020
+        y: 896
+        width: 7
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dbadc7ac63391c54bab1244e70cb5d20
+      internalID: -968198481
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SelectWhatEnhance_5
+      rect:
+        serializedVersion: 2
+        x: 481
+        y: 895
+        width: 7
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8453fba964bdbd94390074359bdfa3b3
+      internalID: 1721943032
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SelectWhatEnhance_6
+      rect:
+        serializedVersion: 2
+        x: 722
+        y: 890
+        width: 16
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f62404d3c95da094aadaba4a7b637dda
+      internalID: 12386802
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SelectWhatEnhance_7
+      rect:
+        serializedVersion: 2
+        x: 1102
+        y: 895
+        width: 5
+        height: 4
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1adce0812bab8904c8e3d4829d4ee258
+      internalID: -181374902
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SelectWhatEnhance_8
+      rect:
+        serializedVersion: 2
+        x: 1108
+        y: 892
+        width: 5
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 41d9fc6150005fa49a9d4e020445e130
+      internalID: -158514284
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SelectWhatEnhance_9
+      rect:
+        serializedVersion: 2
+        x: 1122
+        y: 882
+        width: 16
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2a437be8340a74141a084fe081126768
+      internalID: -1097581268
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SelectWhatEnhance_10
+      rect:
+        serializedVersion: 2
+        x: 1193
+        y: 871
+        width: 11
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 66365aa2dd9d57049a956c1c61e102cb
+      internalID: -1394236816
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SelectWhatEnhance_11
+      rect:
+        serializedVersion: 2
+        x: 1205
+        y: 891
+        width: 21
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b8acaf29ce9b537448c8f35b13c64ef3
+      internalID: -1572316778
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SelectWhatEnhance_12
+      rect:
+        serializedVersion: 2
+        x: 1542
+        y: 722
+        width: 116
+        height: 186
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ddaf4acdfc8ee24448de2514e7adcc80
+      internalID: -981850548
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SelectWhatEnhance_13
+      rect:
+        serializedVersion: 2
+        x: 409
+        y: 882
+        width: 21
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5d983acf1cc1c51439dcfd59fec5e06d
+      internalID: 632242568
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SelectWhatEnhance_14
+      rect:
+        serializedVersion: 2
+        x: 459
+        y: 884
+        width: 5
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a83be571151435045bff0ef4d4f58950
+      internalID: -80038569
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SelectWhatEnhance_15
+      rect:
+        serializedVersion: 2
+        x: 1010
+        y: 888
+        width: 9
+        height: 4
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3a1c953dc2ab9e643b97dc83ee657daf
+      internalID: -833023550
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SelectWhatEnhance_16
+      rect:
+        serializedVersion: 2
+        x: 387
+        y: 869
+        width: 7
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c31a55ddee02d0045920ef984d8c6f84
+      internalID: 123192439
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SelectWhatEnhance_17
+      rect:
+        serializedVersion: 2
+        x: 418
+        y: 868
+        width: 8
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c01cb2b2569974246b3cd73d35b93e9c
+      internalID: 1207042468
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SelectWhatEnhance_18
+      rect:
+        serializedVersion: 2
+        x: 441
+        y: 866
+        width: 13
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1933b7a97228da046bd2e33a292009f4
+      internalID: 27756966
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SelectWhatEnhance_19
+      rect:
+        serializedVersion: 2
+        x: 457
+        y: 858
+        width: 21
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 694a250bc00773b44ac8531f6f228736
+      internalID: -2021921920
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SelectWhatEnhance_20
+      rect:
+        serializedVersion: 2
+        x: 521
+        y: 862
+        width: 6
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5193215d330d66549be2c0d1602ac1e4
+      internalID: -222304479
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SelectWhatEnhance_21
+      rect:
+        serializedVersion: 2
+        x: 634
+        y: 858
+        width: 5
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: aa6014f936de75b41a3f56696817535a
+      internalID: -1545900934
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SelectWhatEnhance_22
+      rect:
+        serializedVersion: 2
+        x: 698
+        y: 868
+        width: 11
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a0ccb78ab8a06ac4ea5c456d4ecdc93c
+      internalID: -451207941
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SelectWhatEnhance_23
+      rect:
+        serializedVersion: 2
+        x: 1221
+        y: 862
+        width: 7
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 320073e92b3531f46b1b5f490a5154fe
+      internalID: -917069125
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SelectWhatEnhance_24
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 808
+        width: 45
+        height: 49
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 169e181c15eef2e41a3ea2a9634b9672
+      internalID: -781332097
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SelectWhatEnhance_25
+      rect:
+        serializedVersion: 2
+        x: 41
+        y: 827
+        width: 9
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 94ed99d02c162bd45beed779a49c1f01
+      internalID: -678529812
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SelectWhatEnhance_26
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 817
+        width: 12
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8309d304009f39746a9cbc4fbec70858
+      internalID: -1773558483
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SelectWhatEnhance_27
+      rect:
+        serializedVersion: 2
+        x: 81
+        y: 848
+        width: 18
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7127223889bf97b4db22d32e8812c52d
+      internalID: -225203414
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SelectWhatEnhance_28
+      rect:
+        serializedVersion: 2
+        x: 93
+        y: 819
+        width: 32
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a6b2eef7a65d3394cb6eadc5060863bd
+      internalID: 771478692
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SelectWhatEnhance_29
+      rect:
+        serializedVersion: 2
+        x: 1064
+        y: 846
+        width: 65
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: aece9c8197e7f484a9b43f46f80e847e
+      internalID: 1862293518
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SelectWhatEnhance_30
+      rect:
+        serializedVersion: 2
+        x: 1220
+        y: 850
+        width: 8
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5dfdc2a0051c52b46ae267f4b5d6551c
+      internalID: 1691124980
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SelectWhatEnhance_31
+      rect:
+        serializedVersion: 2
+        x: 1613
+        y: 760
+        width: 33
+        height: 60
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 93df079447e423440840c01ca98ee324
+      internalID: 1885086499
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SelectWhatEnhance_32
+      rect:
+        serializedVersion: 2
+        x: 16
+        y: 738
+        width: 26
+        height: 36
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c8f3044aeb629bf48b77b0a45ee61a0c
+      internalID: -1748580993
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SelectWhatEnhance_33
+      rect:
+        serializedVersion: 2
+        x: 1653
+        y: 712
+        width: 11
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d4be6abbd8655814ea68296506b8324a
+      internalID: -1099214958
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SelectWhatEnhance_34
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 652
+        width: 50
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e4e12288ed849394fbe1982fd9e68138
+      internalID: 942111574
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SelectWhatEnhance_35
+      rect:
+        serializedVersion: 2
+        x: 49
+        y: 618
+        width: 11
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 49855f7d66343bb4f8e3bfb336a06b7f
+      internalID: -1362065518
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SelectWhatEnhance_36
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 244
+        width: 11
+        height: 89
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6189fe4a2b6e5aa4e8de425ed9139e86
+      internalID: 1593031959
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SelectWhatEnhance_37
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 219
+        width: 5
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9e06aed5316dbf945811ee93ae4d0804
+      internalID: -1228344347
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SelectWhatEnhance_38
+      rect:
+        serializedVersion: 2
+        x: 41
+        y: 219
+        width: 10
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 052f1fbe800b95e4eaf6460e708ae0d4
+      internalID: 1455713433
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SelectWhatEnhance_39
+      rect:
+        serializedVersion: 2
+        x: 21
+        y: 198
+        width: 9
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 52db036acba34ef44ace9a80c14792f7
+      internalID: 1736934117
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SelectWhatEnhance_40
+      rect:
+        serializedVersion: 2
+        x: 31
+        y: 201
+        width: 13
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 45670e8ab365ed442829c9be5672f06d
+      internalID: 734738520
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SelectWhatEnhance_41
+      rect:
+        serializedVersion: 2
+        x: 45
+        y: 202
+        width: 7
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b1c848ee66c6b724b9c0dd6887da849c
+      internalID: -1612227810
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SelectWhatEnhance_42
+      rect:
+        serializedVersion: 2
+        x: 1607
+        y: 152
+        width: 45
+        height: 53
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7a116c264883e7949b78511cac5c94f0
+      internalID: -2016489720
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SelectWhatEnhance_43
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 148
+        width: 38
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 43f9bdcdf4cb9aa4cace99590caa1158
+      internalID: 1610043303
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SelectWhatEnhance_44
+      rect:
+        serializedVersion: 2
+        x: 39
+        y: 162
+        width: 13
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b18173038c39f904eb36ab2c40a2f38c
+      internalID: 1259011221
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SelectWhatEnhance_45
+      rect:
+        serializedVersion: 2
+        x: 1591
+        y: 138
+        width: 15
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0018c297bdc454847bf50bbc1e0206f6
+      internalID: 1619792361
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SelectWhatEnhance_46
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 42
+        width: 113
+        height: 98
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dbae70e54b01bab448397ddd6250b59d
+      internalID: -870378289
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SelectWhatEnhance_47
+      rect:
+        serializedVersion: 2
+        x: 1623
+        y: 136
+        width: 15
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 31e2fa82952dc4f48b8dc0518f269481
+      internalID: 691916782
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SelectWhatEnhance_48
+      rect:
+        serializedVersion: 2
+        x: 389
+        y: 117
+        width: 11
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 72f10d7e6c148634fb115e462241121d
+      internalID: 1691899724
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SelectWhatEnhance_49
+      rect:
+        serializedVersion: 2
+        x: 1591
+        y: 96
+        width: 27
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0fce78aa47b86c846bae0a98cdc1a6ae
+      internalID: 924752390
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SelectWhatEnhance_50
+      rect:
+        serializedVersion: 2
+        x: 513
+        y: 105
+        width: 6
+        height: 4
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4d671d81dc10eff428e07a3241788d90
+      internalID: -864738913
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SelectWhatEnhance_51
+      rect:
+        serializedVersion: 2
+        x: 1655
+        y: 104
+        width: 8
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3d8517797af20c54a8fadcef2af156dd
+      internalID: 984337840
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SelectWhatEnhance_52
+      rect:
+        serializedVersion: 2
+        x: 101
+        y: 30
+        width: 40
+        height: 44
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9799319215bbcf9489cca621f38465c8
+      internalID: -2107473933
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SelectWhatEnhance_53
+      rect:
+        serializedVersion: 2
+        x: 379
+        y: 65
+        width: 7
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dde88d381b5c2bb42afcaa5d43d821af
+      internalID: 918151798
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SelectWhatEnhance_54
+      rect:
+        serializedVersion: 2
+        x: 1158
+        y: 64
+        width: 14
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c8777993627d5b34ab9297ceefa7f798
+      internalID: 861965910
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SelectWhatEnhance_55
+      rect:
+        serializedVersion: 2
+        x: 1474
+        y: 64
+        width: 17
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5573d9e66631ad846bcb5ea930f7b390
+      internalID: 997422810
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SelectWhatEnhance_56
+      rect:
+        serializedVersion: 2
+        x: 152
+        y: 16
+        width: 35
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4aef8b442ac20c44cb896b5e9365be92
+      internalID: -980315165
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SelectWhatEnhance_57
+      rect:
+        serializedVersion: 2
+        x: 1560
+        y: 43
+        width: 6
+        height: 5
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 679763868a0ffe24c8e42b7b5fbfea31
+      internalID: 1487015007
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SelectWhatEnhance_58
+      rect:
+        serializedVersion: 2
+        x: 119
+        y: 32
+        width: 4
+        height: 4
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7e66d2560f5bc754c85c22ca64f0f72f
+      internalID: -399331679
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SelectWhatEnhance_59
+      rect:
+        serializedVersion: 2
+        x: 1591
+        y: 16
+        width: 45
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4fdb922b957abb3429c8330c3e5abe1b
+      internalID: 2017321708
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SelectWhatEnhance_60
+      rect:
+        serializedVersion: 2
+        x: 419
+        y: 8
+        width: 11
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 15e3d733bbba54b46a8e6dd83da61898
+      internalID: 1579703163
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    nameFileIdTable:
+      SelectWhatEnhance_1: 1766620723
+      SelectWhatEnhance_10: -1394236816
+      SelectWhatEnhance_11: -1572316778
+      SelectWhatEnhance_12: -981850548
+      SelectWhatEnhance_13: 632242568
+      SelectWhatEnhance_14: -80038569
+      SelectWhatEnhance_15: -833023550
+      SelectWhatEnhance_16: 123192439
+      SelectWhatEnhance_17: 1207042468
+      SelectWhatEnhance_18: 27756966
+      SelectWhatEnhance_19: -2021921920
+      SelectWhatEnhance_2: 2106061378
+      SelectWhatEnhance_20: -222304479
+      SelectWhatEnhance_21: -1545900934
+      SelectWhatEnhance_22: -451207941
+      SelectWhatEnhance_23: -917069125
+      SelectWhatEnhance_24: -781332097
+      SelectWhatEnhance_25: -678529812
+      SelectWhatEnhance_26: -1773558483
+      SelectWhatEnhance_27: -225203414
+      SelectWhatEnhance_28: 771478692
+      SelectWhatEnhance_29: 1862293518
+      SelectWhatEnhance_3: 326003654
+      SelectWhatEnhance_30: 1691124980
+      SelectWhatEnhance_31: 1885086499
+      SelectWhatEnhance_32: -1748580993
+      SelectWhatEnhance_33: -1099214958
+      SelectWhatEnhance_34: 942111574
+      SelectWhatEnhance_35: -1362065518
+      SelectWhatEnhance_36: 1593031959
+      SelectWhatEnhance_37: -1228344347
+      SelectWhatEnhance_38: 1455713433
+      SelectWhatEnhance_39: 1736934117
+      SelectWhatEnhance_4: -968198481
+      SelectWhatEnhance_40: 734738520
+      SelectWhatEnhance_41: -1612227810
+      SelectWhatEnhance_42: -2016489720
+      SelectWhatEnhance_43: 1610043303
+      SelectWhatEnhance_44: 1259011221
+      SelectWhatEnhance_45: 1619792361
+      SelectWhatEnhance_46: -870378289
+      SelectWhatEnhance_47: 691916782
+      SelectWhatEnhance_48: 1691899724
+      SelectWhatEnhance_49: 924752390
+      SelectWhatEnhance_5: 1721943032
+      SelectWhatEnhance_50: -864738913
+      SelectWhatEnhance_51: 984337840
+      SelectWhatEnhance_52: -2107473933
+      SelectWhatEnhance_53: 918151798
+      SelectWhatEnhance_54: 861965910
+      SelectWhatEnhance_55: 997422810
+      SelectWhatEnhance_56: -980315165
+      SelectWhatEnhance_57: 1487015007
+      SelectWhatEnhance_58: -399331679
+      SelectWhatEnhance_59: 2017321708
+      SelectWhatEnhance_6: 12386802
+      SelectWhatEnhance_60: 1579703163
+      SelectWhatEnhance_7: -181374902
+      SelectWhatEnhance_8: -158514284
+      SelectWhatEnhance_9: -1097581268
+      StelectWhatEnhance_real: -470165588
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

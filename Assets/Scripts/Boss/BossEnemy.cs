@@ -368,6 +368,7 @@ public class BossEnemy : EnemyBase
         while(CanAttack && !player.IsReadyForBossPresentation)yield return null;
         if(!CanAttack){ReleaseAwakeningPresentation();yield break;}
         player.BeginBossPresentationLock();
+        if(AudioManager.Instance!=null)AudioManager.Instance.BeginHadesBattle(this);
         awakeningCamera=FindObjectOfType<CameraFollowTarget>();
         awakeningWarning=FindObjectOfType<DepthWarningUI>();
         hadesBackground=FindObjectOfType<DepthBackgroundController>();
@@ -1137,6 +1138,7 @@ public class BossEnemy : EnemyBase
 
 
         IsDead = true;
+        if(AudioManager.Instance!=null)AudioManager.Instance.EndHadesBattle(this);
         if(awakeningWarning!=null)awakeningWarning.CancelBossMessage();
         ReleaseAwakeningPresentation();
         StopOpeningSweep();
@@ -1414,6 +1416,7 @@ public class BossEnemy : EnemyBase
     // =========================================================
 
     private void OnDisable() {
+        if(AudioManager.Instance!=null)AudioManager.Instance.EndHadesBattle(this);
         IsDeathPresentationPlaying = false;
         if (player != null && !player.IsWaitingForBossPresentation) player.EndBossPresentationLock();
         if (bossHUD != null) Destroy(bossHUD.gameObject);

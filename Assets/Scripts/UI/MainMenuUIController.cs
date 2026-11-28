@@ -19,11 +19,13 @@ public class MainMenuUIController : MonoBehaviour
 
     [SerializeField] private HUDController hudController;
 
+    [SerializeField] private ShopPanelController shopPanel;
+    private bool starting;
     private void Start() {
         menuRoot.SetActive(true);
 
         readyUI.SetActive(true);
-        playButtonRoot.SetActive(false);
+        playButtonRoot.SetActive(true);
 
         if (gameHUD != null)
             gameHUD.SetActive(false);
@@ -32,41 +34,15 @@ public class MainMenuUIController : MonoBehaviour
             GameState.Ready);
     }
 
-    public void OnReadyPressed() {
-        // 타이틀 + READY 제거
-        readyUI.SetActive(false);
-
-        // Inventory 내려오기
-        inventoryUI.Open();
-
-        // PLAY 등장
-        playButtonRoot.SetActive(true);
-
-        GameFlowController.Instance.SetState(
-            GameState.Inventory);
-    }
-
+    public void OnReadyPressed() {if(shopPanel!=null)shopPanel.Open();}
     public void OnPlayPressed() {
-        // 중복 입력 방지
-        playButtonRoot.SetActive(false);
-
-        // Inventory부터 접는다.
-        inventoryUI.Close(() => {
-            StartGameplayTransition();
-        });
+        if(starting || (shopPanel!=null && shopPanel.IsShowing))return;
+        starting=true;playButtonRoot.SetActive(false);StartGameplayTransition();
     }
     public void ReturnToMenu() {
-        menuRoot.SetActive(true);
-
-        readyUI.SetActive(false);
-        playButtonRoot.SetActive(true);
-
-        if (gameHUD != null) {
-            gameHUD.SetActive(false);
-        }
-
-        GameFlowController.Instance.SetState(
-            GameState.Inventory);
+        starting=false;menuRoot.SetActive(true);readyUI.SetActive(true);playButtonRoot.SetActive(true);
+        if(gameHUD!=null)gameHUD.SetActive(false);
+        GameFlowController.Instance.SetState(GameState.Ready);
     }
     private void StartGameplayTransition() {
         // Overlay로 화면을 덮고 있던 메뉴 제거

@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-public class PermanentUpgradeManager : MonoBehaviour
+public partial class PermanentUpgradeManager : MonoBehaviour
 {
     public static PermanentUpgradeManager Instance {
         get;
@@ -33,6 +33,35 @@ public class PermanentUpgradeManager : MonoBehaviour
 
     [SerializeField]
     private int defenseIncreasePerLevel = 1;
+    [SerializeField,Min(0)] private int pickaxeAttackIncreasePerLevel = 10;
+    [SerializeField] private InventoryUIController shopUI;
+    [SerializeField] private ShopPanelController shopPanelUI;
+    public int GetPermanentValue(PermanentUpgradeType type) {
+        if(playerStatus==null)return 0;
+        return type==PermanentUpgradeType.HP?playerStatus.PermanentMaxHP:type==PermanentUpgradeType.Defense?playerStatus.BaseDefense:playerStatus.BaseAttack;
+    }
+    public int GetNextPermanentValue(PermanentUpgradeType type) => (int)Math.Min(int.MaxValue,(long)GetPermanentValue(type)+GetIncreasePerLevel(type));
+    private bool purchaseInProgress;
+    private int lastPurchaseFrame=-1;
+    public int PickaxeAttackBonus => (int)Math.Min(int.MaxValue,(long)GetLevel(PermanentUpgradeType.PickaxeAttack)*Math.Max(0,pickaxeAttackIncreasePerLevel));
+    public int GetIncreasePerLevel(PermanentUpgradeType type) {
+        switch(type) {
+            case PermanentUpgradeType.HP:return hpIncreasePerLevel;
+            case PermanentUpgradeType.Attack:return attackIncreasePerLevel;
+            case PermanentUpgradeType.Defense:return defenseIncreasePerLevel;
+            case PermanentUpgradeType.PickaxeAttack:return pickaxeAttackIncreasePerLevel;
+            default:return 0;
+        }
+    }
+    public CurrencyType GetCurrencyType(PermanentUpgradeType type) {
+        switch(type) {
+            case PermanentUpgradeType.HP:case PermanentUpgradeType.Shockwave:return CurrencyType.Shockwave;
+            case PermanentUpgradeType.Defense:case PermanentUpgradeType.Shield:return CurrencyType.Shield;
+            default:return CurrencyType.Dash;
+        }
+    }
+    public bool IsShopOpen => (shopPanelUI!=null?shopPanelUI.IsOpen:shopUI!=null && shopUI.IsOpen && shopUI.isActiveAndEnabled) &&
+        GameFlowController.Instance!=null && GameFlowController.Instance.CurrentState==GameState.Inventory;
 
 
     // =========================================================
@@ -83,9 +112,7 @@ public class PermanentUpgradeManager : MonoBehaviour
 
     public int GetLevel(
         PermanentUpgradeType type) {
-        return PlayerPrefs.GetInt(
-            GetLevelKey(type),
-            0);
+        return Mathf.Max(0,PlayerPrefs.GetInt(GetLevelKey(type),0));
     }
 
 
@@ -100,11 +127,7 @@ public class PermanentUpgradeManager : MonoBehaviour
                 type);
 
 
-        return Mathf.Max(
-            1,
-            baseUpgradeCost
-            + level
-            * costIncreasePerLevel);
+        return (int)Math.Max(1L,Math.Min(int.MaxValue,(long)baseUpgradeCost+(long)level*costIncreasePerLevel));
     }
 
 
@@ -115,6 +138,8 @@ public class PermanentUpgradeManager : MonoBehaviour
     public bool CanUpgrade(
         PermanentUpgradeType type,
         CurrencyType currencyType) {
+        if(!Enum.IsDefined(typeof(PermanentUpgradeType),type) || !IsShopOpen ||
+            currencyType!=GetCurrencyType(type) || GetLevel(type)==int.MaxValue)return false;
         if (CurrencyManager.Instance == null)
             return false;
 
@@ -150,69 +175,18 @@ public class PermanentUpgradeManager : MonoBehaviour
     public bool TryUpgrade(
         PermanentUpgradeType type,
         CurrencyType currencyType) {
-        if (!CanUpgrade(
-            type,
-            currencyType)) {
-            return false;
+        if(purchaseInProgress || lastPurchaseFrame==Time.frameCount || !CanUpgrade(type,currencyType))return false;
+        purchaseInProgress=true;lastPurchaseFrame=Time.frameCount;
+        int nextLevel=GetLevel(type)+1;
+        try {
+            int cost=GetUpgradeCost(type);
+            if(!CurrencyManager.Instance.SpendCurrency(currencyType,cost))return false;
+            ApplyUpgradeEffect(type);
+            PlayerPrefs.SetInt(GetLevelKey(type),nextLevel);
+            PlayerPrefs.Save();
         }
-
-
-        int cost =
-            GetUpgradeCost(
-                type);
-
-
-        // =============================
-        // ÀçÈ­ Â÷°¨
-        // =============================
-
-        bool spent =
-            CurrencyManager.Instance
-                .SpendCurrency(
-                    currencyType,
-                    cost);
-
-
-        if (!spent)
-            return false;
-
-
-        // =============================
-        // ½ÇÁ¦ ½ºÅÈ »ó½Â
-        // =============================
-
-        ApplyUpgradeEffect(
-            type);
-
-
-        // =============================
-        // °­È­ Lv ÀúÀå
-        // =============================
-
-        int nextLevel =
-            GetLevel(type)
-            + 1;
-
-
-        PlayerPrefs.SetInt(
-            GetLevelKey(type),
-            nextLevel);
-
-
-        PlayerPrefs.Save();
-
-
-        OnUpgradeLevelChanged?.Invoke(
-            type,
-            nextLevel);
-
-
-        Debug.Log(
-            $"[Permanent Upgrade] " +
-            $"{type} Lv.{nextLevel} / " +
-            $"Cost : {cost} {currencyType}");
-
-
+        finally {purchaseInProgress=false;}
+        OnUpgradeLevelChanged?.Invoke(type,nextLevel);
         return true;
     }
 
@@ -302,6 +276,8 @@ public class PermanentUpgradeManager : MonoBehaviour
                     $"HP: {playerStatus.MaxHP}";
 
 
+            case PermanentUpgradeType.PickaxeAttack:
+                return $"°î±ªÀÌ °øÅë ATK +{PickaxeAttackBonus}";
             case PermanentUpgradeType.Attack:
 
                 if (playerStatus == null)

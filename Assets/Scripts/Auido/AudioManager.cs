@@ -1,3 +1,4 @@
+using DG.Tweening;
 using UnityEngine;
 using UnityEngine.Audio;
 
@@ -33,6 +34,14 @@ public class AudioManager : MonoBehaviour
 
     [SerializeField]
     private AudioClip gameplayBGM;
+    [SerializeField] private AudioClip hadesBattleBGM;
+    [SerializeField, Min(0f)] private float bgmFadeOutTime = .35f;
+    [SerializeField, Min(.01f)] private float bgmFadeInTime = 1.2f;
+    private Sequence bgmTransition;
+    private AudioClip pendingBGM;
+    private Object hadesMusicOwner;
+    private float bgmVolume = 1f;
+
 
 
     // =========================================================
@@ -99,6 +108,7 @@ public class AudioManager : MonoBehaviour
     // =========================================================
 
     private void Awake() {
+        if(bgmSource!=null)bgmVolume=bgmSource.volume;
         Instance =
             this;
     }
@@ -148,6 +158,8 @@ public class AudioManager : MonoBehaviour
 
     public void PlayBGM(
         AudioClip clip) {
+        bgmTransition?.Kill(); bgmTransition=null; pendingBGM=null;
+        if(bgmSource!=null)bgmSource.volume=bgmVolume;
         if (clip == null)
             return;
 
@@ -174,6 +186,35 @@ public class AudioManager : MonoBehaviour
     // =========================================================
     // Presets
     // =========================================================
+
+    public void BeginHadesBattle(Object owner) {
+        if(owner==null || hadesBattleBGM==null)return;
+        hadesMusicOwner=owner;
+        FadeToBGM(hadesBattleBGM);
+    }
+    public void EndHadesBattle(Object owner) {
+        if(hadesMusicOwner!=owner || hadesMusicOwner==null)return;
+        hadesMusicOwner=null;
+        FadeToBGM(gameplayBGM);
+    }
+    private void FadeToBGM(AudioClip clip) {
+        if(bgmSource==null || clip==null || pendingBGM==clip)return;
+        if(bgmTransition==null && bgmSource.clip==clip && bgmSource.isPlaying)return;
+        bgmTransition?.Kill();pendingBGM=clip;
+        bgmTransition=DOTween.Sequence().SetUpdate(true);
+        if(bgmSource.clip!=clip || !bgmSource.isPlaying) {
+            bgmTransition.Append(bgmSource.DOFade(0f,bgmFadeOutTime));
+            bgmTransition.AppendCallback(()=>{
+                bgmSource.clip=clip;bgmSource.loop=true;bgmSource.volume=0f;bgmSource.Play();
+            });
+        }
+        bgmTransition.Append(bgmSource.DOFade(bgmVolume,bgmFadeInTime).SetEase(Ease.OutSine));
+        bgmTransition.OnComplete(()=>{bgmTransition=null;pendingBGM=null;});
+    }
+    private void OnDisable() {
+        bgmTransition?.Kill();bgmTransition=null;pendingBGM=null;hadesMusicOwner=null;
+        if(bgmSource!=null)bgmSource.volume=bgmVolume;
+    }
 
     public void PlayEnemyKill() {
         PlaySFX(

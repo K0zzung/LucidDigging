@@ -3,20 +3,36 @@ from pathlib import Path
 import tempfile,subprocess
 root=Path(__file__).resolve().parents[1]
 folder=Path(tempfile.mkdtemp(prefix='LucidEquipment-'))
-for rel in ['Weapon/WeaponData.cs','Weapon/WeaponManager.cs','Weapon/EquipmentCombat.cs','Weapon/PickaxeBossReward.cs','System/DamageCalculator.cs','System/TerrainData.cs','System/TerrainManager.cs','UI/HUDController.cs','UI/IInventoryEquipmentProvider.cs']:
+for rel in ['Weapon/WeaponData.cs','Weapon/WeaponManager.cs','Weapon/EquipmentCombat.cs','Weapon/PickaxeBossReward.cs','System/DamageCalculator.cs','System/TerrainData.cs','System/TerrainManager.cs','UI/HUDController.cs','UI/IInventoryEquipmentProvider.cs','Player/PermanentUpgradeManager.cs','Player/PermanentUpgradeType.cs','Currency/CurrencyManager.cs','Currency/CurrencyType.cs']:
  b=(root/'Assets/Scripts'/rel).read_bytes()
  try:s=b.decode('utf-8-sig')
  except UnicodeDecodeError:s=b.decode('cp949')
  (folder/Path(rel).name).write_text(s,encoding='utf-8')
+def production_method(path,signature):
+ b=(root/path).read_bytes()
+ try:source=b.decode('utf-8-sig')
+ except UnicodeDecodeError:source=b.decode('cp949')
+ start=source.index(signature);i=source.index('{',start)+1;depth=1
+ while depth:
+  if source[i]=='{':depth+=1
+  elif source[i]=='}':depth-=1
+  i+=1
+ return source[start:i]
+category=production_method('Assets/Scripts/UI/ShopUpgradeCategories.cs','public static int CategoryOf(')
+click=production_method('Assets/Scripts/Player/PermanentUpgradeRowUI.cs','public void OnClickUpgrade()')
+(folder/'ShopHarness.cs').write_text('using UnityEngine;\npublic static class ShopClassifier{'+category+'}\n'+
+ 'public class PurchaseButton{public bool interactable=true;public bool IsInteractable()=>interactable;}\n'+
+ 'public class RowHarness {public bool isActiveAndEnabled=true;public GameObject gameObject=new GameObject{activeSelf=true};public int blockedPurchaseFrame=-1;public PurchaseButton upgradeButton=new PurchaseButton();public PermanentUpgradeType upgradeType=PermanentUpgradeType.PickaxeAttack;public CurrencyType currencyType=CurrencyType.Dash;public object levelText,costText,currentValueText;public int refreshes,punches;private void Refresh(){refreshes++;}private void PlayTextPunch(object o){punches++;}'+click+'}',encoding='utf-8')
 (folder/'Tests.csproj').write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><NoWarn>0649</NoWarn></PropertyGroup></Project>')
 (folder/'Doubles.cs').write_text(r'''
 using System;using System.Collections.Generic;
 namespace UnityEngine {
  public class Object {public static void Destroy(object o){} public static T Instantiate<T>(T p,Vector3 v,Quaternion q)=>p;}
- public class MonoBehaviour:Object { protected T FindObjectOfType<T>() where T:new()=>new T();}
- public class ScriptableObject:Object {} public class Sprite:Object {} public class GameObject:Object {public T GetComponent<T>() where T:new()=>new T();public bool activeSelf;public void SetActive(bool b){activeSelf=b;}} public class AudioClip:Object {}
+ public class MonoBehaviour:Object {public GameObject gameObject=new GameObject();public bool isActiveAndEnabled=true; protected T FindObjectOfType<T>() where T:new()=>new T();}
+ public class ScriptableObject:Object {} public class Sprite:Object {} public class GameObject:Object {public T GetComponent<T>() where T:new()=>new T();public bool activeSelf;public bool activeInHierarchy=>activeSelf;public void SetActive(bool b){activeSelf=b;}} public class AudioClip:Object {}
  public class RectTransform {public Vector2 anchoredPosition;public object component;public T GetComponent<T>()=> (T)component;}
  public class SerializeField:Attribute{} public class HeaderAttribute:Attribute{public HeaderAttribute(string s){}}
+ public class TooltipAttribute:Attribute {public TooltipAttribute(string s){}}
  public class MinAttribute:Attribute{public MinAttribute(float f){}}public class RangeAttribute:Attribute{public RangeAttribute(float a,float b){}}
  public class ContextMenu:Attribute{public ContextMenu(string s){}}
  [AttributeUsage(AttributeTargets.Class)] public class CreateAssetMenuAttribute:Attribute{public string fileName;public string menuName;}
@@ -26,7 +42,7 @@ namespace UnityEngine {
  public struct Quaternion{public static Quaternion identity=>new Quaternion();}
  public static class Mathf {public static int Max(int a,int b)=>Math.Max(a,b);public static float Max(float a,float b)=>Math.Max(a,b);public static int RoundToInt(float v)=>(int)Math.Round(v,MidpointRounding.ToEven);public static float Clamp01(float v)=>Math.Clamp(v,0,1);}
  public static class Random {public static float value=>.1f;}
- public static class Time {public static float timeScale=1;}
+ public static class Time {public static float timeScale=1;public static int frameCount=10;}
  public static class Debug {public static void Log(string s){} public static void LogError(string s){}public static void LogWarning(string s){}}
  public static class PlayerPrefs {
   public static Dictionary<string,string> data=new Dictionary<string,string>();
@@ -36,9 +52,17 @@ namespace UnityEngine {
   public static void SetString(string k,string v)=>data[k]=v;public static void Save(){}public static void DeleteKey(string k)=>data.Remove(k);
  }
 }
-public enum GameState { Playing,GameOver }public class GameFlowController {public static GameFlowController Instance=new GameFlowController();public GameState CurrentState=GameState.Playing;}
+public enum GameState { Playing,GameOver,Inventory }public class GameFlowController {public static GameFlowController Instance=new GameFlowController();public GameState CurrentState=GameState.Playing;}
 public class PlayerGridController {public bool IsActionInProgress; public bool TryGetBossLandingCell(out UnityEngine.Vector3Int c){c=new UnityEngine.Vector3Int();return true;}}
-public class PlayerStatus {public int Attack=160,RunAttackBonus,RunAttackPenalty;}
+public class PlayerStatus {public int Attack=160,BaseAttack=10,Defense=5,BaseDefense=5,MaxHP=100,PermanentMaxHP=100,RunAttackBonus,RunAttackPenalty;
+ public void IncreasePermanentAttack(int amount){BaseAttack+=amount;Attack+=amount;UnityEngine.PlayerPrefs.SetInt("Player_Attack",BaseAttack);}
+ public void IncreasePermanentDefense(int amount){BaseDefense+=amount;Defense+=amount;UnityEngine.PlayerPrefs.SetInt("Player_Defense",Defense);}
+ public void IncreasePermanentMaxHP(int amount){PermanentMaxHP+=amount;MaxHP+=amount;UnityEngine.PlayerPrefs.SetInt("Player_MaxHP",MaxHP);}
+}
+public class PlayerSkillController {public float GetCurrentDashAttackPercent()=>200;public float GetCurrentShockwaveAttackPercent()=>150;public int GetCurrentShieldDefenseBonus()=>50;}
+public class ShopPanelController {public bool IsOpen;}
+public class InventoryUIController {public bool IsOpen=true,isActiveAndEnabled=true;}
+
 public class EnemyBase {public EnemyCombatCategory CombatCategory; }public class BossEnemy:EnemyBase{}public class BossExplosionEnemy:EnemyBase{}
 public class EnemyManager {public UnityEngine.Vector3 GetCellCenterWorld(UnityEngine.Vector3Int cell)=>new UnityEngine.Vector3();}
 namespace UnityEngine.Tilemaps {
@@ -151,7 +175,77 @@ class Program {
  HudTrace.Events.Clear();hud.HideGameplayHUD();Check(HudTrace.Events.SequenceEqual(new[]{"HandleHide","SkillTween"}),"actual HUD hide closes inventory too");
  HudTrace.Events.Clear();hud.ResetHUD();Check(HudTrace.Events.SequenceEqual(new[]{"HandleHide"}),"actual HUD reset clears inventory presentation");
  int hits=0;var random=new System.Random(1655);for(int i=0;i<100000;i++)if(PickaxeBossReward.ShouldDrop(false,false,.15f,(float)random.NextDouble()))hits++;
- Check(Math.Abs(hits-15000)<600,"100000 independent drop rolls");Console.WriteLine($"{count} tests passed; drops {hits}/100000. Managed doubles; not Unity play.");
+ Check(Math.Abs(hits-15000)<600,"100000 independent drop rolls");
+ GameFlowController.Instance.CurrentState=GameState.Inventory;
+ PlayerPrefs.SetInt("Currency_Dash",100);PlayerPrefs.SetInt("Currency_Shockwave",100);PlayerPrefs.SetInt("Currency_Shield",100);
+ var currency=new CurrencyManager();typeof(CurrencyManager).GetMethod("Awake",BindingFlags.NonPublic|BindingFlags.Instance).Invoke(currency,null);
+ var upgrades=new PermanentUpgradeManager();var shop=new InventoryUIController();var stats=new PlayerStatus{Attack=160};
+ Set(upgrades,"shopUI",shop);Set(upgrades,"playerStatus",stats);Set(upgrades,"attackIncreasePerLevel",10);Set(upgrades,"hpIncreasePerLevel",50);Set(upgrades,"defenseIncreasePerLevel",5);
+ typeof(PermanentUpgradeManager).GetMethod("Awake",BindingFlags.NonPublic|BindingFlags.Instance).Invoke(upgrades,null);
+ PlayerPrefs.SetInt("PermanentUpgrade_Attack_Level",5);PlayerPrefs.SetInt("PermanentUpgrade_Shield_Level",4);
+ Check(upgrades.GetLevel(PermanentUpgradeType.Attack)==5&&upgrades.GetLevel(PermanentUpgradeType.Shield)==4,"legacy levels unchanged");
+ Check((int)PermanentUpgradeType.Shockwave==5&&(int)PermanentUpgradeType.PickaxeAttack==6,"serialized enum compatibility");
+ Check(upgrades.GetLevel(PermanentUpgradeType.PickaxeAttack)==0&&upgrades.PickaxeAttackBonus==0,"new and old saves default to pickaxe level zero");
+ Check(upgrades.GetUpgradeCost(PermanentUpgradeType.Attack)==6&&upgrades.GetUpgradeCost(PermanentUpgradeType.PickaxeAttack)==1,"old and new cost rules");
+ Time.frameCount++;int before=currency.DashCurrency;
+ Check(upgrades.TryUpgrade(PermanentUpgradeType.PickaxeAttack,CurrencyType.Dash)&&currency.DashCurrency==before-1&&upgrades.GetLevel(PermanentUpgradeType.PickaxeAttack)==1,"pickaxe purchase debits exactly once");
+ Check(!upgrades.TryUpgrade(PermanentUpgradeType.PickaxeAttack,CurrencyType.Dash)&&currency.DashCurrency==before-1,"same-frame duplicate purchase rejected");
+ Check(upgrades.PickaxeAttackBonus==10&&upgrades.GetLevel(PermanentUpgradeType.Attack)==5&&stats.Attack==160,"pickaxe purchase leaves sword stats and legacy level unchanged");
+ GameFlowController.Instance.CurrentState=GameState.Playing;loaded.EquipPickaxe(stone);Set(stone,"pickaxeAttack",10);status.Attack=160;status.RunAttackBonus=0;status.RunAttackPenalty=0;
+ Check(loaded.GetTurretAttack(status)==40&&DamageCalculator.CalculateDamage(loaded.GetTurretAttack(status),30)==31,"permanent pickaxe bonus reaches actual defense calculation");
+ status.RunAttackBonus=6;status.RunAttackPenalty=2;Check(loaded.GetTurretAttack(status)==48,"Run bonus and Nightmare penalty still additive");
+ loaded.UnlockWeapon(dragon);loaded.EquipPickaxe(dragon);Check(loaded.GetPickaxeBaseAttack()==320,"same permanent bonus shared by other pickaxe");
+ loaded.EquipWeapon(sword);Check(loaded.GetNormalAttack(status,monster)==160,"pickaxe upgrade does not change sword or skill Attack");
+ GameFlowController.Instance.CurrentState=GameState.Inventory;Time.frameCount++;before=currency.DashCurrency;
+ Check(upgrades.TryUpgrade(PermanentUpgradeType.Attack,CurrencyType.Dash)&&stats.Attack==170&&currency.DashCurrency==before-6&&upgrades.PickaxeAttackBonus==10,"legacy weapon purchase remains independent");
+ Time.frameCount++;before=currency.DashCurrency;bool nested=false;
+ Action reenter=()=>{nested=upgrades.TryUpgrade(PermanentUpgradeType.PickaxeAttack,CurrencyType.Dash);};currency.OnCurrencyChanged+=reenter;
+ Check(upgrades.TryUpgrade(PermanentUpgradeType.PickaxeAttack,CurrencyType.Dash)&&!nested&&currency.DashCurrency==before-2,"currency-event reentrancy cannot double-buy");currency.OnCurrencyChanged-=reenter;
+ Time.frameCount++;shop.IsOpen=false;before=currency.DashCurrency;Check(!upgrades.TryUpgrade(PermanentUpgradeType.PickaxeAttack,CurrencyType.Dash)&&currency.DashCurrency==before,"closed shop does not charge");shop.IsOpen=true;
+ Time.frameCount++;Check(!upgrades.TryUpgrade(PermanentUpgradeType.PickaxeAttack,CurrencyType.Shield),"wrong currency rejected");
+ Time.frameCount++;GameFlowController.Instance.CurrentState=GameState.Playing;Check(!upgrades.TryUpgrade(PermanentUpgradeType.PickaxeAttack,CurrencyType.Dash),"gameplay cannot buy");GameFlowController.Instance.CurrentState=GameState.Inventory;
+ Time.frameCount++;currency.SpendCurrency(CurrencyType.Dash,currency.DashCurrency);int level=upgrades.GetLevel(PermanentUpgradeType.PickaxeAttack);
+ Check(!upgrades.TryUpgrade(PermanentUpgradeType.PickaxeAttack,CurrencyType.Dash)&&upgrades.GetLevel(PermanentUpgradeType.PickaxeAttack)==level,"insufficient currency keeps level");
+ typeof(CurrencyManager).GetMethod("Load",BindingFlags.NonPublic|BindingFlags.Instance).Invoke(currency,null);
+ Check(currency.DashCurrency==0&&upgrades.GetLevel(PermanentUpgradeType.PickaxeAttack)==2,"purchase save reload keeps level and currency");
+ Check(PlayerPrefs.GetString("EquippedWeaponId")=="0"&&PlayerPrefs.GetInt("Skill_DashLevel")==7,"equipment and old skill save keys preserved");
+ PlayerPrefs.SetInt("PermanentUpgrade_PickaxeAttack_Level",-8);Check(upgrades.GetLevel(PermanentUpgradeType.PickaxeAttack)==0&&upgrades.PickaxeAttackBonus==0,"negative saved level safely reads zero");
+ PlayerPrefs.SetInt("PermanentUpgrade_PickaxeAttack_Level",int.MaxValue);Time.frameCount++;
+ Check(upgrades.GetUpgradeCost(PermanentUpgradeType.PickaxeAttack)==int.MaxValue&&!upgrades.TryUpgrade(PermanentUpgradeType.PickaxeAttack,CurrencyType.Dash),"integer-limit level and cost do not overflow");
+ Check(EquipmentCombat.Attack(int.MaxValue,100,0,2)==int.MaxValue,"oversized pickaxe attack does not overflow");
+
+ Check(ShopClassifier.CategoryOf(PermanentUpgradeType.HP)==0&&ShopClassifier.CategoryOf(PermanentUpgradeType.Defense)==0,"basic category HP and DEF");
+ Check(ShopClassifier.CategoryOf(PermanentUpgradeType.Attack)==1&&ShopClassifier.CategoryOf(PermanentUpgradeType.PickaxeAttack)==1,"equipment category independent ATK upgrades");
+ Check(ShopClassifier.CategoryOf(PermanentUpgradeType.Dash)==2&&ShopClassifier.CategoryOf(PermanentUpgradeType.Shield)==2&&ShopClassifier.CategoryOf(PermanentUpgradeType.Shockwave)==2,"skill category all three skills");
+ PlayerPrefs.SetInt("PermanentUpgrade_PickaxeAttack_Level",2);currency.AddCurrency(CurrencyType.Dash,10);currency.SettleRunCurrency();Time.frameCount++;
+ var row=new RowHarness();row.blockedPurchaseFrame=Time.frameCount;before=currency.DashCurrency;row.OnClickUpgrade();Check(currency.DashCurrency==before,"tab-change-frame click rejected");
+ Time.frameCount++;row.gameObject.activeSelf=false;row.OnClickUpgrade();Check(currency.DashCurrency==before,"hidden row cannot purchase");row.gameObject.activeSelf=true;
+ row.upgradeButton.interactable=false;row.OnClickUpgrade();Check(currency.DashCurrency==before,"disabled buy button cannot purchase");row.upgradeButton.interactable=true;
+ row.OnClickUpgrade();row.OnClickUpgrade();Check(currency.DashCurrency==before-3&&row.refreshes==1&&row.punches==3,"real row callback buys once and refreshes after success");
+ Time.frameCount++;shop.IsOpen=false;before=currency.DashCurrency;row.OnClickUpgrade();Check(currency.DashCurrency==before&&row.refreshes==1,"closed shop stale row callback cannot buy");
+
+ shop.IsOpen=true;GameFlowController.Instance.CurrentState=GameState.Inventory;
+ PlayerPrefs.SetInt("Currency_Dash",10000);PlayerPrefs.SetInt("Currency_Shockwave",10000);PlayerPrefs.SetInt("Currency_Shield",10000);
+ currency=new CurrencyManager();typeof(CurrencyManager).GetMethod("Awake",BindingFlags.NonPublic|BindingFlags.Instance).Invoke(currency,null);
+ foreach(PermanentUpgradeType type in Enum.GetValues(typeof(PermanentUpgradeType))) {
+  Time.frameCount++;int oldLevel=upgrades.GetLevel(type);int expectedCost=upgrades.GetUpgradeCost(type);var payment=upgrades.GetCurrencyType(type);
+  int oldBalance=currency.GetCurrency(payment);var snapshot=new Dictionary<PermanentUpgradeType,int>();
+  foreach(PermanentUpgradeType other in Enum.GetValues(typeof(PermanentUpgradeType)))snapshot[other]=upgrades.GetLevel(other);
+  var offer=new RowHarness{upgradeType=type,currencyType=payment};offer.OnClickUpgrade();offer.OnClickUpgrade();
+  Check(upgrades.GetLevel(type)==oldLevel+1&&currency.GetCurrency(payment)==oldBalance-expectedCost&&offer.refreshes==1,$"{type} purchase callback: one level and one charge");
+  Check(snapshot.All(pair=>pair.Key==type||upgrades.GetLevel(pair.Key)==pair.Value),$"{type} callback: other six upgrade levels unchanged");
+  Time.frameCount++;int costBefore=upgrades.GetUpgradeCost(type);
+  Check(upgrades.GetLevel(type)==oldLevel+1&&costBefore==expectedCost+1,$"{type} saved level and next cost reload");
+ }
+
+ stats.PermanentMaxHP=250;stats.MaxHP=900;stats.BaseDefense=30;stats.Defense=110;
+ Check(upgrades.GetPermanentValue(PermanentUpgradeType.HP)==250&&upgrades.GetNextPermanentValue(PermanentUpgradeType.HP)==300,"new shop HP preview excludes Run health");
+ Check(upgrades.GetPermanentValue(PermanentUpgradeType.Defense)==30&&upgrades.GetNextPermanentValue(PermanentUpgradeType.Defense)==35,"new shop DEF preview excludes Shield and Run defense");
+ var newShop=new ShopPanelController();Set(upgrades,"shopPanelUI",newShop);shop.IsOpen=true;
+ Check(!upgrades.IsShopOpen,"legacy open UI cannot authorize purchases once new panel is assigned");
+ newShop.IsOpen=true;Check(upgrades.IsShopOpen,"new fully open panel authorizes same purchase API");
+ newShop.IsOpen=false;Time.frameCount++;before=currency.ShieldCurrency;Check(!upgrades.TryUpgrade(PermanentUpgradeType.Defense,CurrencyType.Shield)&&currency.ShieldCurrency==before,"new closing or hidden panel cannot charge");
+Console.WriteLine($"{count} tests passed; drops {hits}/100000. Managed doubles; not Unity play.");
  }
 }
 ''',encoding='utf-8')

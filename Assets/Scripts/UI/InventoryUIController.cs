@@ -14,12 +14,14 @@ public class InventoryUIController : MonoBehaviour
     [SerializeField] private float openDuration = 1f;
 
     private Tween currentTween;
+    public bool IsOpen { get; private set; }
 
     private void Start() {
         inventoryRoot.anchoredPosition = hiddenPosition;
     }
 
     public void Open(Action onComplete = null) {
+        IsOpen=true;
         currentTween?.Kill();
 
         currentTween = inventoryRoot
@@ -31,6 +33,7 @@ public class InventoryUIController : MonoBehaviour
     }
 
     public void Close(Action onComplete = null) {
+        IsOpen=false;
         currentTween?.Kill();
 
         currentTween = inventoryRoot
@@ -42,6 +45,7 @@ public class InventoryUIController : MonoBehaviour
     }
 
     private void OnDisable() {
+        IsOpen=false;
         currentTween?.Kill();
     }
 }

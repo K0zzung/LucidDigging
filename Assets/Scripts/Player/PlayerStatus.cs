@@ -6,6 +6,7 @@ using UnityEngine;
 public class PlayerStatus : MonoBehaviour
 {
     private int permanentMaxHP;
+    public int PermanentMaxHP => permanentMaxHP;
     public int MaxHP => ClampFinalStat((long)permanentMaxHP + RunMaxHPBonus - RunMaxHPPenalty, 1);
     public int RunAttackBonus { get; private set; }
     public int RunDefenseBonus { get; private set; }

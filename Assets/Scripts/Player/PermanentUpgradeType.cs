@@ -6,5 +6,6 @@ public enum PermanentUpgradeType
 
     Dash,
     Shield,
-    Shockwave
+    Shockwave,
+    PickaxeAttack
 }

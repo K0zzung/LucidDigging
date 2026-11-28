@@ -403,6 +403,16 @@ public class PlayerSkillController : MonoBehaviour
         if (shockwaveVisual != null) Destroy(shockwaveVisual.gameObject);
     }
 
+    // Read-only preview of the existing permanent upgrade values.
+    public float GetPermanentUpgradeStep(PermanentUpgradeType type) {
+        switch(type) {
+            case PermanentUpgradeType.Dash: return dashAttackPercentPerLevel;
+            case PermanentUpgradeType.Shield: return shieldDefenseBonusPerLevel;
+            case PermanentUpgradeType.Shockwave: return shockwaveAttackPercentPerLevel;
+            default: return 0f;
+        }
+    }
+
     public float GetCurrentDashAttackPercent() {
         int level =
             GetPermanentSkillLevel(

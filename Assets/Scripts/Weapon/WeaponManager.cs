@@ -59,7 +59,18 @@ public class WeaponManager : MonoBehaviour, IInventoryEquipmentProvider
         foreach(var p in allPickaxes) if(p!=null && p.WeaponId==id)return EquipPickaxe(p);
         return false;
     }
+    private bool shopEquipRequest;
+    public bool EquipFromShop(WeaponData item, ShopPanelController shop) {
+        if(shop==null || !shop.IsEquipmentTabOpen || GameFlowController.Instance==null ||
+            GameFlowController.Instance.CurrentState!=GameState.Inventory)return false;
+        if(equipmentPlayer==null)equipmentPlayer=FindObjectOfType<PlayerGridController>();
+        if(equipmentPlayer!=null && equipmentPlayer.IsActionInProgress)return false;
+        shopEquipRequest=true;
+        try { return item!=null && (item.IsPickaxe?EquipPickaxe(item):EquipWeapon(item)); }
+        finally { shopEquipRequest=false; }
+    }
     private bool CanSwitchEquipment() {
+        if(shopEquipRequest)return true;
         if(equipmentPlayer==null)equipmentPlayer=FindObjectOfType<PlayerGridController>();
         return equipmentPlayer!=null && !equipmentPlayer.IsActionInProgress && Time.timeScale>0f &&
             GameFlowController.Instance!=null && GameFlowController.Instance.CurrentState==GameState.Playing;
@@ -74,9 +85,14 @@ public class WeaponManager : MonoBehaviour, IInventoryEquipmentProvider
     private void SaveActiveEquipment() {
         PlayerPrefs.SetString("ActiveEquipmentId",ActiveEquipment.WeaponId);PlayerPrefs.Save();
     }
+    public int GetPickaxeBaseAttack() {
+        int bonus=PermanentUpgradeManager.Instance!=null?PermanentUpgradeManager.Instance.PickaxeAttackBonus:0;
+        return (int)System.Math.Min(int.MaxValue,(long)(activePickaxe!=null?activePickaxe.PickaxeAttack:0)+bonus+
+            (PermanentUpgradeManager.Instance!=null?PermanentUpgradeManager.Instance.GetEquipmentAttackBonus(activePickaxe):0));
+    }
     public int GetTurretAttack(PlayerStatus status) {
         return IsPickaxeActive
-            ? EquipmentCombat.Attack(activePickaxe.PickaxeAttack,status.RunAttackBonus,status.RunAttackPenalty,pickaxeTurretMultiplier)
+            ? EquipmentCombat.Attack(GetPickaxeBaseAttack(),status.RunAttackBonus,status.RunAttackPenalty,pickaxeTurretMultiplier)
             : Mathf.Max(1,Mathf.RoundToInt(status.Attack*weaponTurretMultiplier));
     }
     public int GetNormalAttack(PlayerStatus status,EnemyBase target) {
@@ -84,10 +100,11 @@ public class WeaponManager : MonoBehaviour, IInventoryEquipmentProvider
         bool turret=!boss && target.CombatCategory==EnemyCombatCategory.Turret;
         if(turret)return GetTurretAttack(status);
         if(!IsPickaxeActive)return status.Attack;
-        return EquipmentCombat.Attack(activePickaxe.PickaxeAttack,status.RunAttackBonus,status.RunAttackPenalty,
+        return EquipmentCombat.Attack(GetPickaxeBaseAttack(),status.RunAttackBonus,status.RunAttackPenalty,
             boss?pickaxeBossMultiplier:pickaxeMonsterMultiplier);
     }
     public IReadOnlyList<WeaponData> AllWeapons => allWeapons;
+    public IReadOnlyList<WeaponData> AllPickaxes => allPickaxes;
     public event Action<WeaponData> OnWeaponUnlocked;
 
     public WeaponData CurrentWeapon {
@@ -290,7 +307,8 @@ public class WeaponManager : MonoBehaviour, IInventoryEquipmentProvider
             return 0;
 
 
-        return CurrentWeapon.AdditionalAttack;
+        return (int)System.Math.Min(int.MaxValue,(long)CurrentWeapon.AdditionalAttack+
+            (PermanentUpgradeManager.Instance!=null?PermanentUpgradeManager.Instance.GetEquipmentAttackBonus(CurrentWeapon):0));
     }
 
     private void SetOwned(
