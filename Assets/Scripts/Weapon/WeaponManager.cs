@@ -38,6 +38,10 @@ public class WeaponManager : MonoBehaviour, IInventoryEquipmentProvider
     [SerializeField] private float pickaxeBossMultiplier = .25f;
     [SerializeField] private float pickaxeTurretMultiplier = 2f;
     private WeaponData activePickaxe;
+    private WeaponData lastPickaxe;
+    private const string LastPickaxeKey="LastSelectedPickaxeId";
+    public bool EquipLastWeapon() => EquipWeapon(CurrentWeapon!=null && IsOwned(CurrentWeapon)?CurrentWeapon:defaultWeapon);
+    public bool EquipLastPickaxe() => EquipPickaxe(lastPickaxe!=null && IsOwned(lastPickaxe)?lastPickaxe:defaultPickaxe);
     public WeaponData ActiveEquipment => activePickaxe != null ? activePickaxe : CurrentWeapon;
     public bool IsPickaxeActive => activePickaxe != null;
     public event Action<WeaponData> OnActiveEquipmentChanged;
@@ -62,7 +66,9 @@ public class WeaponManager : MonoBehaviour, IInventoryEquipmentProvider
     }
     public bool EquipPickaxe(WeaponData item) {
         if(item==null || !item.IsPickaxe || !allPickaxes.Contains(item) || !IsOwned(item) || !CanSwitchEquipment())return false;
-        activePickaxe=item;SaveActiveEquipment();NotifyEquipment();return true;
+        activePickaxe=item;lastPickaxe=item;
+        PlayerPrefs.SetString(LastPickaxeKey,item.WeaponId);
+        SaveActiveEquipment();NotifyEquipment();return true;
     }
     private void NotifyEquipment() { OnActiveEquipmentChanged?.Invoke(ActiveEquipment);Changed?.Invoke(); }
     private void SaveActiveEquipment() {
@@ -114,7 +120,12 @@ public class WeaponManager : MonoBehaviour, IInventoryEquipmentProvider
         InitializeWeapons();
         if(defaultPickaxe!=null && defaultPickaxe.IsPickaxe && allPickaxes.Contains(defaultPickaxe))SetOwned(defaultPickaxe);
         string activeId=PlayerPrefs.GetString("ActiveEquipmentId", "");
-        foreach(var p in allPickaxes)if(p!=null && p.WeaponId==activeId && IsOwned(p))activePickaxe=p;
+        string lastPickaxeId=PlayerPrefs.GetString(LastPickaxeKey,activeId);
+        foreach(var p in allPickaxes) {
+            if(p==null || !IsOwned(p))continue;
+            if(p.WeaponId==activeId)activePickaxe=p;
+            if(p.WeaponId==lastPickaxeId)lastPickaxe=p;
+        }
 
     }
 

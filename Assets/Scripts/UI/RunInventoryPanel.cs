@@ -87,13 +87,26 @@ public sealed class RunInventoryPanel : MonoBehaviour
         bound=false;
     }
     private void Update() {
-        if(built && Playing && Time.timeScale>0f && Input.GetKeyDown(KeyCode.Tab))Toggle();
+        if(!built || !hudVisible || !Playing || Time.timeScale<=0f)return;
+        // Pending level-up offers take priority even before the card UI's LateUpdate.
+        if(RunProgression.Instance!=null && RunProgression.Instance.PendingLevelUps>0)return;
+        if(Input.GetKeyDown(KeyCode.Tab)){Toggle();return;}
+        if(opened && overlay.gameObject.activeInHierarchy && UiNumberShortcuts.TryRead(out int number)) {
+            if(number==1 || number==2) {
+                if(weapons!=null) {
+                    bool success=number==1?weapons.EquipLastWeapon():weapons.EquipLastPickaxe();
+                    Refresh();if(!success)statusText.text="행동 완료 후 장착할 수 있습니다";
+                }
+            }
+        }
     }
     private void LateUpdate() {
         if(built && overlay.gameObject.activeSelf && canvasRect.rect.size!=lastCanvasSize)Layout();
     }
     public void Toggle() {
-        if(!built || !Playing || Time.timeScale<=0f)return;
+        if(!built || !hudVisible || !Playing || Time.timeScale<=0f ||
+            (RunProgression.Instance!=null && RunProgression.Instance.PendingLevelUps>0))return;
+        UiNumberShortcuts.BlockThisFrame();
         slide?.Kill();Layout(true);Refresh();opened=!opened;
         handleText.text=opened?"<":">";
         slide=panel.DOAnchorPosX(opened?openedX:closedX,slideDuration).SetEase(Ease.OutCubic).SetUpdate(true);
@@ -132,8 +145,8 @@ public sealed class RunInventoryPanel : MonoBehaviour
         panel.pivot=Vector2.up;panel.sizeDelta=new Vector2(Width,Height);
         var background=panel.gameObject.AddComponent<Image>();background.sprite=panelSprite;background.raycastTarget=true;
         Text("Title",panel,"장비",new Vector2(24,-18),new Vector2(384,36),26).alignment=TextAlignmentOptions.Center;
-        Text("WeaponsHeading",panel,"무기",new Vector2(24,-66),new Vector2(384,30),24);
-        Text("PickaxesHeading",panel,"곡괭이",new Vector2(24,-240),new Vector2(384,30),24);
+        Text("WeaponsHeading",panel,"[1] 무기",new Vector2(24,-66),new Vector2(384,30),24);
+        Text("PickaxesHeading",panel,"[2] 곡괭이",new Vector2(24,-240),new Vector2(384,30),24);
         RectTransform weaponContent=Section("Weapons",new Vector2(48,-102),weapons!=null?weapons.AllWeapons.Count:0);
         if(weapons!=null)for(int i=0;i<weapons.AllWeapons.Count;i++) {
             WeaponData data=weapons.AllWeapons[i];if(data==null)continue;

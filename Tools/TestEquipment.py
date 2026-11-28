@@ -14,7 +14,7 @@ using System;using System.Collections.Generic;
 namespace UnityEngine {
  public class Object {public static void Destroy(object o){} public static T Instantiate<T>(T p,Vector3 v,Quaternion q)=>p;}
  public class MonoBehaviour:Object { protected T FindObjectOfType<T>() where T:new()=>new T();}
- public class ScriptableObject:Object {} public class Sprite:Object {} public class GameObject:Object {public bool activeSelf;public void SetActive(bool b){activeSelf=b;}} public class AudioClip:Object {}
+ public class ScriptableObject:Object {} public class Sprite:Object {} public class GameObject:Object {public T GetComponent<T>() where T:new()=>new T();public bool activeSelf;public void SetActive(bool b){activeSelf=b;}} public class AudioClip:Object {}
  public class RectTransform {public Vector2 anchoredPosition;public object component;public T GetComponent<T>()=> (T)component;}
  public class SerializeField:Attribute{} public class HeaderAttribute:Attribute{public HeaderAttribute(string s){}}
  public class MinAttribute:Attribute{public MinAttribute(float f){}}public class RangeAttribute:Attribute{public RangeAttribute(float a,float b){}}
@@ -105,6 +105,17 @@ class Program {
  Time.timeScale=0;Check(!loaded.EquipWeapon(sword),"pause switch rejected");Time.timeScale=1;
  GameFlowController.Instance.CurrentState=GameState.GameOver;Check(!loaded.EquipWeapon(sword),"gameover switch rejected");
  Check(EquipmentCombat.Attack(10,0,100,.25f)==1,"attack minimum");
+ GameFlowController.Instance.CurrentState=GameState.Playing;
+ Check(loaded.EquipLastWeapon()&&loaded.ActiveEquipment==sword,"number shortcut remembers weapon");
+ Check(loaded.EquipLastPickaxe()&&loaded.ActiveEquipment==aron,"number shortcut remembers pickaxe across reload");
+ loaded.EquipPickaxe(stone);loaded.EquipWeapon(sword);
+ Check(loaded.EquipLastPickaxe()&&loaded.ActiveEquipment==stone,"mouse pickaxe selection updates shortcut");
+ loaded.EquipPickaxe(aron);loaded.EquipWeapon(sword);PlayerPrefs.DeleteKey("PickaxeOwned_arondight_pickaxe");
+ Check(loaded.EquipLastPickaxe()&&loaded.ActiveEquipment==stone,"locked remembered pickaxe falls back to default");
+ player.IsActionInProgress=true;Check(!loaded.EquipLastWeapon()&&loaded.ActiveEquipment==stone,"shortcut refuses busy equip without queue");player.IsActionInProgress=false;
+ loaded.EquipWeapon(sword);PlayerPrefs.DeleteKey("LastSelectedPickaxeId");var noHistory=Manager(swords,picks,player);
+ Check(noHistory.EquipLastPickaxe()&&noHistory.ActiveEquipment==stone,"no pickaxe history uses StoneAxe");
+
  GameFlowController.Instance.CurrentState=GameState.Playing;
  var tm=new TerrainManager();var map=new UnityEngine.Tilemaps.Tilemap();
  var tile=new UnityEngine.Tilemaps.TileBase();var ordinaryTile=new UnityEngine.Tilemaps.TileBase();

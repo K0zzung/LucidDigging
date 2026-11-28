@@ -53,6 +53,7 @@ public class RunCardSelectionUI : MonoBehaviour
     private int offerVersion;
     private int offerFrame;
     private bool acceptingSelection;
+    private int selectionAttemptFrame=-1;
     private bool configured;
     private bool configurationFailed;
 
@@ -81,6 +82,11 @@ public class RunCardSelectionUI : MonoBehaviour
         configured = true;
     }
 
+    private void Update() {
+        if(!configured || !IsOpen || !acceptingSelection || gameFlow==null ||
+            gameFlow.CurrentState!=GameState.LevelUpSelection || Time.frameCount<=offerFrame)return;
+        if(UiNumberShortcuts.TryRead(out int number))SelectCard(number-1,offerVersion);
+    }
     private void LateUpdate() {
         if (!configured || configurationFailed) return;
         if (progression.PendingLevelUps > 0 &&
@@ -115,6 +121,7 @@ public class RunCardSelectionUI : MonoBehaviour
     private void ShowNextOffer() {
         offerVersion++;
         offerFrame = Time.frameCount;
+        UiNumberShortcuts.BlockThisFrame();
         if (!RunCardSampler.TryDrawThree(candidates, raritySettings, out offeredCards, out string error)) {
             ReportConfigurationError(error);
             return;
@@ -127,6 +134,9 @@ public class RunCardSelectionUI : MonoBehaviour
         for (int i = 0; i < buttons.Length; i++) {
             int index = i;
             int version = offerVersion;
+            bool available=offeredCards!=null && i<offeredCards.Length && offeredCards[i]!=null;
+            buttons[i].gameObject.SetActive(available);
+            if(!available){buttons[i].interactable=false;continue;}
             RunCardData card = offeredCards[i];
             names[i].text = card.DisplayName;
             effects[i].text = card.HasPenalty
@@ -163,9 +173,13 @@ public class RunCardSelectionUI : MonoBehaviour
             Time.frameCount <= offerFrame || gameFlow.CurrentState != GameState.LevelUpSelection ||
             !gameFlow.CanConfirmRunCard || progression.PendingLevelUps <= 0 ||
             offeredCards == null || index < 0 || index >= offeredCards.Length ||
-            offeredCards[index] == null)
+            offeredCards[index] == null || index>=buttons.Length || buttons[index]==null ||
+            !buttons[index].isActiveAndEnabled || !buttons[index].gameObject.activeInHierarchy ||
+            !buttons[index].IsInteractable() || selectionAttemptFrame==Time.frameCount)
             return;
 
+        selectionAttemptFrame=Time.frameCount;
+        UiNumberShortcuts.BlockThisFrame();
         acceptingSelection = false;
         foreach (Button button in buttons) button.interactable = false;
         RunCardData selected = offeredCards[index];
@@ -199,6 +213,7 @@ public class RunCardSelectionUI : MonoBehaviour
     }
 
     private void Hide() {
+        if(IsOpen)UiNumberShortcuts.BlockThisFrame();
         acceptingSelection = false;
         offeredCards = null;
         offerVersion++;
