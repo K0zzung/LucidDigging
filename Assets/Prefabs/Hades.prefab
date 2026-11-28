@@ -279,6 +279,8 @@ MonoBehaviour:
   spikeWarningPrefab: {fileID: 3264717465601513585, guid: 660419cbd86145c42ad3eb87521a0274, type: 3}
   spikeStrikePrefab: {fileID: 7860808926606003590, guid: b42547a79d407dc4d9d38586da082aeb, type: 3}
   weaponDrop: {fileID: 11400000, guid: 9c53509d782ab35429162796a24ef71c, type: 2}
+  pickaxeDrop: {fileID: 11400000, guid: 868dfbb6d9bd4a4ca0953f3dfaac16cc, type: 2}
+  pickaxeDropChance: 0.15
   forceWeaponDropForTesting: 0
   weaponDropRiseCells: 2
   weaponPickupPrefab: {fileID: 8747088873434279567, guid: 23bde26dbee818d49b75d0aa0a27e612, type: 3}

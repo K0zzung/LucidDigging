@@ -74,6 +74,11 @@ public class TerrainManager : MonoBehaviour
             data.tile);
     }
 
+    // Explicit data classification: do not infer from HasTile, names or sprite appearance.
+    public bool IsTurret(Vector3Int cell) {
+        TerrainData entry=GetTerrainData(cell);
+        return entry!=null && entry.combatCategory==TerrainCombatCategory.Turret;
+    }
     public bool HasTerrain(Vector3Int cell) {
         if (terrainTilemap == null)
             return false;

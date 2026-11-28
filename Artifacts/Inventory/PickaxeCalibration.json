@@ -1,0 +1,59 @@
+[
+  {
+    "name": "StoneAxe",
+    "rect": [
+      122,
+      103,
+      522,
+      514
+    ],
+    "opaque128": [
+      4,
+      0,
+      522,
+      509
+    ],
+    "ppu": 100,
+    "displayScale": 0.26544401544401547,
+    "visibleUnits": 1.375,
+    "attack": 10
+  },
+  {
+    "name": "ArondightPickaxe",
+    "rect": [
+      828,
+      99,
+      542,
+      521
+    ],
+    "opaque128": [
+      4,
+      2,
+      542,
+      518
+    ],
+    "ppu": 100,
+    "displayScale": 0.2555762081784387,
+    "visibleUnits": 1.375,
+    "attack": 160
+  },
+  {
+    "name": "DragonPickaxe",
+    "rect": [
+      1539,
+      101,
+      539,
+      520
+    ],
+    "opaque128": [
+      1,
+      2,
+      537,
+      519
+    ],
+    "ppu": 100,
+    "displayScale": 0.25652985074626866,
+    "visibleUnits": 1.375,
+    "attack": 310
+  }
+]

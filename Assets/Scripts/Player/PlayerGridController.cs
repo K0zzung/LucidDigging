@@ -293,7 +293,9 @@ public class PlayerGridController : MonoBehaviour
 
 
                 bool hardTerrain = terrainManager.GetTerrainDefense(targetCell) >= 30;
-                bool destroyed = terrainManager.DamageTerrain(targetCell,playerStatus.Attack,out int dealtDamage);
+                int attack = terrainManager.IsTurret(targetCell) && WeaponManager.Instance!=null
+                    ? WeaponManager.Instance.GetTurretAttack(playerStatus) : playerStatus.Attack;
+                bool destroyed = terrainManager.DamageTerrain(targetCell,attack,out int dealtDamage);
 
 
                 // 실제 준 데미지 표시
@@ -398,7 +400,7 @@ public class PlayerGridController : MonoBehaviour
 
                 bool killed =
                     enemy.TakeDamage(
-                        playerStatus.Attack,
+                        WeaponManager.Instance != null ? WeaponManager.Instance.GetNormalAttack(playerStatus,enemy) : playerStatus.Attack,
                         out int dealtDamage);
 
 

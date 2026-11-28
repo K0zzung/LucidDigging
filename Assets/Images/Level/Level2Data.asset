@@ -18,3 +18,4 @@ MonoBehaviour:
   maxHP: 35
   attack: 100
   defense: 30
+  combatCategory: 1

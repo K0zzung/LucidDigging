@@ -5,6 +5,18 @@ using UnityEngine;
     menuName = "Game/Weapon Data")]
 public class WeaponData : ScriptableObject
 {
+    public bool IsPickaxe => isPickaxe;
+    public int PickaxeAttack => pickaxeAttack;
+    public float DisplayScale => displayScale;
+    public Vector2 GripOffset => gripOffset;
+    public float GripAngle => gripAngle;
+    [Header("Pickaxe / visible-size calibration")]
+    [SerializeField] private bool isPickaxe;
+    [SerializeField,Min(1)] private int pickaxeAttack = 10;
+    [SerializeField,Min(0.001f)] private float displayScale = 1f;
+    [SerializeField] private Vector2 gripOffset;
+    [SerializeField] private float gripAngle;
+
     // =========================================================
     // Identity
     // =========================================================

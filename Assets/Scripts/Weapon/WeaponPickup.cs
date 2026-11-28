@@ -160,8 +160,7 @@ public class WeaponPickup : MonoBehaviour
             startWorldPosition;
 
 
-        visualRoot.localScale =
-            Vector3.one;
+        visualRoot.localScale = Vector3.one * (weaponData != null && weaponData.IsPickaxe ? weaponData.DisplayScale : 1f);
 
 
         visualRoot.rotation =
@@ -313,6 +312,7 @@ public class WeaponPickup : MonoBehaviour
     // =========================================================
 
     private void OnDestroy() {
+        PickaxeBossReward.Release(weaponData);
         dropSequence?.Kill();
 
 

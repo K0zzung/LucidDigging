@@ -30,12 +30,17 @@ public sealed class ShieldPresentation : MonoBehaviour
     private Image border;
     private TMP_Text seconds;
     private Image timeFill;
-    private const float BadgeWidth = 304f;
-    private const float BadgeHeight = 136f;
+    private const float BadgeWidth = 184f;
+    private const float BadgeHeight = 56f;
     private Canvas canvas;
-    private Graphic[] existingHUD;
-    private Vector3[] hudLayoutScales;
-    private readonly Vector3[] corners = new Vector3[4];
+    private RectTransform healthBarRect;
+    [Header("Buff HUD placement - relative to visible HP artwork")]
+    [Tooltip("Optional placement reference. Empty uses HUDController's HP bar.")]
+    [SerializeField] private RectTransform hpBarAnchorOverride;
+    [Tooltip("Normalized visible bottom-left inside the HP bar Rect. HPSlider.png alpha bounds: x=59/2170, y=241/725. No runtime pixel reads.")]
+    [SerializeField] private Vector2 hpBarVisibleBottomLeft = new Vector2(0.02718894f, 0.3324138f);
+    [Tooltip("Canvas reference units. X positive moves right; Y positive moves up. Applied after the visible HP anchor.")]
+    [SerializeField] private Vector2 hpBarBadgeOffset = new Vector2(12f, -8f);
     private bool wasActive;
     private bool built;
     private float activationAge = 1f;
@@ -103,16 +108,13 @@ public sealed class ShieldPresentation : MonoBehaviour
             Debug.LogWarning("[Shield] Missing HUD canvas/icon/font; buff HUD unavailable.", this);
             return;
         }
-        existingHUD = hud.GetComponentsInChildren<Graphic>(true);
-        hudLayoutScales = new Vector3[existingHUD.Length];
-        for (int i = 0; i < existingHUD.Length; i++)
-            hudLayoutScales[i] = existingHUD[i].rectTransform.localScale;
+        healthBarRect = hud.HealthBarRect;
         safeRoot = Rect("BuffSafeArea", canvas.transform);
         container = Rect("ActiveBuffs", safeRoot);
-        container.anchorMin = container.anchorMax = container.pivot = Vector2.one;
+        container.anchorMin = container.anchorMax = container.pivot = Vector2.up;
         container.sizeDelta = new Vector2(BadgeWidth, BadgeHeight);
         var layout = container.gameObject.AddComponent<HorizontalLayoutGroup>();
-        layout.childAlignment = TextAnchor.UpperRight;
+        layout.childAlignment = TextAnchor.UpperLeft;
         layout.childControlWidth = layout.childControlHeight = false;
         layout.childForceExpandWidth = layout.childForceExpandHeight = false;
         layout.spacing = 10f;
@@ -130,18 +132,15 @@ public sealed class ShieldPresentation : MonoBehaviour
         plate.color = new Color(0.035f, 0.055f, 0.11f, 1f);
         plate.raycastTarget = false;
 
-        var iconRect = Area("ShieldIcon", background, new Vector2(0f, 0.2f), new Vector2(0.32f, 1f), 12f);
+        var iconRect = Area("ShieldIcon", background, new Vector2(0f, 0.12f), new Vector2(0.32f, 1f), 4f);
         var icon = iconRect.gameObject.AddComponent<Image>();
         icon.sprite = buffIcon;
         icon.preserveAspect = true;
         icon.raycastTarget = false;
-        Label("BuffName", background, "보호막", 28f,
-            new Vector2(0.34f, 0.63f), new Vector2(0.95f, 0.94f),
-            new Color(0.65f, 0.85f, 1f));
-        seconds = Label("RemainingTime", background, "", 46f,
-            new Vector2(0.34f, 0.24f), new Vector2(0.95f, 0.65f), Color.white);
+        seconds = Label("RemainingTime", background, "", 30f,
+            new Vector2(0.34f, 0.14f), new Vector2(0.98f, 0.96f), Color.white);
 
-        var trackRect = Area("DurationTrack", background, new Vector2(0.05f, 0.08f), new Vector2(0.95f, 0.16f));
+        var trackRect = Area("DurationTrack", background, new Vector2(0.05f, 0.04f), new Vector2(0.95f, 0.09f));
         var track = trackRect.gameObject.AddComponent<Image>();
         track.color = new Color(0.1f, 0.18f, 0.28f, 1f);
         track.raycastTarget = false;
@@ -229,32 +228,23 @@ public sealed class ShieldPresentation : MonoBehaviour
         var area = Screen.safeArea;
         safeRoot.anchorMin = new Vector2(area.xMin / Screen.width, area.yMin / Screen.height);
         safeRoot.anchorMax = new Vector2(area.xMax / Screen.width, area.yMax / Screen.height);
-        // Preserve the existing HUD's top band; scale the new badge for narrow screens.
+        // Follow only the HP bar, never skill pickup/punch animations or other HUD graphics.
         float scale = Mathf.Min(1f, safeRoot.rect.width / 1080f);
         container.localScale = Vector3.one * scale;
-        float inset = topInset * scale;
-        Camera uiCamera = canvas.renderMode == RenderMode.ScreenSpaceOverlay ? null : canvas.worldCamera;
-        // The existing HP/skill bar uses centered anchors. Its screen position shifts
-        // on tall phones, so reserve its actual visible bounds rather than a guess.
-        for (int i = 0; i < existingHUD.Length; i++) {
-            var graphic = existingHUD[i];
-            if (graphic == null || !graphic.isActiveAndEnabled) continue;
-            var rect = graphic.rectTransform;
-            rect.GetLocalCorners(corners);
-            // Item pickup punches the skill icon's scale. Measure its resting
-            // layout instead so the buff timer does not follow that animation.
-            Vector3 restingCorner = rect.localPosition + rect.localRotation *
-                Vector3.Scale(corners[0], hudLayoutScales[i]);
-            Vector3 worldBottom = rect.parent.TransformPoint(restingCorner);
-            Vector2 screenBottom = RectTransformUtility.WorldToScreenPoint(uiCamera, worldBottom);
-            if (RectTransformUtility.ScreenPointToLocalPointInRectangle(safeRoot, screenBottom, uiCamera, out Vector2 local))
-                inset = Mathf.Max(inset, safeRoot.rect.yMax - local.y + 12f * scale);
+        Vector2 position = new Vector2(rightInset * scale, -topInset * scale);
+        RectTransform anchor = hpBarAnchorOverride != null ? hpBarAnchorOverride : healthBarRect;
+        if (anchor != null) {
+            Rect bounds = anchor.rect;
+            Vector3 visibleBottomLeft = new Vector3(
+                bounds.xMin + bounds.width * hpBarVisibleBottomLeft.x,
+                bounds.yMin + bounds.height * hpBarVisibleBottomLeft.y, 0f);
+            Vector3 local = safeRoot.InverseTransformPoint(anchor.TransformPoint(visibleBottomLeft));
+            position = new Vector2(local.x - safeRoot.rect.xMin + hpBarBadgeOffset.x * scale,
+                local.y - safeRoot.rect.yMax + hpBarBadgeOffset.y * scale);
         }
-        container.anchoredPosition = new Vector2(-rightInset * scale, -inset);
-        // Ensure the badge remains inside even unusually short safe areas.
-        float height = safeRoot.rect.height;
-        if (inset + BadgeHeight * scale > height)
-            container.anchoredPosition = new Vector2(-rightInset * scale, -Mathf.Max(0f, height - BadgeHeight * scale));
+        position.x = Mathf.Clamp(position.x, 0f, Mathf.Max(0f, safeRoot.rect.width - BadgeWidth * scale));
+        position.y = Mathf.Clamp(position.y, -Mathf.Max(0f, safeRoot.rect.height - BadgeHeight * scale), 0f);
+        container.anchoredPosition = position;
     }
 
     private void HandleHPChanged(int hp, int maxHP) {

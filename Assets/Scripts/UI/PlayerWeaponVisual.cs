@@ -8,6 +8,13 @@ public class PlayerWeaponVisual : MonoBehaviour
 
 
     private bool isBound;
+    private Vector3 defaultPosition,defaultScale;
+    private Quaternion defaultRotation;
+    private void Awake() {
+        if(weaponRenderer==null)return;
+        defaultPosition=weaponRenderer.transform.localPosition;defaultScale=weaponRenderer.transform.localScale;
+        defaultRotation=weaponRenderer.transform.localRotation;
+    }
 
 
     private void OnEnable() {
@@ -38,7 +45,7 @@ public class PlayerWeaponVisual : MonoBehaviour
             return;
 
 
-        WeaponManager.Instance.OnWeaponChanged +=
+        WeaponManager.Instance.OnActiveEquipmentChanged +=
             HandleWeaponChanged;
 
 
@@ -53,7 +60,7 @@ public class PlayerWeaponVisual : MonoBehaviour
 
 
         if (WeaponManager.Instance != null) {
-            WeaponManager.Instance.OnWeaponChanged -=
+            WeaponManager.Instance.OnActiveEquipmentChanged -=
                 HandleWeaponChanged;
         }
 
@@ -69,7 +76,7 @@ public class PlayerWeaponVisual : MonoBehaviour
 
 
         HandleWeaponChanged(
-            WeaponManager.Instance.CurrentWeapon);
+            WeaponManager.Instance.ActiveEquipment);
     }
 
 
@@ -87,7 +94,9 @@ public class PlayerWeaponVisual : MonoBehaviour
         }
 
 
-        weaponRenderer.sprite =
-            weapon.WeaponSprite;
+        weaponRenderer.sprite = weapon.WeaponSprite;
+        weaponRenderer.transform.localScale=defaultScale*(weapon.IsPickaxe?weapon.DisplayScale:1f);
+        weaponRenderer.transform.localPosition=defaultPosition+(weapon.IsPickaxe?(Vector3)weapon.GripOffset:Vector3.zero);
+        weaponRenderer.transform.localRotation=defaultRotation*Quaternion.Euler(0,0,weapon.IsPickaxe?weapon.GripAngle:0);
     }
 }

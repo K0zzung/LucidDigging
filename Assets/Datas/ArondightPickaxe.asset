@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ff97fb8955b4ee943941066c4ad66352, type: 3}
+  m_Name: ArondightPickaxe
+  m_EditorClassIdentifier: 
+  weaponId: arondight_pickaxe
+  weaponName: ArondightPickaxe
+  additionalAttack: 0
+  inventoryIcon: {fileID: 1722550479, guid: f9125a4dc4986c042a2848608c94ae26, type: 3}
+  weaponSprite: {fileID: 1722550479, guid: f9125a4dc4986c042a2848608c94ae26, type: 3}
+  attackEffectPrefab: {fileID: 0}
+  attackSound: {fileID: 8300000, guid: ce373555a17d7324f8271b54d7331e35, type: 3}
+  isPickaxe: 1
+  pickaxeAttack: 160
+  displayScale: 0.255576
+  gripOffset: {x: 0, y: 0}
+  gripAngle: 0

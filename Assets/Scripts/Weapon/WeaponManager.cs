@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class WeaponManager : MonoBehaviour
+public class WeaponManager : MonoBehaviour, IInventoryEquipmentProvider
 {
     public static WeaponManager Instance {
         get;
@@ -27,6 +27,62 @@ public class WeaponManager : MonoBehaviour
     // =========================================================
     // Runtime
     // =========================================================
+
+    [Header("Pickaxes (independent ownership)")]
+    [SerializeField] private WeaponData defaultPickaxe;
+    [SerializeField] private List<WeaponData> allPickaxes = new List<WeaponData>();
+    [SerializeField] private PlayerGridController equipmentPlayer;
+    [Header("Ordinary attack efficiency; not applied to Terrain or skills")]
+    [SerializeField] private float weaponTurretMultiplier = .25f;
+    [SerializeField] private float pickaxeMonsterMultiplier = .25f;
+    [SerializeField] private float pickaxeBossMultiplier = .25f;
+    [SerializeField] private float pickaxeTurretMultiplier = 2f;
+    private WeaponData activePickaxe;
+    public WeaponData ActiveEquipment => activePickaxe != null ? activePickaxe : CurrentWeapon;
+    public bool IsPickaxeActive => activePickaxe != null;
+    public event Action<WeaponData> OnActiveEquipmentChanged;
+    public event Action Changed;
+    private readonly List<InventoryEquipmentItem> pickaxeItems = new List<InventoryEquipmentItem>();
+    public IReadOnlyList<InventoryEquipmentItem> Items {
+        get {
+            pickaxeItems.Clear();
+            foreach(var p in allPickaxes) if(p!=null) pickaxeItems.Add(new InventoryEquipmentItem(
+                p.WeaponId,p.WeaponName,p.InventoryIcon,IsOwned(p),ActiveEquipment==p,ActiveEquipment==p));
+            return pickaxeItems;
+        }
+    }
+    public bool TryEquip(string id) {
+        foreach(var p in allPickaxes) if(p!=null && p.WeaponId==id)return EquipPickaxe(p);
+        return false;
+    }
+    private bool CanSwitchEquipment() {
+        if(equipmentPlayer==null)equipmentPlayer=FindObjectOfType<PlayerGridController>();
+        return equipmentPlayer!=null && !equipmentPlayer.IsActionInProgress && Time.timeScale>0f &&
+            GameFlowController.Instance!=null && GameFlowController.Instance.CurrentState==GameState.Playing;
+    }
+    public bool EquipPickaxe(WeaponData item) {
+        if(item==null || !item.IsPickaxe || !allPickaxes.Contains(item) || !IsOwned(item) || !CanSwitchEquipment())return false;
+        activePickaxe=item;SaveActiveEquipment();NotifyEquipment();return true;
+    }
+    private void NotifyEquipment() { OnActiveEquipmentChanged?.Invoke(ActiveEquipment);Changed?.Invoke(); }
+    private void SaveActiveEquipment() {
+        PlayerPrefs.SetString("ActiveEquipmentId",ActiveEquipment.WeaponId);PlayerPrefs.Save();
+    }
+    public int GetTurretAttack(PlayerStatus status) {
+        return IsPickaxeActive
+            ? EquipmentCombat.Attack(activePickaxe.PickaxeAttack,status.RunAttackBonus,status.RunAttackPenalty,pickaxeTurretMultiplier)
+            : Mathf.Max(1,Mathf.RoundToInt(status.Attack*weaponTurretMultiplier));
+    }
+    public int GetNormalAttack(PlayerStatus status,EnemyBase target) {
+        bool boss=target is BossEnemy || target is BossExplosionEnemy;
+        bool turret=!boss && target.CombatCategory==EnemyCombatCategory.Turret;
+        if(turret)return GetTurretAttack(status);
+        if(!IsPickaxeActive)return status.Attack;
+        return EquipmentCombat.Attack(activePickaxe.PickaxeAttack,status.RunAttackBonus,status.RunAttackPenalty,
+            boss?pickaxeBossMultiplier:pickaxeMonsterMultiplier);
+    }
+    public IReadOnlyList<WeaponData> AllWeapons => allWeapons;
+    public event Action<WeaponData> OnWeaponUnlocked;
 
     public WeaponData CurrentWeapon {
         get;
@@ -56,6 +112,10 @@ public class WeaponManager : MonoBehaviour
 
 
         InitializeWeapons();
+        if(defaultPickaxe!=null && defaultPickaxe.IsPickaxe && allPickaxes.Contains(defaultPickaxe))SetOwned(defaultPickaxe);
+        string activeId=PlayerPrefs.GetString("ActiveEquipmentId", "");
+        foreach(var p in allPickaxes)if(p!=null && p.WeaponId==activeId && IsOwned(p))activePickaxe=p;
+
     }
 
 
@@ -209,6 +269,8 @@ public class WeaponManager : MonoBehaviour
             $"[Weapon] Unlocked : {weapon.WeaponName}");
 
 
+        OnWeaponUnlocked?.Invoke(weapon);
+        Changed?.Invoke();
         return true;
     }
 
@@ -243,7 +305,7 @@ public class WeaponManager : MonoBehaviour
     private string GetOwnedKey(
         WeaponData weapon) {
         return
-            $"WeaponOwned_{weapon.WeaponId}";
+            $"{(weapon.IsPickaxe ? "PickaxeOwned" : "WeaponOwned")}_{weapon.WeaponId}";
     }
 
 
@@ -266,8 +328,9 @@ public class WeaponManager : MonoBehaviour
 
 
         // ¿ÃπÃ ¿Â¬¯ ¡ﬂ
-        if (CurrentWeapon == weapon)
-            return true;
+        if(weapon.IsPickaxe || !allWeapons.Contains(weapon) || !CanSwitchEquipment())return false;
+        if(CurrentWeapon==weapon && activePickaxe==null)return true;
+        activePickaxe=null;
 
 
         CurrentWeapon =
@@ -275,7 +338,8 @@ public class WeaponManager : MonoBehaviour
 
 
         SaveEquippedWeapon();
-
+        SaveActiveEquipment();
+        NotifyEquipment();
 
         OnWeaponChanged?.Invoke(
             CurrentWeapon);

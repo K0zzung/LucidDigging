@@ -112,6 +112,8 @@ public class BossExplosionEnemy : EnemyBase
 
     [SerializeField]
     private WeaponData weaponDrop;
+    [SerializeField] private WeaponData pickaxeDrop;
+    [SerializeField,Range(0f,1f)] private float pickaxeDropChance = .15f;
 
     [SerializeField]
     private WeaponPickup weaponPickupPrefab;
@@ -749,6 +751,7 @@ public class BossExplosionEnemy : EnemyBase
         // =============================
 
         TrySpawnWeaponDrop();
+        PickaxeBossReward.Spawn(pickaxeDrop,pickaxeDropChance,weaponPickupPrefab,player,enemyManager,transform.position);
 
 
         // =============================

@@ -25,6 +25,10 @@ public class PlayerWeaponView : MonoBehaviour
     [SerializeField] private float arondightMotionWeight = 1.08f;
     [SerializeField] private float dragonMotionWeight = 1.22f;
 
+    [Header("Pickaxe motion (same hit/end timing)")]
+    [SerializeField] private float pickaxeMotionWeight = 1.25f;
+    [SerializeField] private float pickaxeWindupMultiplier = 1.6f;
+    [SerializeField] private float pickaxeFollowMultiplier = .65f;
     private Vector3 defaultArmPosition;
     private Vector3 defaultArmScale;
     private Sequence attackSequence;
@@ -60,11 +64,15 @@ public class PlayerWeaponView : MonoBehaviour
         Vector3 travel = new Vector3(Mathf.Abs(direction.x), direction.y, 0f).normalized;
         string weaponId = WeaponManager.Instance != null && WeaponManager.Instance.CurrentWeapon != null
             ? WeaponManager.Instance.CurrentWeapon.WeaponId : "0";
+        bool pickaxe=WeaponManager.Instance!=null && WeaponManager.Instance.IsPickaxeActive;
         float weight = weaponId == "2" ? dragonMotionWeight : weaponId == "1" ? arondightMotionWeight : 1f;
+        if(pickaxe)weight=pickaxeMotionWeight;
+        float preparation=pickaxe?windupAngle*pickaxeWindupMultiplier:windupAngle;
+        float follow=pickaxe?followThroughAngle*pickaxeFollowMultiplier:followThroughAngle;
         attackSequence = DOTween.Sequence();
 
         if (WeaponManager.Instance != null &&AudioManager.Instance != null) {
-            WeaponData weapon = WeaponManager.Instance.CurrentWeapon;
+            WeaponData weapon = WeaponManager.Instance.ActiveEquipment;
 
             if (weapon != null) {
                 AudioManager.Instance.PlaySFX(weapon.AttackSound);
@@ -77,7 +85,7 @@ public class PlayerWeaponView : MonoBehaviour
                 new Vector3(
                     0f,
                     0f,
-                    baseAngle + windupAngle * weight),
+                    baseAngle + preparation * weight),
                 windupTime
             ).SetEase(Ease.OutSine)
         );
@@ -89,7 +97,7 @@ public class PlayerWeaponView : MonoBehaviour
                 new Vector3(
                     0f,
                     0f,
-                    baseAngle - followThroughAngle * weight),
+                    baseAngle - follow * weight),
                 swingTime
             ).SetEase(Ease.InExpo)
         );

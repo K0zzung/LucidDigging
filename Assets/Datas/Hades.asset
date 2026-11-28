@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: Hades
   m_EditorClassIdentifier: 
   enemyName: Hades
-  maxHP: 10000
+  combatCategory: 0
+  maxHP: 1
   attack: 350
   defense: 25
   experienceReward: 350

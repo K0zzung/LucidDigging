@@ -24,6 +24,7 @@ public class PlayerWeaponAttackVFX : MonoBehaviour
     private Color currentColor;
 
     public void Play(Vector2Int direction) {
+        if(WeaponManager.Instance!=null && WeaponManager.Instance.IsPickaxeActive)return;
         var weapon = WeaponManager.Instance != null ? WeaponManager.Instance.CurrentWeapon : null;
         if (weapon == null || weapon.AttackEffectPrefab == null) return;
         GameObject prefab = weapon.AttackEffectPrefab;

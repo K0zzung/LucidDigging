@@ -2134,6 +2134,7 @@ GameObject:
   m_Component:
   - component: {fileID: 243090079}
   - component: {fileID: 243090080}
+  - component: {fileID: 2147000010}
   m_Layer: 5
   m_Name: SkillBar
   m_TagString: Untagged
@@ -7783,6 +7784,16 @@ MonoBehaviour:
   - {fileID: 11400000, guid: be476ee4b78129747aefc6fe5fe9a14a, type: 2}
   - {fileID: 11400000, guid: 9c53509d782ab35429162796a24ef71c, type: 2}
   - {fileID: 11400000, guid: 9892e70162ea6244fb703a9dc4822b2f, type: 2}
+  defaultPickaxe: {fileID: 11400000, guid: bc15e855b9e248f5a2cf4eee18985250, type: 2}
+  allPickaxes:
+  - {fileID: 11400000, guid: bc15e855b9e248f5a2cf4eee18985250, type: 2}
+  - {fileID: 11400000, guid: 868dfbb6d9bd4a4ca0953f3dfaac16cc, type: 2}
+  - {fileID: 11400000, guid: 80456b9985b44264ac83d5d112de2ea3, type: 2}
+  equipmentPlayer: {fileID: 4856862971284855651}
+  weaponTurretMultiplier: 0.25
+  pickaxeMonsterMultiplier: 0.25
+  pickaxeBossMultiplier: 0.25
+  pickaxeTurretMultiplier: 2
 --- !u!1 &891179873
 GameObject:
   m_ObjectHideFlags: 0
@@ -15812,6 +15823,32 @@ RectTransform:
   m_AnchoredPosition: {x: 211, y: -37}
   m_SizeDelta: {x: 223.87103, y: 72.075}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &2147000010
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 243090078}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cdf4e1b8c9264a83a8f8aebe76b7d564, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  panelSprite: {fileID: 21300000, guid: 6633a98a59734e238a6f678f080d40a2, type: 3}
+  slotSprite: {fileID: 21300000, guid: 2a3154ce89f74770a29b00ba33c33b03, type: 3}
+  equippedSprite: {fileID: 21300000, guid: a570801908f54127b2a51b7052edae96, type: 3}
+  handleSprite: {fileID: 21300000, guid: adaf8e168538496e8ac8cd1e62d8064b, type: 3}
+  font: {fileID: 11400000, guid: 7318f80099aff7a40930834c98a9b305, type: 2}
+  skillSlots:
+  - {fileID: 38676226}
+  - {fileID: 528460617}
+  - {fileID: 148000125}
+  player: {fileID: 4856862971284855651}
+  pickaxeProvider: {fileID: 0}
+  slideDuration: 0.22
+  slotGapBelowHUD: 14
+  handleFadeDuration: 0.25
 --- !u!1001 &4856862971284855650
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -15895,6 +15932,14 @@ PrefabInstance:
     - target: {fileID: 4995128372316939401, guid: 3f0879277e7741640ab42382c96c705d, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7184203001700012345, guid: 3f0879277e7741640ab42382c96c705d, type: 3}
+      propertyPath: hpBarBadgeOffset.x
+      value: 14.4
+      objectReference: {fileID: 0}
+    - target: {fileID: 7184203001700012345, guid: 3f0879277e7741640ab42382c96c705d, type: 3}
+      propertyPath: hpBarBadgeOffset.y
+      value: 12.6
       objectReference: {fileID: 0}
     - target: {fileID: 7588589304019171929, guid: 3f0879277e7741640ab42382c96c705d, type: 3}
       propertyPath: dashVFX
@@ -16039,6 +16084,9 @@ MonoBehaviour:
   strikeDistance: 0.075
   arondightMotionWeight: 1.08
   dragonMotionWeight: 1.22
+  pickaxeMotionWeight: 1.25
+  pickaxeWindupMultiplier: 1.6
+  pickaxeFollowMultiplier: 0.65
 --- !u!114 &4856862971284855658
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -3,6 +3,7 @@ using UnityEngine;
 
 public class EnemyBase : MonoBehaviour
 {
+    public EnemyCombatCategory CombatCategory => data != null ? data.combatCategory : EnemyCombatCategory.Monster;
     [Header("Data")]
     [SerializeField]
     protected EnemyData data;

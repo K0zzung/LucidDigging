@@ -36,6 +36,8 @@ public class HUDController : MonoBehaviour
     private float closeDuration = 0.3f;
 
 
+    public RectTransform HealthBarRect => hpSlider != null ? hpSlider.GetComponent<RectTransform>() : null;
+
     private Tween skillBarTween;
 
 
@@ -53,6 +55,7 @@ public class HUDController : MonoBehaviour
     // =========================================================
 
     public void ShowGameplayHUD() {
+        if(skillBar!=null)skillBar.GetComponent<RunInventoryPanel>()?.ShowWithGameplayHUD();
         if (hpSlider != null) {
             hpSlider.SetActive(
                 true);
@@ -84,6 +87,7 @@ public class HUDController : MonoBehaviour
     // =========================================================
 
     public void HideGameplayHUD() {
+        if(skillBar!=null)skillBar.GetComponent<RunInventoryPanel>()?.HideWithGameplayHUD();
         // HP는 죽는 순간 바로 제거
         if (hpSlider != null) {
             hpSlider.SetActive(
@@ -112,6 +116,7 @@ public class HUDController : MonoBehaviour
     // =========================================================
 
     public void ResetHUD() {
+        if(skillBar!=null)skillBar.GetComponent<RunInventoryPanel>()?.HideWithGameplayHUD();
         skillBarTween?.Kill();
 
 

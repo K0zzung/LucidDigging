@@ -156,6 +156,8 @@ MonoBehaviour:
   deathShakeStrength: 0.18
   deathFadeDuration: 0.35
   weaponDrop: {fileID: 11400000, guid: 9892e70162ea6244fb703a9dc4822b2f, type: 2}
+  pickaxeDrop: {fileID: 11400000, guid: 80456b9985b44264ac83d5d112de2ea3, type: 2}
+  pickaxeDropChance: 0.15
   weaponPickupPrefab: {fileID: 8747088873434279567, guid: 23bde26dbee818d49b75d0aa0a27e612, type: 3}
   explosionAttackSFX: {fileID: 8300000, guid: 717365246793ba948bb22eaa2fd7696b, type: 3}
 --- !u!1 &5311974372895099144
