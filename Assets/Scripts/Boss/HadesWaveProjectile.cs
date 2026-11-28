@@ -65,7 +65,7 @@ public sealed class HadesWaveProjectile : MonoBehaviour
             if (enemies != null && walls != null && enemies.TryGetEnemy(walls.WorldToCell(point),out EnemyBase enemy) &&
                 enemy != null && enemy != source && !enemy.IsDead) {
                 BeginFade(); // One impact even for a multi-cell enemy or reentrant death callbacks.
-                enemy.TakeDamage(attack);
+                enemy.TakeDamageFromEnemy(attack);
                 return;
             }
         }

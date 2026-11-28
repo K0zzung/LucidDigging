@@ -14,10 +14,12 @@ $enemy=[IO.File]::ReadAllText((Join-Path $root 'Assets/Scripts/Enemy/EnemyBase.c
 $boss=[IO.File]::ReadAllText((Join-Path $root 'Assets/Scripts/Boss/BossEnemy.cs'),$encoding)
 $grid=[IO.File]::ReadAllText((Join-Path $root 'Assets/Scripts/Player/PlayerGridController.cs'),$encoding)
 $damage=Method $enemy 'public virtual bool TakeDamage('
+$single=$damage
 # First overload delegates; use the second, actual damage/XP implementation.
 $second=$enemy.IndexOf('public virtual bool TakeDamage(',$enemy.IndexOf('public virtual bool TakeDamage(')+1)
 $damage=Method $enemy.Substring($second) 'public virtual bool TakeDamage('
 $phase=Method $boss 'protected override bool TryPreventDeath()'
+$enemyHit=Method $enemy 'public bool TakeDamageFromEnemy('
 $power=($boss -split "`n" | Where-Object {$_ -match 'private int PatternAttack\('}) -join "`n"
 $wait=Method $grid 'private IEnumerator WaitForHadesPresentation('
 $complete=Method $grid 'private void CompleteBossDefeat('
@@ -40,9 +42,12 @@ public class HadesWaveProjectile {public GameObject gameObject=new GameObject();
 public class EnemyBase {
  public int CurrentHP=1200,MaxHP=1200,Deaths,HealthRefreshes; public bool IsDead;private bool experienceGranted;
  protected EnemyData data=new EnemyData();private object healthBarInstance=new object();
+ private int enemyDamageDepth;
+ ENEMYHIT
  protected virtual bool TryPreventDeath()=>false;
  protected virtual void Die(){IsDead=true;Deaths++;}
  void HideHealthBar(){} void RefreshHealthBar(){HealthRefreshes++;}void PlayHitAnimation(){}
+ SINGLE
  DAMAGE
 }
 public class WarningSpy {public int Calls;public string Text;public float ShowBossMessage(string text,object font){Calls++;Text=text;return 2;}}
@@ -84,6 +89,11 @@ public static class PhaseTests {
   Check(b.Attack(100)==150&&DamageCalculator.CalculateDamage(b.Attack(100),25)==120,"1.5 power before defense");
   Check(b.TakeDamage(5000,out damage)&&b.IsDead&&b.Deaths==1&&RunProgression.Instance.XP==90,"second lethal claims one final death and XP");
   Check(!b.TakeDamage(5000,out damage)&&b.Deaths==1&&RunProgression.Instance.XP==90&&b.awakeningWarning.Calls==1,"duplicate final damage ignored and announcement not repeated");
+  int savedXP=RunProgression.Instance.XP;var npcVictim=new EnemyBase();
+  Check(npcVictim.TakeDamageFromEnemy(5000)&&npcVictim.IsDead&&RunProgression.Instance.XP==savedXP,"NPC kill grants no player XP");
+  npcVictim.TakeDamage(5000,out damage);Check(RunProgression.Instance.XP==savedXP,"player cannot claim XP after NPC kill");
+  var playerVictim=new EnemyBase();playerVictim.TakeDamageFromEnemy(100);
+  Check(playerVictim.TakeDamage(5000,out damage)&&RunProgression.Instance.XP==savedXP+90,"player last hit after nonlethal NPC hit still grants XP");
   var custom=new BossEnemy{phaseTwoMaxHP=2000};custom.TakeDamage(5000,out damage);Check(custom.CurrentHP==2000&&custom.MaxHP==2000,"editable phase two HP");
   var p=new LandingProbe();b.IsDeathPresentationPlaying=true;int completed=0;var wait=p.Wait(b,()=>completed++);
   for(int i=0;i<4;i++)Check(wait.MoveNext()&&p.Falls==0&&p.Locked,"no landing during stone stages");
@@ -95,5 +105,5 @@ public static class PhaseTests {
 }
 '@
 $calculator=[IO.File]::ReadAllText((Join-Path $root 'Assets/Scripts/System/DamageCalculator.cs')) -replace '(?m)^using [^;]+;\r?\n',''
-Add-Type -TypeDefinition ($stub.Replace('DAMAGE',$damage).Replace('PHASE',$phase).Replace('POWER',$power).Replace('WAIT',$wait).Replace('TIMING',$timing).Replace('COMPLETE',$complete)+$calculator)
+Add-Type -TypeDefinition ($stub.Replace('DAMAGE',$damage).Replace('SINGLE',$single).Replace('ENEMYHIT',$enemyHit).Replace('PHASE',$phase).Replace('POWER',$power).Replace('WAIT',$wait).Replace('TIMING',$timing).Replace('COMPLETE',$complete)+$calculator)
 [PhaseTests]::Run()

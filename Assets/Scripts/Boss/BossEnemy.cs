@@ -890,17 +890,7 @@ public class BossEnemy : EnemyBase
         var danger=new List<Vector3Int>(6);
         HadesSpikePatterns.BuildHorizontal(arenaLeftX,arenaWidth,row,cells,danger);
         cells.RemoveAll(cell=>!HorizontalBaseValid(cell));
-        danger.Clear();
-        foreach(var cell in cells)for(int i=0;i<3;i++)
-            danger.Add(cell+new Vector3Int((cell.x==arenaLeftX?1:-1)*i,0,0));
-        if(!HadesSpikePatterns.ReserveEscape(player.CurrentCell,danger,FreeEscapeCell))yield break;
-        cells.RemoveAll(cell=>!danger.Contains(cell) ||
-            !danger.Contains(cell+new Vector3Int(cell.x==arenaLeftX?1:-1,0,0)) ||
-            !danger.Contains(cell+new Vector3Int(cell.x==arenaLeftX?2:-2,0,0)));
         if(cells.Count==0)yield break;
-        danger.Clear();
-        foreach(var cell in cells)for(int i=0;i<3;i++)
-            danger.Add(cell+new Vector3Int((cell.x==arenaLeftX?1:-1)*i,0,0));
         var rowRoot=new GameObject("OpeningRow"+row);
         rowRoot.transform.SetParent(patternRoot.transform,false);
         var rowMarkers=new BossSpikeWarning[cells.Count];
@@ -914,7 +904,6 @@ public class BossEnemy : EnemyBase
         }
         yield return new WaitForSeconds(warning);
         if(!CanAttack || rowRoot==null)yield break;
-        if(!HadesSpikePatterns.HasEscape(player.CurrentCell,danger,FreeEscapeCell)) {Destroy(rowRoot);yield break;}
         if(AudioManager.Instance!=null)AudioManager.Instance.PlaySFX(spikeAttackSFX);
         float speed=PatternSpeed;
         for(int n=0;n<cells.Count;n++) {
@@ -1120,7 +1109,7 @@ public class BossEnemy : EnemyBase
                 enemy != this &&
                 !enemy.IsDead &&
                 hitEnemies.Add(enemy)) {
-                enemy.TakeDamage(
+                enemy.TakeDamageFromEnemy(
                     PatternAttack(spikeAttack));
             }
         }

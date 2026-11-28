@@ -24,7 +24,7 @@ namespace UnityEngine {
 namespace UnityEngine.Tilemaps {public class Tilemap {public int WallX=999; public UnityEngine.Vector3Int WorldToCell(UnityEngine.Vector3 v)=>new UnityEngine.Vector3Int((int)Math.Floor(v.x),(int)Math.Floor(v.y));public bool HasTile(UnityEngine.Vector3Int v)=>v.x==WallX;}}
 public class PlayerGridController {public UnityEngine.Vector3Int CurrentCell;}
 public class PlayerStatus {public bool IsDead;public int Defense=5,HP=100,HudHP=100,DeathEvents;public void TakeDamage(int n){HP-=n;HudHP=HP;if(HP<=0){IsDead=true;DeathEvents++;}}}
-public class EnemyBase {public bool IsDead;public int Calls,LastAttack,HP=1000;public bool TakeDamage(int attack){Calls++;LastAttack=attack;HP-=DamageCalculator.CalculateDamage(attack,10);return HP<=0;}}
+public class EnemyBase {public bool IsDead;public int Calls,LastAttack,HP=1000;public bool TakeDamageFromEnemy(int attack)=>TakeDamage(attack);public bool TakeDamage(int attack){Calls++;LastAttack=attack;HP-=DamageCalculator.CalculateDamage(attack,10);return HP<=0;}}
 public class EnemyManager {public System.Collections.Generic.Dictionary<UnityEngine.Vector3Int,EnemyBase> Cells=new System.Collections.Generic.Dictionary<UnityEngine.Vector3Int,EnemyBase>();public bool TryGetEnemy(UnityEngine.Vector3Int c,out EnemyBase e)=>Cells.TryGetValue(c,out e);}
 public static class Probe {
  static void Check(bool ok,string name){if(!ok)throw new Exception(name);}

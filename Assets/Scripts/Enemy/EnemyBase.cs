@@ -135,6 +135,14 @@ public class EnemyBase : MonoBehaviour
     // =========================================================
     // Damage
     // =========================================================
+    private int enemyDamageDepth;
+    // Preserve virtual damage/death behavior while withholding player kill XP for this hit.
+    public bool TakeDamageFromEnemy(int attack) {
+        enemyDamageDepth++;
+        try {return TakeDamage(attack);}
+        finally {enemyDamageDepth--;}
+    }
+
     public virtual bool TakeDamage(
     int attack) {
         return TakeDamage(
@@ -185,7 +193,7 @@ public class EnemyBase : MonoBehaviour
             experienceGranted = true;
             Die();
 
-            if (RunProgression.Instance != null) {
+            if (enemyDamageDepth == 0 && RunProgression.Instance != null) {
                 RunProgression.Instance.AddExperience(data.experienceReward);
             }
 

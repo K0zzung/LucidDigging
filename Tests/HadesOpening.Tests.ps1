@@ -57,3 +57,11 @@ $wake=$source.Substring($wakeStart,$wakeEnd-$wakeStart)
 if($wake.IndexOf('awakened = true;') -ge $wake.IndexOf('yield return OpeningHorizontalSweep();') -or
  $wake.IndexOf('yield return OpeningHorizontalSweep();') -ge $wake.IndexOf('yield return AttackLoop();')){throw 'Awaken -> opening -> regular loop order changed'}
 'PASS: awakening completes before one opening sweep; regular attack loop follows.'
+
+$rowStart=$source.IndexOf('    private IEnumerator OpeningHorizontalRow(')
+$rowEnd=$source.IndexOf('    private bool HorizontalBaseValid(', $rowStart)
+if($rowEnd -lt 0){$rowEnd=$source.IndexOf('    private IEnumerator HorizontalSpikeWave()', $rowStart)}
+$row=$source.Substring($rowStart,$rowEnd-$rowStart)
+if($row.Contains('ReserveEscape') -or $row.Contains('HasEscape')){throw 'Intro must not skip sides based on player position'}
+if(!$row.Contains('HorizontalBaseValid')){throw 'Intro must still exclude walls and Hades cells'}
+'PASS: intro attacks do not omit sides based on player position; wall/owner exclusion retained.'
